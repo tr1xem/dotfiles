@@ -1,0 +1,28 @@
+pkgname=trix-ignis
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Ignis"
+options=('!debug')
+groups=('trix')
+provides=('trix-ignis')
+depends=(
+    matugen-bin
+    tela-circle-icon-theme-all
+    ttf-jetbrains-mono-nerd
+    ttf-nerd-fonts-symbols-mono
+    vicinae-bin
+    python-ignis-git
+    python-j2cli
+    python-materialyoucolor-git
+    python-pywayland
+    ignis-gvc
+    adwaita-qt5
+    adwaita-qt6
+    gradience
+    python-jsonschema
+)
+
+
+# vim:ft=sh
+

@@ -1,0 +1,36 @@
+pkgname=trix-hyprland
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Hyprland environment"
+options=('!debug')
+groups=('trix')
+provides=('trix-hyprland')
+depends=(
+    pyprland
+    pwvucontrol
+    polkit-gnome
+    nwg-look
+    hypridle
+    hyprsunset
+    hyprlock
+    bluez-utils
+    blueman
+    duf
+    efitools
+    network-manager-applet
+    nvidia-prime
+    gst-plugin-va
+    xdg-desktop-portal
+    xdg-desktop-portal-hyprland
+    noto-fonts-emoji
+    slurp
+    brightnessctl
+    mpv
+    fastfetch
+    gnome-clocks
+    hyprpicker
+    ly
+)
+
+# vim:ft=sh

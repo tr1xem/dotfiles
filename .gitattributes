@@ -1,0 +1,3 @@
+.cache/cppman/** filter=lfs diff=lfs merge=lfs -text
+.cache/tealdeer/** filter=lfs diff=lfs merge=lfs -text
+.cache/** !text !filter !merge !diff

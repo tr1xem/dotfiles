@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Define the state file and arguments
+STATE_FILE="rotate_state.txt"
+VALUES=(100 50 0)
+
+# Read the current state (default to -1 if file doesn't exist)
+CURRENT_INDEX=$(cat "$STATE_FILE" 2>/dev/null || echo -1)
+
+# Determine the next index
+NEXT_INDEX=$(( (CURRENT_INDEX + 1) % ${#VALUES[@]} ))
+
+# Update the state file with the new index
+echo $NEXT_INDEX > "$STATE_FILE"
+
+# Get the value for the current index
+ARG=${VALUES[$NEXT_INDEX]}
+
+# Execute the command with the argument
+echo "Executing command with argument: $ARG"
+# Replace this with your actual command
+awcc brightness "$ARG"

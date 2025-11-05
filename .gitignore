@@ -1,0 +1,6 @@
+/dotfiles/.config/tmux/plugins/
+# Ignore Python cache directories globally
+__pycache__/
+*.pyc
+*.pyo
+

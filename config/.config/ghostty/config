@@ -1,0 +1,28 @@
+background-opacity = 0.6
+# background-blur-radius = 20
+theme = tokyonight_night
+font-family = JetBrainsMonoNL Nerd Font
+cursor-style = block
+cursor-invert-fg-bg = true
+background = #000000
+font-size = 10
+window-decoration =server
+cursor-style-blink = false
+macos-titlebar-style = hidden
+macos-option-as-alt = true
+mouse-hide-while-typing = true
+mouse-hide-while-typing = true
+confirm-close-surface = false
+
+# Auto-update Ghostty when a new release is available.
+auto-update = download
+
+term = xterm-256color
+
+window-padding-balance = true
+window-padding-y = 2
+
+shell-integration = fish
+shell-integration-features = no-cursor, sudo, title
+keybind = ctrl+shift+i=unbind
+keybind = ctrl+alt+r=reload_config

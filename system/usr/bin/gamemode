@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Check if running as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo "This script must be run as root."
+    exec sudo "$0" "$@"
+    exit 1
+fi
+
+# Function to run dbus-send and extract value
+run_dbus_get() {
+    local property=$1
+    local output
+    output=$(dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
+             org.freedesktop.DBus.Properties.Get string:org.scx.Loader string:"$property" 2>&1)
+    if echo "$output" | grep -q "Error"; then
+        echo "[tr1x_em] :Error fetching $property: $output" | tee /dev/kmsg
+        exit 1
+    fi
+    # Extract value after 'variant' (e.g., "scx_lavd" or "1")
+    echo "$output" | grep -oP 'variant\s+\w+\s+"?\K[^"]+' | tail -1
+}
+
+# Get current scheduler and mode
+current_scheduler=$(run_dbus_get CurrentScheduler)
+current_mode=$(run_dbus_get SchedulerMode)
+
+# Log for debugging
+echo "[tr1x_em] :Current scheduler: $current_scheduler, mode: $current_mode" | tee /dev/kmsg
+
+# Check scheduler and mode
+if [ "$current_scheduler" = "scx_lavd" ]; then
+    if [ "$current_mode" = "1" ]; then
+        echo "[tr1x_em] :scx already set to gaming"
+    else
+        echo "[tr1x_em] :Switched scx to gaming mode" | tee /dev/kmsg
+        if ! dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
+                      org.scx.Loader.SwitchScheduler string:scx_lavd uint32:1 >/dev/null 2>&1 | tee /dev/kmsg; then
+            echo "[tr1x_em] :Error switching to gaming mode" | tee /dev/kmsg
+            exit 1
+        fi
+    fi
+else
+    echo "[tr1x_em] :Switched to scx_lavd and gaming mode" | tee /dev/kmsg
+    if ! dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
+                  org.scx.Loader.SwitchScheduler string:scx_lavd uint32:1 >/dev/null 2>&1 | tee /dev/kmsg; then
+        echo "[tr1x_em] :Error switching to scx_lavd gaming mode" | tee /dev/kmsg
+        exit 1
+    fi
+fi
+pl1=80000000
+pl2=100000000
+currentpl=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw)
+if [ "$currentpl" != "$pl1" ]; then
+    echo "Setting PL1 to 80W"
+    echo $pl1 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
+    echo $pl2 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw
+    sudo chmod o+r /sys/class/powercap/intel-rapl\:0/energy_uj
+    # sudo /usr/bin/auto-cpufreq --force='performance'
+    echo "[tr1x_em] :powerlimits set for gaming " | tee /dev/kmsg
+
+else
+    echo "[tr1x_em] :powerlimits already set for gaming "
+fi
+
+
+
+# tlp ac
+# cpupower -c 0-11 frequency-set -d 1.2GHz -u 4.9GHz
+# cpupower -c 12-19 frequency-set -d 0.8GHz -u 3.6GHz
+# cpupower -c all frequency-set -g performance
+# cpupower -c all set --perf-bias 0
+# current_scheduler=$(grep "^SCX_SCHEDULER=" "/etc/default/scx" | cut -d'=' -f2)
+# current_flags=$(grep "^SCX_FLAGS=" "/etc/default/scx" | cut -d'=' -f2)
+# new_scheduler="scx_lavd"
+# new_flags="--performance "
+# if [ "$new_flags" != "$current_flags" ]; then
+#     echo "lavd :performance "
+#     sed -i -e "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=$new_scheduler/" \
+#         -e "s/^SCX_FLAGS=.*/SCX_FLAGS=\"$new_flags\"/" "/etc/default/scx"
+#     systemctl restart scx
+# else
+#     echo "lavd performance already set ! "
+# fi
+# sudo nvidia-smi -lgc 2580,2580
+

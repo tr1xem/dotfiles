@@ -1,0 +1,61 @@
+#!/bin/bash
+# tlp bat
+# executeAcpiCall() {
+#     echo -n "$1" > /proc/acpi/call
+# }
+#
+# executeAcpiCall "\\_SB.AMWW.WMAX 0 0x15 {1, 0xa1, 0x00, 0x00}"
+# executeAcpiCall "\\_SB.AMWW.WMAX 0 0x25 {1, 0x01, 0x00, 0x00}"
+# cpupower -c all set --perf-bias 15
+# cpupower -c 0-11 frequency-set -d 0.8GHz -u 1.2GHz
+# cpupower -c 12-19 frequency-set -d 0.8GHz -u 1GHz
+# current_scheduler=$(grep "^SCX_SCHEDULER=" "/etc/default/scx" | cut -d'=' -f2)
+# current_flags=$(grep "^SCX_FLAGS=" "/etc/default/scx" | cut -d'=' -f2 | xargs)
+# new_scheduler="scx_lavd"
+# new_flags="--powersave "
+# if [ "$new_flags" != "$current_flags" ]; then
+#     echo "lavd :powersave "
+#     sed -i -e "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=$new_scheduler/" \
+#         -e "s/^SCX_FLAGS=.*/SCX_FLAGS=\"$new_flags\"/" "/etc/default/scx"
+#     systemctl restart scx
+# else
+#     echo "lavd powersave already set ! "
+# fi
+#
+# # /usr/bin/python /home/saumya/.config/hypr/g15-fan-cli.py p
+# #made for the systemd service
+# echo "[custom] :powersave mode enabled " | tee /dev/kmsg
+#
+#
+echo 1 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
+# output=$(dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader org.freedesktop.DBus.Properties.Get string:org.scx.Loader string:CurrentScheduler 2>&1)
+# mode=$(dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader org.freedesktop.DBus.Properties.Get string:org.scx.Loader string:SchedulerMode 2>&1)
+# if echo "$output" | grep -q "scx_lavd"; then
+#     if echo "$mode" | grep -q "uint32 2"; then
+#         echo "[tr1x_em] :scx already set to powersaving"
+#     else
+#         echo "[tr1x_em] :Switched scx to powersaving" | tee /dev/kmsg
+#         dbus-send --system --dest=org.scx.Loader /org/scx/Loader org.scx.Loader.SwitchScheduler string:scx_lavd uint32:2
+#         fi
+#
+# else
+#     dbus-send --system --dest=org.scx.Loader /org/scx/Loader org.scx.Loader.SwitchSchedulerWithArgs string:scx_lavd array:string:"--powersave"
+#     echo "[tr1x_em] :Switched to scx_lavd and Powersave mode enabled" | tee /dev/kmsg
+# fi
+
+# pl1=55000000
+# pl2=55000000
+# currentpl=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw)
+# if [ "$currentpl" != "$pl1" ]; then
+#     echo "Setting PL1 to 55W"
+#     echo $pl1 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
+#     echo $pl2 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw
+#     # sudo auto-cpufreq --force='powersave'
+#     echo "[tr1x_em] :powerlimits set for powersaving " | tee /dev/kmsg
+# else
+#     echo "[tr1x_em] :powerlimits already set for powersaving "
+# fi
+
+
+
+

@@ -1,0 +1,26 @@
+pkgname=trix-dev-git
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix git"
+options=('!debug')
+groups=('trix')
+provides=('trix-dev-git')
+depends=(
+    base
+    neovim
+    hererocks
+    opencode-bin
+    luarocks
+    uv
+    zoxide
+    wf-recorder
+    xdg-user-dirs
+    ghostty
+    tmux
+    fzf
+    yazi
+)
+
+
+# vim:ft=sh

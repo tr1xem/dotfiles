@@ -1,0 +1,49 @@
+#!/bin/bash
+ezauth="key:$EZAUTH"
+ezuploadurl="https://api.e-z.host/files"
+
+#file name formatting
+random_string=$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 7)
+focused_window=$(hyprctl activewindow)
+app_name=$(echo "$focused_window" | grep "class:" | awk '{print $2}')
+time=$(date "+%d-%b_%H-%M-%S")
+#file="${app_name}_${time}_${random_string}.png"
+file="${random_string}-${app_name}.png"
+
+temp_file="$HOME/Pictures/Screenshots/${file}"
+flameshot gui -p $temp_file
+
+#grim -g "$(slurp)" - >"$temp_file"
+
+if [[ $(file --mime-type -b $temp_file) != "image/png" ]]; then
+        rm $temp_file
+        notify-send -r 91190 -t 2200 "Screenshot aborted" -i "flameshot" -a "Flameshot-A" && exit 1
+
+#Uploading logics
+fi
+json_data=$( curl -X POST -F "file=@/${temp_file}" -H $ezauth  -v $ezuploadurl 2>/dev/null)
+status=$(echo "$json_data" | jq -r '.status')
+
+if [[ $status == "error" ]]; then
+        message=$(echo "$json_data" | jq -r '.message')
+        notify-send -i "flameshot" -a "t1" -r 91190 -t 2200 -i "$message" -a "Flameshot" && exit 1
+fi
+image_url=$(echo "$json_data" | jq -r '.imageUrl')
+raw_url=$(echo "$json_data" | jq -r '.rawUrl')
+d_url=$(echo "$json_data" | jq -r '.deletionUrl')
+
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+    wl-copy "$image_url"
+else
+    printf "%s" "$image_url" | xclip -selection clipboard
+fi
+
+ACTION=$(notify-send  -a "Flameshot" -i "$temp_file" "Screenshot Uploaded" "$image_url" \
+     -A "view=View" -A "copy=Copy Raw" -A "delete=Delete")
+
+case "$ACTION" in
+view) xdg-open "$image_url" ;;
+copy) wl-copy $raw_url;;
+delete) curl $d_url && notify-send -i "flameshot" -a "Flameshot-D" "Deleted File" "Successfully";;
+esac
+rm $temp_file

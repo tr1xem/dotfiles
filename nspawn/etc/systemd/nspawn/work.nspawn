@@ -1,0 +1,11 @@
+[Exec]
+Boot=yes
+PrivateUsers=no
+
+[Network]
+VirtualEthernet=no
+
+[Exec]
+Environment=WAYLAND_DISPLAY=/tmp/wayland.sock
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+

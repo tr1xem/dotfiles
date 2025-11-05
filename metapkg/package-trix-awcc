@@ -1,0 +1,15 @@
+pkgname=trix-awcc
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="AWCC development environment"
+options=('!debug')
+groups=('trix')
+provides=('trix-awcc')
+depends=(
+    awcc-git
+    python-evdev
+    nlohmann-json
+)
+# vim:ft=sh
+

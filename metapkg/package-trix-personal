@@ -1,0 +1,39 @@
+pkgname=trix-personal
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Personal"
+options=('!debug')
+groups=('trix')
+provides=('trix-personal')
+depends=(
+    discord
+    brave-bin
+    zen-browser-bin
+    ayugram-desktop
+    btop
+    eog
+    flameshot
+    mission-center
+    gimp
+    matugen-bin
+    pokemon-colorscripts-go
+    qbittorrent-enhanced
+    rclone
+    spotify
+    stow
+    udiskie
+    wf-recorder
+    eog
+    evtest
+    fd
+    ffmpeg-audio-thumbnailer
+    gnome-calculator
+    bat
+    eza
+    fish
+    fisher
+    tealdeer
+)
+
+# vim:ft=sh

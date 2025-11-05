@@ -1,0 +1,31 @@
+pkgname=trix-dev-env
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix development environment"
+options=('!debug')
+groups=('trix')
+provides=('trix-dev-env')
+depends=(
+    base
+    neovim
+    hererocks
+    opencode-bin
+    luarocks
+    uv
+    zoxide
+    wf-recorder
+    xdg-user-dirs
+    ghostty
+    tmux
+    fzf
+    ccache
+    cppman
+    gdb
+    git-lfs
+    hugo
+    yazi
+)
+
+
+# vim:ft=sh

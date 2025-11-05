@@ -1,0 +1,12 @@
+[submodule "keys"]
+	path = keys
+	url = https://github.com/tr1xem/keys
+[submodule "wallpapers/Pictures/Wallpapers"]
+	path = wallpapers/Pictures/Wallpapers
+	url = https://github.com/tr1xem/Wallpapers
+[submodule "config/.config/nvim"]
+	path = config/.config/nvim
+	url = https://github.com/tr1xem/nvim
+[submodule "personal"]
+	path = personal
+	url = https://github.com/tr1xem/personal

@@ -1,0 +1,56 @@
+#!/bin/bash
+ezauth="key:$EZAUTH"
+
+ezuploadurlt="https://api.e-z.host/paste/file"
+ezuploadurlf="https://api.e-z.host/files"
+
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <filename>"
+    exit 1
+fi
+
+FILENAME="$(realpath "$1")"
+BASENAME="$(basename "$FILENAME")"
+TEMP="/tmp/${BASENAME%.txt}.txt"
+
+echo "Uploading: $FILENAME"
+
+# Check if file exists and is readable
+if [[ ! -f "$FILENAME" || ! -r "$FILENAME" ]]; then
+    echo "Error: File '$FILENAME' does not exist or is not readable."
+    exit 1
+fi
+
+# Determine file type
+FILE_TYPE=$(file --mime-type -b "$FILENAME")
+
+# Upload logic
+case "$FILE_TYPE" in
+    text/*)
+        cp "$FILENAME" "$TEMP"
+        json_data=$(curl -X POST -F "file=@$TEMP" -H "key:$ezauth" -v "$ezuploadurlt" 2>/dev/null)
+        file_url=$(echo "$json_data" | jq -r '.pasteUrl')
+        rm "$TEMP"
+        ;;
+    image/* | video/* | audio/* | application/zip | application/x-zip-compressed )
+        json_data=$(curl -X POST -F "file=@$FILENAME" -H "key:$ezauth" -v "$ezuploadurlf" 2>/dev/null)
+        file_url=$(echo "$json_data" | jq -r '.imageUrl')
+        ;;
+    *)
+        echo "Error: Unsupported file type ($FILE_TYPE)."
+        # notify-send "File Not Valid" -a "Trix Uploader"
+        exit 1
+        ;;
+esac
+
+# Copy URL to clipboard and notify
+if [[ -n "$file_url" && "$file_url" != "null" ]]; then
+    echo "$file_url"
+    echo -n "$file_url" | wl-copy
+    notify-send "File URL copied to clipboard" "$file_url" -a "Trix Uploader"
+else
+    echo "Upload failed."
+    notify-send "Upload Failed" -a "Trix Uploader"
+fi
+

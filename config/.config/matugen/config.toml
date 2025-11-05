@@ -1,0 +1,164 @@
+[config]
+reload_apps = true
+
+[config.reload_apps_list]
+# kitty = true
+gtk_theme = true
+
+[config.wallpaper]
+command = "swww"
+arguments = [ "img", "-t", "fade", "--transition-duration", "0.5", "--transition-step", "255", "--transition-fps", "60", "-f", "Nearest",]
+set = true
+
+# [templates.kitty]
+# input_path = "~/.config/matugen/templates/kitty-colors.conf"
+# output_path = "~/.config/kitty/colors.conf"
+# post_hook = "killall -SIGUSR1 kitty &"
+
+[templates.ghostty]
+input_path = "~/.config/matugen/templates/ghostty"
+output_path = "~/.config/ghostty/themes/matugen"
+
+[templates.slurp]
+input_path = "~/.config/matugen/templates/colors-slurp.sh"
+output_path = "~/.config/kitty/slurp.sh"
+
+[templates.gradience]
+input_path = "~/.config/matugen/templates/gradience.json"
+output_path = "~/.config/presets/user/gradience.json"
+post_hook = "gradience-cli apply --gtk both -n Matu-Adw"
+
+[templates.discord]
+input_path = "~/.config/matugen/templates/discord-colors.theme.css"
+output_path = "~/.config/Vencord/themes/material.theme.css"
+
+# [templates.pywal]
+# input_path = "~/.config/matugen/templates/pywal-colors"
+# output_path = "~/.cache/wal/colors"
+
+[templates.pywaljson]
+input_path = "~/.config/matugen/templates/pywal-colors.json"
+output_path = "~/.cache/wal/colors.json"
+post_hook = "pywalfox update &"
+
+# [templates.pywalsh]
+# input_path = "~/.config/matugen/templates/colors.sh"
+# output_path = "~/.cache/wal/colors.sh"
+# post_hook = "walogram -B > /dev/null 2>&1 &"
+
+# [templates.pywalwalfile]
+# input_path = "~/.config/matugen/templates/wal"
+# output_path = "~/.cache/wal/wal"
+
+[templates.rofi]
+input_path = "~/.config/matugen/templates/colors-rofi.rasi"
+output_path = "~/.cache/wal/colors-rofi.rasi"
+
+[templates.zathura]
+input_path = "~/.config/matugen/templates/colors-zathura"
+output_path = "~/.config/zathura/zathurarc"
+
+# [templates.yazi]
+# output_path = "~/.config/yazi/theme.toml"
+# input_path = "~/.config/matugen/templates/colors-yazi.toml"
+
+[templates.hyprland]
+input_path = "~/.config/matugen/templates/hyprland-colors.conf"
+output_path = "~/.config/hypr/colors.conf"
+
+# [templates.hyprfabricated]
+# input_path = "~/.config/hyprfabricated/config/matugen/templates/hyprfabricated.css"
+# output_path = "~/.config/hyprfabricated/styles/colors.css"
+# post_hook = "fabric-cli exec hyprfabricated 'app.set_css()' &"
+
+
+[templates.fuzzel]
+input_path = "~/.config/matugen/templates/fuzzel.ini"
+output_path = "~/.config/fuzzel/fuzzel.ini"
+
+[templates.discord2]
+input_path = "~/.config/matugen/templates/discord.css"
+output_path = "~/.config/Vencord/themes/material-you.css"
+
+[templates.spicetify]
+input_path = "~/.config/matugen/templates/colors.ini"
+output_path = "~/.config/spicetify/Themes/Comfy/color.ini"
+
+[templates.starship]
+input_path = "~/.config/matugen/templates/starship-colors.toml"
+output_path = "~/.config/starship.toml"
+
+[templates.Telegram]
+input_path = "~/.config/matugen/templates/telegram-colors.tdesktop-theme"
+output_path = "~/.config/telegram-desktop/themes/material-you.tdesktop-theme"
+
+[templates.heroic]
+input_path = "~/.config/matugen/templates/heroic-theme.css"
+output_path = "~/.config/heroic/themes/heroic-colors.css"
+
+# [templates.obsidian]
+# input_path = "~/.config/matugen/templates/obsidian.css"
+# output_path = "~/Documents/Hyprfabracted/.obsidian/themes/Border/theme.css"
+
+
+# [templates.modus]
+# input_path = "~/.config/matugen/templates/modus.css"
+# output_path = "~/.config/Modus/styles/colors.css"
+# post_hook = "fabric-cli exec modus 'app.set_css()' &"
+
+[config.custom_colors.red]
+color = "#FF0000"
+blend = true
+
+[config.custom_colors.green]
+color = "#00FF00"
+blend = true
+
+[config.custom_colors.yellow]
+color = "#FFFF00"
+blend = true
+
+[config.custom_colors.blue]
+color = "#0000FF"
+blend = true
+
+[config.custom_colors.magenta]
+color = "#FF00FF"
+blend = true
+
+[config.custom_colors.cyan]
+color = "#00FFFF"
+blend = true
+
+[config.custom_colors.white]
+color = "#FFFFFF"
+blend = true
+
+[config.custom_colors.orange]
+color = "#FFA500"
+blend = true
+
+[config.custom_colors.purple]
+color = "#800080"
+blend = true
+
+
+
+
+[templates.qt6ct]
+input_path = '~/.config/matugen/templates/qtct-colors.conf'
+output_path = '~/.config/qt6ct/colors/matugen.conf'
+[templates.qt5ct]
+input_path = '~/.config/matugen/templates/qtct-colors.conf'
+output_path = '~/.config/qt5ct/colors/matugen.conf'
+
+
+[templates.btop]
+input_path = '~/.config/matugen/templates/btop.theme'
+output_path = '~/.config/btop/themes/matugen.theme'
+
+
+[templates.vicinae]
+input_path = '~/.config/matugen/templates/vicinae-matugen.toml'
+output_path = '~/.local/share/vicinae/themes/matugen.toml'
+post_hook = 'vicinae theme set matugen'

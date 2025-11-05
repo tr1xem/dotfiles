@@ -1,0 +1,214 @@
+run '~/.tmux/plugins/tpm/tpm'
+# Plugins
+set -g allow-passthrough
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'christoomey/vim-tmux-navigator'
+set -g @plugin 'tmux-plugins/tmux-yank'
+# set -g @plugin 'niksingh710/minimal-tmux-status'
+set-window-option -g automatic-rename on
+set-option -g set-titles on
+
+
+bind r source-file ~/.config/tmux/tmux.confi \; display-message 'Config Reloaded!'
+
+#Hacks
+set -g default-terminal "tmux-256color"
+set -as terminal-overrides ',tmux*:sitm=\E[3m'
+set -as terminal-overrides ',*:Ss=\E[%p1%d q:Se=\E[ q'
+set -as terminal-overrides ",*-256color:Tc"
+set -g set-titles on
+set -g set-titles-string "#W/#T"
+set -g mouse on
+setw -g mode-keys vi
+
+# Change Prefix
+unbind C-b
+set-option -g prefix C-a
+bind-key C-a send-prefix
+set -s escape-time 0
+set -g base-index 1
+
+bind '"'
+unbind %
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+
+# (copy mode) v,y and escape to select, copy and cancel respectively
+
+bind-key -T copy-mode-vi v send-keys -X begin-selection
+bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
+bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+
+# Vim style
+bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xsel -i -p && xsel -o -p | xsel -i -b"
+bind-key p run "xsel -o | tmux load-buffer - ; tmux paste-buffer"
+
+# resize panes
+bind-key -r -T prefix       M-Up              resize-pane -U 6
+bind-key -r -T prefix       M-Down            resize-pane -D 5
+bind-key -r -T prefix       M-Left            resize-pane -L 5
+bind-key -r -T prefix       M-Right           resize-pane -R 5
+bind-key -r i run-shell "tmux neww tmux-cht.sh"
+
+# Switch Clients
+bind -n C-Up switch-client -p
+bind -n C-Down switch-client -n
+bind -r ^ last-window
+bind -r k select-pane -U
+bind -r j select-pane -D
+bind -r h select-pane -L
+bind -r l select-pane -R
+
+
+# TODO
+bind -r D neww -c "#{pane_current_path}" "[[ -e TODO.md ]] && nvim TODO.md || nvim ~/personal/todo.md"
+
+# forget the find window.  That is for chumps
+bind-key -r f run-shell "tmux neww ~/.local/bin/tmux-sessionizer"
+bind-key -r i run-shell "tmux neww ~/.local/bin/tmuxcht"
+
+
+# Start windows and panes at 1, not 0
+set -g base-index 1
+set -g pane-base-index 1
+set-window-option -g pane-base-index 1
+set-option -g renumber-windows on
+
+
+# Shift arrow to switch windows
+bind -n S-Left  previous-window
+bind -n S-Right next-window
+
+# Shift Alt vim keys to switch windows
+bind -n M-H previous-window
+bind -n M-L next-window
+
+
+bind '"' split-window -v -c "#{pane_current_path}"
+bind % split-window -h -c "#{pane_current_path}"
+# set -g status-style "bg=#232136,fg=#e0def4"
+#
+# # Left side of the status bar
+# set -g status-left-length 40
+# set -g status-left "#[bg=#c4a7e7,fg=#232136,bold]  #[bg=#232136,fg=#e0def4] #S "
+#
+# # Right side of the status bar
+# set -g status-right-length 80
+# set -g status-right "#[bg=#232136,fg=#9ccfd8]%b %d %Y#[bg=#232136,fg=#e0def4] %l:%M %p"
+#
+# # Window status style
+# setw -g window-status-format "#[fg=#908caa,bg=#232136] #I #[fg=#e0def4]#W "
+# setw -g window-status-current-format "#[fg=#232136,bg=#c4a7e7] #I #[fg=#232136,bold]#W #[fg=#e0def4,bg=#232136]"
+#
+# # Pane border
+# set -g pane-border-style "bg=#232136,fg=#908caa"
+# set -g pane-active-border-style "bg=#232136,fg=#9ccfd8"
+#
+# # Message style
+# set -g message-style "bg=#c4a7e7,fg=#232136"
+#
+# # Command prompt
+# These are the default values used inside the plugin to achieve the preview shown above.
+# Theme: borders set -g status-left-length 85
+# set -g status-left "working on#[fg=colour135] #S"
+# set -g window-status-current-format "#[fg=black,bold bg=default]│#[fg=white bg=cyan]#W#[fg=black,bold bg=default]│"
+# set -g window-status-current-format "#[fg=black,bold bg=default]│#[fg=colour135 bg=black]#W#[fg=black,bold bg=default]│"
+# set -g status-style bg=default
+# set -g status-right "#[fg=magenta] #[bg=gray] %b %d %Y %l:%M %p"
+# set -g status-right '#(gitmux "#{pane_current_path}")'
+# set -g status-justify centre
+#
+
+
+set -g status-interval 6
+
+# Start window and pane indices at 1.
+set -g base-index 1
+set -g pane-base-index 0
+
+# Length of tmux status line
+set -g status-left-length 30
+set -g status-right-length 150
+
+set-option -g status "on"
+
+# Default statusbar color
+set-option -g status-style bg=colour237,fg=colour223 # bg=bg1, fg=fg1
+
+# Default window title colors
+set-window-option -g window-status-style bg=colour214,fg=colour237 # bg=yellow, fg=bg1
+
+# Default window with an activity alert
+set-window-option -g window-status-activity-style bg=colour237,fg=colour248 # bg=bg1, fg=fg3
+
+# Active window title colors
+set-window-option -g window-status-current-style bg=red,fg=colour237 # fg=bg1
+
+# Set active pane border color
+set-option -g pane-active-border-style fg=colour214
+
+# Set inactive pane border color
+set-option -g pane-border-style fg=colour239
+
+# Message info
+set-option -g message-style bg=colour239,fg=colour223 # bg=bg2, fg=fg1
+
+# Writing commands inactive
+set-option -g message-command-style bg=colour239,fg=colour223 # bg=fg3, fg=bg1
+
+# Pane number display
+set-option -g display-panes-active-colour colour1 #fg2
+set-option -g display-panes-colour colour237 #bg1
+
+# Clock
+set-window-option -g clock-mode-colour colour109 #blue
+
+# Bell
+set-window-option -g window-status-bell-style bg=colour167,fg=colour235 # bg=red, fg=bg
+
+set-option -g status-left "\
+#[fg=colour7, bg=colour241]#{?client_prefix,#[bg=colour167],} ❐ #S \
+#[fg=colour241, bg=colour237]#{?client_prefix,#[fg=colour167],}#{?window_zoomed_flag, 🔍,}"
+
+set-option -g status-right "\
+#[fg=colour214, bg=colour237] \
+#[fg=colour237, bg=colour214] #(~/.config/tmux/scripts/music.sh) \
+#[fg=colour223, bg=colour237] #(~/.config/tmux/scripts/uptime.sh) \
+#[fg=colour246, bg=colour237]  %d %b %y\
+#[fg=colour109]  %I:%M %P \
+#[fg=colour248, bg=colour239]"
+
+set-window-option -g window-status-current-format "\
+#[fg=colour237, bg=colour214]\
+#[fg=colour239, bg=colour214] #I* \
+#[fg=colour239, bg=colour214, bold] #W \
+#[fg=colour214, bg=colour237]"
+
+set-window-option -g window-status-format "\
+#[fg=colour237,bg=colour239,noitalics]\
+#[fg=colour223,bg=colour239] #I \
+#[fg=colour223, bg=colour239] #W \
+#[fg=colour239, bg=colour237]"
+
+# Set the history limit so we get lots of scrollback.
+setw -g history-limit 50000000
+
+
+# set -g pane-border-lines single
+# set -g pane-border-style fg=brightblack
+# set -g pane-active-border-style fg=red
+#
+# # Theme: status
+# set -g status-style bg=default,fg=brightblack
+# set -g status-left "#[fg=brightblack,bright]#(basename \"#{pane_current_path}\")"
+# set -g status-right "#[fg=brightblack,bright]#S"
+#
+# # Theme: status (windows)
+# set -g window-status-format "●"
+# set -g window-status-current-format "●"
+# set -g window-status-current-style "#{?window_zoomed_flag,fg=yellow,fg=red,nobold}"
+# set -g window-status-bell-style "fg=red,nobold"
+# set -g status-justify absolute-centre
+#
+

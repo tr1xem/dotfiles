@@ -1,0 +1,43 @@
+pkgname=trix-cachyos
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Cachyos tools needed"
+options=('!debug')
+groups=('trix')
+provides=('trix-cachyos')
+depends=(
+    acpi_call-dkms
+    # cachyos-fish-config
+    # cachyos-hyprland-settings
+    cachyos-keyring
+    cachyos-mirrorlist
+    cachyos-rate-mirrors
+    cachyos-settings
+    cachyos-snapper-support
+    cachyos-v3-mirrorlist
+    cachyos-v4-mirrorlist
+    chaotic-keyring
+    chaotic-mirrorlist
+    libva-nvidia-driver
+    linux-cachyos-headers
+    linux-cachyos-lts-headers
+    linux-cachyos-lts-nvidia-open
+    linux-cachyos-nvidia-open
+    chwd
+    sbctl
+    scx-manager
+    btrfs-assistant
+    grub-btrfs
+    sof-firmware
+    intel-ucode
+    lsof
+    paru
+    ufw
+    fwupd
+    tlp
+    tlpui
+    tlp-rdw
+)
+
+# vim:ft=sh
