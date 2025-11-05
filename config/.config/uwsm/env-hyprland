@@ -1,15 +1,14 @@
-export XDG_MENU_PREFIX="plasma-kbuildsycoca6"
-export GDK_BACKEND="wayland,x11,*"
-export QT_QPA_PLATFORM="wayland;xcb"
-export SDL_VIDEODRIVER="wayland"
-export CLUTTER_BACKEND="wayland"
-export QT_AUTO_SCREEN_SCALE_FACTOR="1"
-#export QT_QPA_PLATFORMTHEME="qt6ct"
-export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
-export MOZ_ENABLE_WAYLAND="1"
-export AQ_DRM_DEVICES="/dev/dri/intel-igpu:/dev/dri/nvidia-gpu"
-export WLR_RENDER_DRM_DEVICE="/dev/dri/render-intel"
-export QT_QPA_PLATFORMTHEME=qt5ct
+export XDG_MENU_PREFIX=plasma-kbuildsycoca6
+export GDK_BACKEND=wayland,x11,*
+export QT_QPA_PLATFORM=wayland;xcb
+export SDL_VIDEODRIVER=wayland
+export CLUTTER_BACKEND=wayland
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export QT_QPA_PLATFORMTHEME=qt6ct
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export MOZ_ENABLE_WAYLAND=1
+export AQ_DRM_DEVICES=/dev/dri/intel-igpu:/dev/dri/nvidia-gpu
+export WLR_RENDER_DRM_DEVICE=/dev/dri/render-intel
 
 
 #export __GL_VRR_ALLOWED=0
