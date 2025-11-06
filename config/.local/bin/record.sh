@@ -27,7 +27,7 @@ if pgrep -f "wf-recorder" >/dev/null; then
     LAST_VIDEO=$(ls -t "$SAVE_DIR"/*.mp4 2>/dev/null | head -n 1)
     notify-send -i "screenrecorder" -a "wl-screenrec" "Recording Stopped" "$LAST_VIDEO"
 
-    json_data=$(curl -X POST -F "file=@/$LAST_VIDEO" -H "key:$ezauth"  -v $ezuploadurl 2>/dev/null)
+    json_data=$(curl -X POST -F "file=@/$LAST_VIDEO" -H "$ezauth"  -v $ezuploadurl 2>/dev/null)
     # json_data=$(curl -s -F "secret=WmSwoBDJuwrB" -F "file=@$processed_file" "https://api.monarchupload.cc/v3/upload")
     status=$(echo "$json_data" | jq -r '.status')
     echo $json_data
