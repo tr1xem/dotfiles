@@ -13,3 +13,4 @@ export VDPAU_DRIVER=va_gl
 export XCURSOR_THEME='Bibata-Modern-Ice'
 export XCURSOR_SIZE=20
 export GSK_RENDERER=cairo
+export LD_LIBRARY_PATH=/usr/local/lib

@@ -10,6 +10,7 @@ set -xg XDG_DOCUMENTS_DIR (xdg-user-dir DOCUMENTS)
 set -xg XDG_MUSIC_DIR (xdg-user-dir MUSIC)
 set -xg XDG_PICTURES_DIR (xdg-user-dir PICTURES)
 set -xg XDG_VIDEOS_DIR (xdg-user-dir VIDEOS)
+set -xg LD_LIBRARY_PATH  /usr/local/lib
 # set -xg CXX clang++
 set -Ux OLLAMA_MODELS /run/media/saumya/Nexus/ollama/
 # set -xg CMAKE_GENERATOR Ninja
