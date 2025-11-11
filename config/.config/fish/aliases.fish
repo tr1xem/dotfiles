@@ -80,3 +80,11 @@ function ilspyx
     ilspycmd -p -o $base $argv
 end
 
+function pixelmpv
+    set url $argv[1]
+    set id (string match -r '[A-Za-z0-9]{8,}$' $url)
+    curl -s "https://pixeldrain.net/api/list/$id" \
+        | jq -r '"#EXTM3U", (.files[]? | select(.mime_type | startswith("video/") or startswith("audio/")) | "#EXTINF:-1," + .name, "https://pixeldrain.net/api/file/" + .id)' \
+        | mpv --playlist=-
+end
+

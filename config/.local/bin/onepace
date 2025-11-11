@@ -1,0 +1,257 @@
+#!/usr/bin/env python3
+import requests
+from bs4 import BeautifulSoup
+import sys
+import re
+import json
+import subprocess
+import os
+import argparse
+
+CACHE_FILE = os.path.expanduser("~/.cache/onepace.json")
+
+
+def scrape_arcs():
+    url = "https://onepace.net/en/watch"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Find the main timeline list
+        timeline = soup.find("ol", {"role": "list", "aria-label": "Story Timeline"})
+        if not timeline:
+            print("Could not find the story timeline.", file=sys.stderr)
+            return []
+
+        arcs = []
+        for arc_li in timeline.find_all("li"):
+            arc_data = {}
+
+            # Get arc name from h2 > a
+            h2 = arc_li.find("h2")
+            if h2 and h2.find("a"):
+                arc_data["name"] = h2.find("a").text.strip()
+            else:
+                continue  # Skip if no name
+
+            # Get watch options
+            watch_ul = arc_li.find("ul", {"aria-label": "Watch options"})
+            if not watch_ul:
+                continue
+
+            options = {}
+            for option_li in watch_ul.find_all(
+                "li", recursive=False
+            ):  # Direct children
+                # Get option type (e.g., "English Subtitles")
+                type_span = option_li.find("span", class_="flex-1")
+                if type_span:
+                    option_type = type_span.text.strip()
+                else:
+                    continue
+
+                # Get qualities
+                qualities_ul = option_li.find("ul")
+                if qualities_ul:
+                    qualities = {}
+                    for qual_li in qualities_ul.find_all("li"):
+                        link = qual_li.find("a")
+                        if link and link.get("href"):
+                            # Quality text like "480p"
+                            qual_text = (
+                                qual_li.find("span", class_="grow").text.strip()
+                                if qual_li.find("span", class_="grow")
+                                else "Unknown"
+                            )
+                            qualities[qual_text] = link["href"]
+                    if qualities:
+                        options[option_type] = qualities
+
+            if options:
+                arc_data["options"] = options
+                arcs.append(arc_data)
+
+        return arcs
+    except requests.RequestException as e:
+        print(f"Error fetching the page: {e}", file=sys.stderr)
+        return []
+
+
+def load_cache():
+    try:
+        with open(CACHE_FILE, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+
+
+def save_cache(arcs):
+    os.makedirs(os.path.dirname(CACHE_FILE), exist_ok=True)
+    try:
+        with open(CACHE_FILE, "w") as f:
+            json.dump(arcs, f, indent=2)
+    except Exception as e:
+        print(f"Error saving cache: {e}", file=sys.stderr)
+
+
+def get_proxy():
+    try:
+        response = requests.get("https://pixeldrain-bypass.cybar.to/api/proxy.json")
+        response.raise_for_status()
+        data = response.json()
+        proxies = data.get("proxies", [])
+        return proxies[0] if proxies else None
+    except requests.RequestException as e:
+        print(f"Error fetching proxy: {e}", file=sys.stderr)
+        return None
+
+
+def get_m3u_from_url(url, proxy_domain=None):
+    match = re.search(r"[A-Za-z0-9]{8,}$", url)
+    if not match:
+        return ""
+    id_ = match.group()
+    try:
+        response = requests.get(f"https://pixeldrain.net/api/list/{id_}")
+        response.raise_for_status()
+        data = response.json()
+        files = data.get("files", [])
+        m3u_lines = ["#EXTM3U"]
+        base_url = (
+            f"https://{proxy_domain}/"
+            if proxy_domain
+            else "https://pixeldrain.net/api/file/"
+        )
+        for f in files:
+            if f.get("mime_type", "").startswith(("video/", "audio/")):
+                m3u_lines.append(f"#EXTINF:-1,{f['name']}")
+                m3u_lines.append(f"{base_url}{f['id']}")
+        return "\n".join(m3u_lines)
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as e:
+        print(f"Error fetching M3U for {url}: {e}", file=sys.stderr)
+        return ""
+
+
+def select_with_vicinae(options, placeholder):
+    if not options:
+        return None
+    try:
+        result = subprocess.run(
+            [
+                "vicinae",
+                "dmenu",
+                "-p",
+                placeholder,
+                "-n Watch OnePace",
+                "-s Loaded Items - {count}",
+            ],
+            input="\n".join(options),
+            text=True,
+            capture_output=True,
+        )
+        selected = result.stdout.strip()
+        return selected if selected else None
+    except FileNotFoundError:
+        print("vicinae not found. Please install vicinae.", file=sys.stderr)
+    except subprocess.SubprocessError as e:
+        print(f"Error running vicinae: {e}", file=sys.stderr)
+    return None
+
+
+def play_with_mpv(m3u):
+    if not m3u:
+        print("No playlist to play.", file=sys.stderr)
+        return
+    try:
+        subprocess.run(["mpv", "--playlist=-"], input=m3u, text=True)
+    except FileNotFoundError:
+        print("mpv not found. Please install mpv.", file=sys.stderr)
+    except subprocess.SubprocessError as e:
+        print(f"Error running mpv: {e}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="OnePace scraper with caching and bypass"
+    )
+    parser.add_argument(
+        "--force-cache", action="store_true", help="Force update the cache"
+    )
+    parser.add_argument(
+        "--use-bypass", action="store_true", help="Use bypass proxy for downloads"
+    )
+    args = parser.parse_args()
+
+    proxy_domain = None
+    if args.use_bypass:
+        proxy_domain = get_proxy()
+        if proxy_domain:
+            print(f"Using proxy: {proxy_domain}")
+        else:
+            print("Failed to get proxy, proceeding without bypass.")
+
+    arcs = load_cache()
+    if arcs is None or args.force_cache:
+        print(
+            "Fetching data from website..."
+            if args.force_cache
+            else "Cache not found, fetching data..."
+        )
+        arcs = scrape_arcs()
+        if arcs:
+            save_cache(arcs)
+            print("Cache updated.")
+        else:
+            print("Failed to fetch data.")
+            sys.exit(1)
+    else:
+        print("Loaded from cache.")
+
+    if not arcs:
+        print("No arcs available.")
+        sys.exit(1)
+
+    # Select arc
+    arc_names = [arc["name"] for arc in arcs]
+    selected_arc_name = select_with_vicinae(arc_names, "Select Arc")
+    if not selected_arc_name:
+        print("No arc selected.")
+        sys.exit(0)
+
+    # Find the selected arc
+    selected_arc = next((arc for arc in arcs if arc["name"] == selected_arc_name), None)
+    if not selected_arc:
+        print("Arc not found.")
+        sys.exit(1)
+
+    # Collect quality options
+    quality_options = []
+    link_map = {}
+    if "options" in selected_arc:
+        for option_type, qualities in selected_arc["options"].items():
+            for qual, link in qualities.items():
+                label = f"{option_type} {qual}"
+                quality_options.append(label)
+                link_map[label] = link
+
+    if not quality_options:
+        print("No qualities available for this arc.")
+        sys.exit(1)
+
+    selected_label = select_with_vicinae(quality_options, "Select quality")
+    if not selected_label:
+        print("No quality selected.")
+        sys.exit(0)
+
+    link = link_map.get(selected_label)
+    if not link:
+        print("Link not found.")
+        sys.exit(1)
+
+    m3u = get_m3u_from_url(link, proxy_domain)
+    if not m3u:
+        print("Failed to generate playlist.")
+        sys.exit(1)
+
+    play_with_mpv(m3u)

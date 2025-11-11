@@ -15,15 +15,15 @@ set notification-fg             "#d8c2bf"
 
 set completion-bg               "#231918"
 set completion-fg               "#d8c2bf"
-set completion-group-bg         "#ffb3ac"
-set completion-group-fg         "#571e1b"
+set completion-group-bg         "#ffb4ab"
+set completion-group-fg         "#561e19"
 set completion-highlight-bg     "#e7bdb8"
-set completion-highlight-fg     "#442927"
+set completion-highlight-fg     "#442926"
 
 set index-bg                    "#1a1110"
 set index-fg                    "#d8c2bf"
-set index-active-bg             "#ffb3ac"
-set index-active-fg             "#571e1b"
+set index-active-bg             "#ffb4ab"
+set index-active-fg             "#561e19"
 
 set inputbar-bg                 "#231918"
 set inputbar-fg                 "#d8c2bf"
@@ -31,8 +31,8 @@ set statusbar-bg                "#231918"
 set statusbar-fg                "#d8c2bf"
 
 set highlight-fg                rgba(241,222,220,1.0)
-set highlight-active-color      rgba(255,194,140,0.5)
-set highlight-color             rgba(225,180,171,0.5)
+set highlight-active-color      rgba(255,195,140,0.5)
+set highlight-color             rgba(224,180,171,0.5)
 
 set default-bg                  "#1a1110"
 set default-fg                  "#d8c2bf"
