@@ -1,7 +1,5 @@
 #!/bin/bash
 ezauth="$EZAUTH"
-
-echo $ezauth
 ezuploadurlt="https://api.e-z.host/paste/file"
 ezuploadurlf="https://api.e-z.host/files"
 

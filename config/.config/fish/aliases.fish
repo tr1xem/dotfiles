@@ -37,6 +37,7 @@ alias study="sh /run/media/saumya/Nexus/Games/study.sh"
 alias checknvidia="cat /proc/driver/nvidia/gpus/0000:01:00.0/power"
 alias dectohex="printf '0x%x\n' $1"
 alias hextodec="printf '%d\n' $1"
+alias vencordinstall='sh -c "$(curl -sS https://vencord.dev/install.sh)"'
 
 function parusweep
     set orphans (paru -Qdtq)
@@ -87,4 +88,5 @@ function pixelmpv
         | jq -r '"#EXTM3U", (.files[]? | select(.mime_type | startswith("video/") or startswith("audio/")) | "#EXTINF:-1," + .name, "https://pixeldrain.net/api/file/" + .id)' \
         | mpv --playlist=-
 end
+
 
