@@ -3,7 +3,7 @@
 
 set -e
 
-TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+TIMESTAMP=$(date '+%Y-%m-%d %I:%M:%S %p')
 COMMIT_MSG="Automated Dev Commit : $TIMESTAMP"
 
 echo "Staging main repo changes..."
