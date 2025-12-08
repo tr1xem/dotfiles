@@ -13,4 +13,4 @@
 
 - Stop a user service from running on login:
 
-`systemctl disable --user {{unit}}`
+`systemctl disable {{unit}} --user`

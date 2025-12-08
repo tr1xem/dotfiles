@@ -14,26 +14,27 @@ depends=(
     btop
     eog
     flameshot
-    mission-center
+    # mission-center
     gimp
     matugen-bin
     pokemon-colorscripts-go
-    qbittorrent-enhanced
+    # qbittorrent-enhanced
     rclone
     spotify
     stow
-    udiskie
+    # udiskie
     wf-recorder
     eog
-    evtest
-    fd
-    ffmpeg-audio-thumbnailer
+    # evtest
+    # fd
+    # ffmpeg-audio-thumbnailer
     gnome-calculator
     bat
     eza
     fish
     fisher
     tealdeer
+    wf-recorder
 )
 
 # vim:ft=sh

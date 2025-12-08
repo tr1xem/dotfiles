@@ -8,7 +8,7 @@
 
 `kubectl get {{pod|service|deployment|ingress|...}} {{[-o|--output]}} wide`
 
-- Update specified pod with the label 'unhealthy' and the value 'true':
+- Update specified pod with the label `unhealthy` and the value `true`:
 
 `kubectl label pods {{name}} unhealthy=true`
 
@@ -18,7 +18,7 @@
 
 - Display resource (CPU/Memory/Storage) usage of nodes or pods:
 
-`kubectl top {{pod|node}}`
+`kubectl top {{pods|node}}`
 
 - Print the address of the master and cluster services:
 

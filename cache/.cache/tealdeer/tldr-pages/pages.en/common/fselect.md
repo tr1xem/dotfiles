@@ -1,11 +1,11 @@
 # fselect
 
 > Find files with SQL-like queries.
-> More information: <https://github.com/jhspetersson/fselect>.
+> More information: <https://github.com/jhspetersson/fselect/blob/master/docs/usage.md>.
 
 - Select full path and size from temporary or configuration files in a given directory:
 
-`fselect size, path from {{path/to/directory}} where name = {{'*.cfg'}} or name = {{'*.tmp'}}`
+`fselect size, path from {{path/to/directory}} where name = '{{*.cfg}}' or name = '{{*.tmp}}'`
 
 - Find square images:
 

@@ -14,14 +14,12 @@ set -xg LD_LIBRARY_PATH  /usr/local/lib
 # set -xg CXX clang++
 set -Ux OLLAMA_MODELS /run/media/saumya/Nexus/ollama/
 # set -xg CMAKE_GENERATOR Ninja
-set -xg CFLAGS "-fdiagnostics-color=always"
-set -gx CXXFLAGS "-std=c++23"
-set -gx CFLAGS "-std=c23"
-set -xg CXXFLAGS "-fdiagnostics-color=always"
+set -xg CFLAGS "-fdiagnostics-color=always -std=c23"
+set -xg CXXFLAGS "-fdiagnostics-color=always -std=c++23"
 set -gx EDITOR "nvim"  # Replace "nano" with your desired editor (e.g., vim, nvim, etc.)
 set -gx VISUAL "$EDITOR"
-set -xg CXX "ccache clang++"
-set -xg CC "ccache clang"
+# set -xg CXX "ccache clang++"
+# set -xg CC "ccache clang"
 # set -xg CC "ccache gcc"
 # set -xg CXX "ccache g++"
 

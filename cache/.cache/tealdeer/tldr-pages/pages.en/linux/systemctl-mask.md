@@ -13,4 +13,4 @@
 
 - Mask a user service:
 
-`sysemctl mask --user {{service_name}}`
+`systemctl mask {{service_name}} --user`

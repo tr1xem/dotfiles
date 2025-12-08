@@ -1,12 +1,12 @@
 # qm list
 
 > List all virtual machines.
-> More information: <https://pve.proxmox.com/pve-docs/qm.1.html>.
+> More information: <https://pve.proxmox.com/pve-docs/qm.1.html#cli_qm_list>.
 
 - List all virtual machines:
 
-`qm {{[l|list]}}`
+`qm list`
 
 - List all virtual machines with a full status about the ones which are currently running:
 
-`qm {{[l|list]}} --full 1`
+`qm list --full 1`

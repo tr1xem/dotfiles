@@ -1,7 +1,7 @@
 # dockdiver
 
 > A tool for interacting with Docker registries, including listing and dumping repositories.
-> More information: <https://github.com/MachiavelliII/dockdiver>.
+> More information: <https://github.com/MachiavelliII/dockdiver#instructions>.
 
 - List all repositories in a Docker registry:
 
@@ -25,4 +25,4 @@
 
 - Add custom headers as JSON (e.g., '{"X-Custom": "Value"}'):
 
-`dockdiver -url {{https://example.com}} -list -headers {{'{"X-Custom": "Value"}'}}`
+`dockdiver -url {{https://example.com}} -list -headers '{{{"X-Custom": "Value"}}}'`

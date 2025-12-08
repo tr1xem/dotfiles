@@ -13,4 +13,4 @@
 
 - Enable a user unit to run on login:
 
-`systemctl enable --user {{unit}}`
+`systemctl enable {{unit}} --user`

@@ -9,7 +9,7 @@
 
 `compgen -c`
 
-- List all commands that you could run that start with a specified string and save results to `COMPREPLY`:
+- List all commands that you could run that start with a specified string and save results to `$COMPREPLY`:
 
 `compgen -V COMPREPLY -c {{str}}`
 
@@ -29,7 +29,7 @@
 
 `compgen -k`
 
-- See all available commands/aliases starting with 'ls':
+- See all available commands/aliases starting with `ls`:
 
 `compgen -ac {{ls}}`
 

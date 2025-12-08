@@ -2,7 +2,7 @@
 
 > Renders an animated tree diagram of Git, SVN, Mercurial and Bazaar repositories.
 > It shows files and directories being created, modified or removed over time.
-> More information: <https://gource.io>.
+> More information: <https://manned.org/gource>.
 
 - Run gource in a directory (if it isn't the repository's root directory, the root is sought up from there):
 
@@ -18,7 +18,7 @@
 
 - Use fullscreen mode and a custom background color:
 
-`gource {{[-f|--fullscreen ]}} {{[-b|--background-colour]}} {{hex_color_code}}`
+`gource {{[-f|--fullscreen]}} {{[-b|--background-colour]}} {{hex_color_code}}`
 
 - Specify the animation title:
 

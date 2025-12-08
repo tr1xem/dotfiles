@@ -1,7 +1,7 @@
 # dpkg-reconfigure
 
 > Reconfigure an already installed package.
-> More information: <https://manned.org/dpkg-reconfigure.8>.
+> More information: <https://manned.org/dpkg-reconfigure>.
 
 - Reconfigure one or more packages:
 
@@ -10,3 +10,7 @@
 - Reconfigure console font setup:
 
 `dpkg-reconfigure console-setup`
+
+- Reconfigure the timezone:
+
+`dpkg-reconfigure tzdata`

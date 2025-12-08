@@ -8,10 +8,10 @@ groups=('trix')
 provides=('trix-ignis')
 depends=(
     matugen-bin
-    tela-circle-icon-theme-all
+    # tela-circle-icon-theme-all
     ttf-jetbrains-mono-nerd
     ttf-nerd-fonts-symbols-mono
-    vicinae-bin
+    vicinae
     python-ignis-git
     python-j2cli
     python-materialyoucolor-git

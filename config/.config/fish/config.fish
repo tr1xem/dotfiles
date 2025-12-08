@@ -32,3 +32,5 @@ source ~/.config/fish/auto-Hypr.fish
 if test -f ~/.config/fish/keys.fish
     source ~/.config/fish/keys.fish
 end
+
+eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"

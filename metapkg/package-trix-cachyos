@@ -24,7 +24,7 @@ depends=(
     linux-cachyos-lts-headers
     linux-cachyos-lts-nvidia-open
     linux-cachyos-nvidia-open
-    chwd
+    # chwd
     sbctl
     scx-manager
     btrfs-assistant

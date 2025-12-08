@@ -3,7 +3,7 @@ Boot=yes
 PrivateUsers=no
 
 [Network]
-VirtualEthernet=yes
+VirtualEthernet=no
 
 [Exec]
 Environment=WAYLAND_DISPLAY=/tmp/wayland.sock

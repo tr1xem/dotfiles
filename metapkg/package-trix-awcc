@@ -8,7 +8,6 @@ groups=('trix')
 provides=('trix-awcc')
 depends=(
     awcc-git
-    python-evdev
     nlohmann-json
 )
 # vim:ft=sh

@@ -10,11 +10,11 @@
 
 - Replace a `regex` in case-insensitive mode in specific files or directories:
 
-`fastmod --ignore-case {{regex}} {{replacement}} -- {{path/to/file path/to/directory ...}}`
+`fastmod --ignore-case {{regex}} {{replacement}} -- {{path/to/file_or_directory1 path/to/file_or_directory2 ...}}`
 
 - Replace a `regex` in a specific directory in files filtered with a case-insensitive glob pattern:
 
-`fastmod {{regex}} {{replacement}} --dir {{path/to/directory}} --iglob {{'**/*.{js,json}'}}`
+`fastmod {{regex}} {{replacement}} --dir {{path/to/directory}} --iglob '{{**/*.{js,json}}}'`
 
 - Replace for an exact string in `.js` or JSON files:
 

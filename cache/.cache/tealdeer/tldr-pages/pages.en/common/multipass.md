@@ -1,7 +1,7 @@
 # multipass
 
 > Manage Ubuntu virtual machines using native hypervisors.
-> More information: <https://documentation.ubuntu.com/multipass/en/latest/reference/command-line-interface/#>.
+> More information: <https://documentation.ubuntu.com/multipass/en/latest/reference/command-line-interface/>.
 
 - List the aliases that can be used to launch an instance:
 
@@ -33,4 +33,4 @@
 
 - Mount a directory into a specific instance:
 
-`multipass mount {{path/to/local/directory}} {{instance_name}}:{{path/to/target/directory}}`
+`multipass mount {{path/to/local_directory}} {{instance_name}}:{{path/to/target_directory}}`

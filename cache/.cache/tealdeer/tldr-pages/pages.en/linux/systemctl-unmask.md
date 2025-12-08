@@ -14,4 +14,4 @@
 
 - Unmask a user service:
 
-`systemctl unmask --user {{service_name}}`
+`systemctl unmask {{service_name}} --user`

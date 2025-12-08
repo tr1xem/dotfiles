@@ -10,21 +10,21 @@ depends=(
     base
     neovim
     hererocks
-    opencode-bin
-    luarocks
-    uv
+    # opencode-bin
+    # uv
     zoxide
-    wf-recorder
     xdg-user-dirs
+    # luarocks
     ghostty
     tmux
     fzf
-    ccache
+    # ccache
     cppman
-    gdb
+    # gdb
     git-lfs
     hugo
-    yazi
+    # yazi
+    tmux
 )
 
 
