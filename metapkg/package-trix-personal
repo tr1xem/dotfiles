@@ -8,7 +8,7 @@ groups=('trix')
 provides=('trix-personal')
 depends=(
     discord
-    brave-bin
+    # brave-bin
     zen-browser-bin
     ayugram-desktop
     btop

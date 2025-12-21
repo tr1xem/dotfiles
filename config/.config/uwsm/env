@@ -14,3 +14,5 @@ export XCURSOR_THEME='Bibata-Modern-Ice'
 export XCURSOR_SIZE=20
 export GSK_RENDERER=cairo
 export LD_LIBRARY_PATH=/usr/local/lib
+
+# vim:ft=bash

@@ -18,4 +18,4 @@ export WLR_RENDER_DRM_DEVICE=/dev/dri/render-intel
 #export NVD_BACKEND=direct
 #export __GLX_VENDOR_LIBRARY_NAME=nvidia
 
-# set ft=conf
+# vim:ft=bash

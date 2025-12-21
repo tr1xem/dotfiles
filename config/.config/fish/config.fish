@@ -26,7 +26,6 @@ fish_add_path /home/saumya/.spicetify
 fish_add_path /home/saumya/.local/bin/statusbar
 
 source ~/.config/fish/aliases.fish
-source ~/.config/fish/ffmpeg.fish
 source ~/.config/fish/env.fish
 source ~/.config/fish/auto-Hypr.fish
 if test -f ~/.config/fish/keys.fish

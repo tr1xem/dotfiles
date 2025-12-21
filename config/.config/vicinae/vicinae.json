@@ -1,0 +1,25 @@
+{
+    "closeOnFocusLoss": true,
+    "considerPreedit": false,
+    "faviconService": "twenty",
+    "font": {
+        "normal": "SF Pro Rounded",
+        "size": 10
+    },
+    "keybinding": "default",
+    "keybinds": {
+    },
+    "popToRootOnClose": true,
+    "rootSearch": {
+        "searchFiles": false
+    },
+    "theme": {
+        "iconTheme": "Tela circle",
+        "name": "matugen"
+    },
+    "window": {
+        "csd": true,
+        "opacity": 0.5,
+        "rounding": 10
+    }
+}
