@@ -8,3 +8,14 @@ VirtualEthernet=no
 [Exec]
 Environment=WAYLAND_DISPLAY=/tmp/wayland.sock
 Environment=XDG_RUNTIME_DIR=/run/user/1000
+
+[Files]
+Bind=/dev/nvidia0
+Bind=/dev/nvidiactl
+Bind=/dev/nvidia-modeset
+Bind=/dev/nvidia-uvm
+Bind=/dev/nvidia-uvm-tools
+
+[Service]
+DeviceAllow=/dev/nvidia* rwm
+

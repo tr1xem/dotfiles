@@ -26,8 +26,8 @@ alias recordvideo="wf-recorder --file=wf-recorder-no-audio.mp4"
 alias clock="tty-clock -s -c -B -t -x -b"
 # alias tmux="tmux -u"
 alias hows-my-gpu='echo "NVIDIA Dedicated Graphics" && lspci -nnk | grep -i "NVIDIA" -A 2 | grep "Kernel driver in use" || echo "No NVIDIA GPU detected"; echo "Intel Corporation Raptor Lake-S UHD Graphics" && lspci -nnk | grep -i "Intel.*Graphics" -A 3 | grep "Kernel driver in use" || echo "No Intel GPU detected"; echo "Enable and disable the dedicated NVIDIA GPU with nvidia-enable and nvidia-disable"'
-alias nvidia-enable='sudo virsh nodedev-reattach pci_0000_01_00_0 && echo "GPU reattached (now host ready)" && sudo rmmod vfio_pci vfio_pci_core vfio_iommu_type1 && echo "VFIO drivers removed" && sudo modprobe -i nvidia_modeset nvidia_uvm nvidia && echo "NVIDIA drivers added" && echo "COMPLETED!"'
-alias nvidia-disable='sudo rmmod nvidia_modeset nvidia_uvm nvidia && echo "NVIDIA drivers removed" && sudo modprobe -i vfio_pci vfio_pci_core vfio_iommu_type1 && echo "VFIO drivers added" && sudo virsh nodedev-detach pci_0000_01_00_0 && echo "GPU detached (now vfio ready)" && echo "COMPLETED!"'
+alias nvidia-enable='sudo rmmod vfio_pci vfio_pci_core vfio_iommu_type1 && echo "VFIO drivers removed" && sudo modprobe -i nvidia_modeset nvidia_uvm nvidia && echo "NVIDIA drivers added" && echo "COMPLETED!"'
+alias nvidia-disable='sudo rmmod nvidia_modeset nvidia_uvm nvidia && echo "NVIDIA drivers removed" && sudo modprobe -i vfio_pci vfio_pci_core vfio_iommu_type1 && echo "VFIO drivers added" && echo "COMPLETED!"'
 alias scxgame='dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader org.scx.Loader.SwitchScheduler string:scx_lavd uint32:1'
 alias scxpower=' dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader org.scx.Loader.SwitchScheduler string:scx_lavd uint32:2'
 alias pamcan=pacman

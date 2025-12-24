@@ -21,12 +21,13 @@ output_path = "~/.config/ghostty/themes/matugen"
 
 [templates.slurp]
 input_path = "~/.config/matugen/templates/colors-slurp.sh"
-output_path = "~/.config/kitty/slurp.sh"
+output_path = "~/.local/bin/slurp.sh"
+post_hook = "chmod +x ~/.local/bin/slurp.sh"
 
-[templates.gradience]
-input_path = "~/.config/matugen/templates/gradience.json"
-output_path = "~/.config/presets/user/gradience.json"
-post_hook = "gradience-cli apply --gtk both -n Matu-Adw"
+# [templates.gradience]
+# input_path = "~/.config/matugen/templates/gradience.json"
+# output_path = "~/.config/presets/user/gradience.json"
+# post_hook = "gradience-cli apply --gtk both -n Matu-Adw"
 
 [templates.discord]
 input_path = "~/.config/matugen/templates/discord-colors.theme.css"
@@ -36,10 +37,10 @@ output_path = "~/.config/Vencord/themes/material.theme.css"
 # input_path = "~/.config/matugen/templates/pywal-colors"
 # output_path = "~/.cache/wal/colors"
 
-[templates.pywaljson]
-input_path = "~/.config/matugen/templates/pywal-colors.json"
-output_path = "~/.cache/wal/colors.json"
-post_hook = "pywalfox update &"
+# [templates.pywaljson]
+# input_path = "~/.config/matugen/templates/pywal-colors.json"
+# output_path = "~/.cache/wal/colors.json"
+# post_hook = "pywalfox update &"
 
 # [templates.pywalsh]
 # input_path = "~/.config/matugen/templates/colors.sh"
@@ -50,9 +51,9 @@ post_hook = "pywalfox update &"
 # input_path = "~/.config/matugen/templates/wal"
 # output_path = "~/.cache/wal/wal"
 
-[templates.rofi]
-input_path = "~/.config/matugen/templates/colors-rofi.rasi"
-output_path = "~/.cache/wal/colors-rofi.rasi"
+# [templates.rofi]
+# input_path = "~/.config/matugen/templates/colors-rofi.rasi"
+# output_path = "~/.cache/wal/colors-rofi.rasi"
 
 [templates.zathura]
 input_path = "~/.config/matugen/templates/colors-zathura"
@@ -72,29 +73,29 @@ output_path = "~/.config/hypr/colors.conf"
 # post_hook = "fabric-cli exec hyprfabricated 'app.set_css()' &"
 
 
-[templates.fuzzel]
-input_path = "~/.config/matugen/templates/fuzzel.ini"
-output_path = "~/.config/fuzzel/fuzzel.ini"
-
-[templates.discord2]
-input_path = "~/.config/matugen/templates/discord.css"
-output_path = "~/.config/Vencord/themes/material-you.css"
+# [templates.fuzzel]
+# input_path = "~/.config/matugen/templates/fuzzel.ini"
+# output_path = "~/.config/fuzzel/fuzzel.ini"
+#
+# [templates.discord2]
+# input_path = "~/.config/matugen/templates/discord.css"
+# output_path = "~/.config/Vencord/themes/material-you.css"
 
 [templates.spicetify]
 input_path = "~/.config/matugen/templates/colors.ini"
 output_path = "~/.config/spicetify/Themes/Comfy/color.ini"
 
-[templates.starship]
-input_path = "~/.config/matugen/templates/starship-colors.toml"
-output_path = "~/.config/starship.toml"
+# [templates.starship]
+# input_path = "~/.config/matugen/templates/starship-colors.toml"
+# output_path = "~/.config/starship.toml"
 
-[templates.Telegram]
-input_path = "~/.config/matugen/templates/telegram-colors.tdesktop-theme"
-output_path = "~/.config/telegram-desktop/themes/material-you.tdesktop-theme"
+# [templates.Telegram]
+# input_path = "~/.config/matugen/templates/telegram-colors.tdesktop-theme"
+# output_path = "~/.config/telegram-desktop/themes/material-you.tdesktop-theme"
 
-[templates.heroic]
-input_path = "~/.config/matugen/templates/heroic-theme.css"
-output_path = "~/.config/heroic/themes/heroic-colors.css"
+# [templates.heroic]
+# input_path = "~/.config/matugen/templates/heroic-theme.css"
+# output_path = "~/.config/heroic/themes/heroic-colors.css"
 
 # [templates.obsidian]
 # input_path = "~/.config/matugen/templates/obsidian.css"
@@ -142,12 +143,23 @@ blend = true
 color = "#800080"
 blend = true
 
+[config.custom_colors.teal]
+color = "#008080"
+blend = true
 
+[config.custom_colors.pink]
+color = "#FFC0CB"
+blend = true
+
+[config.custom_colors.brown]
+color = "#A52A2A"
+blend = true
 
 
 [templates.qt6ct]
 input_path = '~/.config/matugen/templates/qtct-colors.conf'
 output_path = '~/.config/qt6ct/colors/matugen.conf'
+
 [templates.qt5ct]
 input_path = '~/.config/matugen/templates/qtct-colors.conf'
 output_path = '~/.config/qt5ct/colors/matugen.conf'
@@ -162,3 +174,7 @@ output_path = '~/.config/btop/themes/matugen.theme'
 input_path = '~/.config/matugen/templates/vicinae-matugen.toml'
 output_path = '~/.local/share/vicinae/themes/matugen.toml'
 post_hook = 'vicinae theme set matugen'
+
+# [templates.rewaita]
+# input_path = '~/.config/matugen/templates/matugen 😎.css'
+# output_path = '~/.local/share/dark/Matugen 😎.css'

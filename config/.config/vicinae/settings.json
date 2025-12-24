@@ -10,6 +10,7 @@
 
 {
    "close_on_focus_loss": true,
+   "pop_to_root_on_close": true,
    "font": {
       "normal": {
          "size": 10
@@ -18,10 +19,18 @@
    "theme": {
       "dark": {
          "name": "matugen",
-         "icon_theme": "Tela"
+         "icon_theme": "MacTahoe"
       }
    },
    "launcher_window": {
       "opacity": 0.5
+   },
+   "favorites": [],
+   "providers": {
+      "clipboard": {
+         "preferences": {
+            "encryption": true
+         }
+      }
    }
 }

@@ -1,0 +1,71 @@
+@define-color window_bg_color {{colors.background.default.hex}};
+@define-color window_fg_color {{colors.on_background.default.hex}};
+
+@define-color view_bg_color {{colors.surface.default.hex}};
+@define-color view_fg_color {{colors.on_surface.default.hex}};
+
+@define-color success_color {{colors.primary.default.hex}};
+@define-color success_bg_color {{colors.primary_container.default.hex}};
+@define-color success_fg_color {{colors.on_primary_container.default.hex}};
+
+@define-color warning_color {{colors.error.default.hex}};
+@define-color warning_bg_color {{colors.error_container.default.hex}};
+@define-color warning_fg_color {{colors.on_error_container.default.hex}};
+
+@define-color destructive_color {{colors.error.default.hex}};
+@define-color destructive_bg_color {{colors.error_container.default.hex}};
+@define-color destructive_fg_color {{colors.on_error_container.default.hex}};
+
+@define-color error_color {{colors.error.default.hex}};
+@define-color error_bg_color {{colors.error_container.default.hex}};
+@define-color error_fg_color {{colors.on_error_container.default.hex}};
+
+@define-color headerbar_bg_color {{colors.surface_container_low.default.hex}};
+@define-color headerbar_fg_color {{colors.on_surface.default.hex}};
+
+@define-color popover_bg_color {{colors.surface_container.default.hex}};
+@define-color popover_fg_color {{colors.on_surface.default.hex}};
+
+@define-color dialog_bg_color {{colors.surface_container.default.hex}};
+@define-color dialog_fg_color {{colors.on_surface.default.hex}};
+
+@define-color card_bg_color {{colors.surface_container.default.hex}};
+@define-color card_fg_color {{colors.on_surface.default.hex}};
+
+@define-color sidebar_bg_color {{colors.secondary_container.default.hex}};
+@define-color sidebar_fg_color {{colors.on_secondary_container.default.hex}};
+@define-color sidebar_backdrop_color {{colors.background.default.hex}};
+@define-color sidebar_border_color {{colors.outline.default.hex}};
+
+@define-color secondary_sidebar_bg_color @sidebar_bg_color;
+@define-color secondary_sidebar_fg_color @sidebar_fg_color;
+@define-color secondary_sidebar_backdrop_color @sidebar_backdrop_color;
+@define-color secondary_sidebar_border_color @sidebar_border_color;
+
+@define-color blue_1 {{colors.blue.default.hex}};
+@define-color blue_2 {{colors.teal.default.hex}};
+@define-color green_1 {{colors.green.default.hex}};
+@define-color yellow_1 {{colors.yellow.default.hex}};
+@define-color red_1 {{colors.red.default.hex}};
+@define-color purple_1 {{colors.pink.default.hex}};
+@define-color purple_2 {{colors.purple.default.hex}};
+@define-color orange_1 {{colors.orange.default.hex}};
+@define-color brown_1 {{colors.brown.default.hex}};
+@define-color light_1 {{colors.white.default.hex}};
+@define-color light_5 {{colors.on_surface_variant.default.hex}};
+@define-color dark_1 {{colors.outline.default.hex}};
+
+@define-color accent_color {{colors.primary.default.hex}};
+@define-color accent_bg_color {{colors.primary.default.hex}};
+@define-color accent_fg_color {{colors.on_primary.default.hex}};
+
+toast {
+  background-color: {{colors.background.default.hex}};
+  color: {{colors.on_background.default.hex}};
+}
+
+toggle:checked {
+  background-color: {{colors.surface_variant.default.hex}};
+  color: {{colors.on_surface.default.hex}};
+}
+

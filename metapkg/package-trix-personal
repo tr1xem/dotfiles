@@ -7,8 +7,9 @@ options=('!debug')
 groups=('trix')
 provides=('trix-personal')
 depends=(
-    discord
+#    discord
     # brave-bin
+    legcord
     zen-browser-bin
     ayugram-desktop
     btop
@@ -23,18 +24,18 @@ depends=(
     spotify
     stow
     # udiskie
-    wf-recorder
     eog
     # evtest
     # fd
-    # ffmpeg-audio-thumbnailer
     gnome-calculator
     bat
     eza
     fish
     fisher
     tealdeer
-    wf-recorder
+    ffmpegthumbnailer
+    ffmpeg-audio-thumbnailer
+    gpu-screen-recorder
 )
 
 # vim:ft=sh
