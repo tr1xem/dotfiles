@@ -24,14 +24,15 @@ input_path = "~/.config/matugen/templates/colors-slurp.sh"
 output_path = "~/.local/bin/slurp.sh"
 post_hook = "chmod +x ~/.local/bin/slurp.sh"
 
-# [templates.gradience]
-# input_path = "~/.config/matugen/templates/gradience.json"
-# output_path = "~/.config/presets/user/gradience.json"
-# post_hook = "gradience-cli apply --gtk both -n Matu-Adw"
+[templates.gradience]
+input_path = "~/.config/matugen/templates/gradience.json"
+output_path = "~/.config/presets/user/gradience.json"
+post_hook = "gradience-cli apply --gtk both -n Matu-Adw"
 
 [templates.discord]
 input_path = "~/.config/matugen/templates/discord-colors.theme.css"
-output_path = "~/.config/Vencord/themes/material.theme.css"
+#output_path = "~/.config/Vencord/themes/material.theme.css"
+output_path = "~/.config/Equicord/themes/material.theme.css"
 
 # [templates.pywal]
 # input_path = "~/.config/matugen/templates/pywal-colors"

@@ -9,7 +9,7 @@ provides=('trix-personal')
 depends=(
 #    discord
     # brave-bin
-    legcord
+#    legcord
     zen-browser-bin
     ayugram-desktop
     btop

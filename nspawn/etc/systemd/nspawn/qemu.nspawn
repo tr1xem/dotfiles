@@ -18,4 +18,3 @@ Bind=/dev/nvidia-uvm-tools
 
 [Service]
 DeviceAllow=/dev/nvidia* rwm
-

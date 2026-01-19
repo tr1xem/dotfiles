@@ -14,7 +14,7 @@ depends=(
     vicinae
     python-ignis-git
     python-j2cli
-    python-materialyoucolor-git
+    #python-materialyoucolor
     python-pywayland
     ignis-gvc
     adwaita-qt5

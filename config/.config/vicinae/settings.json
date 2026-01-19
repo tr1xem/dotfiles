@@ -9,7 +9,8 @@
 // Learn more about configuration at https://docs.vicinae.com/config
 
 {
-   "close_on_focus_loss": true,
+   "$schema": "https://vicinae.com/schemas/config.json",
+   "close_on_focus_loss": false,
    "pop_to_root_on_close": true,
    "font": {
       "normal": {
@@ -19,7 +20,7 @@
    "theme": {
       "dark": {
          "name": "matugen",
-         "icon_theme": "MacTahoe"
+         "icon_theme": "Tela dark"
       }
    },
    "launcher_window": {
@@ -29,7 +30,8 @@
    "providers": {
       "clipboard": {
          "preferences": {
-            "encryption": true
+            "encryption": true,
+            "monitoring": true
          }
       }
    }

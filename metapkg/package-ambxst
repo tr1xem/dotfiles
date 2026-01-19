@@ -1,0 +1,28 @@
+pkgname=tr1x-ambxst
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Minimal Ambxst Deps"
+options=('!debug')
+groups=('trix')
+provides=('trix-ambxst')
+depends=(
+qt6-base
+qt6-declarative
+qt6-wayland
+qt6-svg
+qt6-tools
+qt6-imageformats
+qt6-multimedia
+qt6-shadertools
+libwebp
+libavif
+quickshell-git
+ttf-phosphor-icons
+ttf-league-gothic
+syntax-highlighting
+
+)
+
+# vim:ft=sh
+#qt6-multimedia quickshell-git ttf-phosphor-icons ttf-league-gothic
