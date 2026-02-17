@@ -1,34 +1,122 @@
 #!/usr/bin/env bash
-# commit-all.sh - Commit main repo and submodules automatically
+# dev-sync.sh — dotfiles + keys manager
 
-set -e
+set -euo pipefail
 
-TIMESTAMP=$(date '+%Y-%m-%d %I:%M:%S %p')
-COMMIT_MSG="Automated Dev Commit : $TIMESTAMP"
+# --------------------------------------------------
+# CONFIG
+# --------------------------------------------------
 
-echo "Staging main repo changes..."
-git add .
+KEYS_DIR="./keys"
+VAULT_PREFIX="keys-vault"
 
-# Stage and commit submodules
-git submodule foreach --recursive '
-  echo "Checking submodule: $name"
-  git add -A
-  if ! git diff-index --quiet HEAD --; then
-      echo "Committing in submodule: $name"
-      git commit -m "'"$COMMIT_MSG"'"
-      # Optional: push submodule
-      git push || echo "Push failed for submodule: $name"
-  else
-      echo "No changes in submodule: $name"
-  fi
-'
+TS_HUMAN=$(date '+%Y-%m-%d %I:%M:%S %p')
+TS_SAFE=$(date '+%Y-%m-%d_%H-%M-%S')
+COMMIT_MSG="Automated Dev Commit : $TS_HUMAN"
 
-# Commit main repo if there are changes
-if ! git diff-index --quiet HEAD --; then
-    echo "Committing main repo..."
-    git commit -m "$COMMIT_MSG"
-fi
+# --------------------------------------------------
+# KEYS ENCRYPT
+# --------------------------------------------------
 
-# Push main repo
-git push
+encrypt_keys() {
+    echo "🔐 Encrypting keys..."
+
+    mkdir -p "$KEYS_DIR"
+
+    ARCHIVE="$KEYS_DIR/$VAULT_PREFIX-$TS_SAFE.tar.gpg"
+
+    tar -C "$KEYS_DIR" \
+        --exclude="*.gpg" \
+        -cf - . \
+    | gpg --symmetric --cipher-algo AES256 -o "$ARCHIVE"
+
+    echo "✅ Created $ARCHIVE"
+}
+
+# --------------------------------------------------
+# KEYS DECRYPT
+# --------------------------------------------------
+
+decrypt_keys() {
+    echo "🔓 Restoring keys..."
+
+    LATEST=$(ls -t "$KEYS_DIR"/$VAULT_PREFIX-*.tar.gpg 2>/dev/null | head -n1 || true)
+
+    [[ -z "${LATEST:-}" ]] && {
+        echo "❌ No vault found"
+        exit 1
+    }
+
+    echo "Using $LATEST"
+
+    gpg -d "$LATEST" | tar -xvf - -C "$KEYS_DIR"
+
+    echo "✅ Keys restored"
+}
+
+# --------------------------------------------------
+# COMMIT SUBMODULES + MAIN REPO
+# --------------------------------------------------
+
+commit_all() {
+
+    echo "📦 Processing submodules..."
+
+    git submodule foreach --recursive '
+        echo "---- $name ----"
+
+        # stage everything inside submodule
+        git add -A
+
+        # commit if needed
+        if ! git diff-index --quiet HEAD --; then
+            echo "Committing $name"
+            git commit -m "'"$COMMIT_MSG"'"
+        else
+            echo "No commit needed"
+        fi
+
+        # push if branch has upstream
+        if git rev-parse --abbrev-ref @{u} >/dev/null 2>&1; then
+            git push || echo "Push failed for $name"
+        fi
+    '
+
+    echo "📌 Updating submodule pointers in main repo..."
+    git add .
+
+    echo "📦 Checking main repo..."
+
+    if ! git diff-index --quiet HEAD --; then
+        git commit -m "$COMMIT_MSG"
+    else
+        echo "Main repo clean"
+    fi
+
+    echo "🚀 Pushing main repo..."
+    git push
+}
+
+# --------------------------------------------------
+# ARGUMENT PARSER
+# --------------------------------------------------
+
+case "${1:-}" in
+    --encrypt)
+        encrypt_keys
+        ;;
+    --decrypt)
+        decrypt_keys
+        ;;
+    --commit)
+        commit_all
+        ;;
+    *)
+        echo "Usage:"
+        echo "  $0 --encrypt   Encrypt keys"
+        echo "  $0 --decrypt   Restore keys"
+        echo "  $0 --commit    Commit + push all repos"
+        exit 1
+        ;;
+esac
 

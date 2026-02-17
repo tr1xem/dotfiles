@@ -1,7 +1,7 @@
 # huggingface-cli
 
 > Interact with Hugging Face Hub.
-> Login, manage local cache, download or upload files.
+> Login, manage local cache, download, or upload files.
 > More information: <https://huggingface.co/docs/huggingface_hub/guides/cli>.
 
 - Login to Hugging Face Hub:
@@ -20,7 +20,7 @@
 
 `huggingface-cli env`
 
-- Download files from an repository and print out the path (omit filenames to download entire repository):
+- Download files from a repository and print out the path (omit filenames to download entire repository):
 
 `huggingface-cli download --repo-type {{repo_type}} {{repo_id}} {{filename1 filename2 ...}}`
 

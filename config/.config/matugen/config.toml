@@ -30,9 +30,9 @@ output_path = "~/.config/presets/user/gradience.json"
 post_hook = "gradience-cli apply --gtk both -n Matu-Adw"
 
 [templates.discord]
-input_path = "~/.config/matugen/templates/discord-colors.theme.css"
+input_path = "~/.config/matugen/templates/discord-material-you.theme.css"
 #output_path = "~/.config/Vencord/themes/material.theme.css"
-output_path = "~/.config/Equicord/themes/material.theme.css"
+output_path = "~/.config/Equicord/themes/material-you.theme.css"
 
 # [templates.pywal]
 # input_path = "~/.config/matugen/templates/pywal-colors"

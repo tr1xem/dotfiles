@@ -96,3 +96,4 @@ function nspawn
 function nspawn_stop
      sudo machinectl stop $argv[1]
  end
+ alias rm='rm -i'

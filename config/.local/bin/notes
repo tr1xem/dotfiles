@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <youtube-url>"
+    exit 1
+fi
+
+WORKDIR="$(pwd -P)"
+cd "$WORKDIR"
+
+URL="$1"
+
+# 1️⃣ Get full title
+FULL_TITLE=$(yt-dlp --no-playlist --get-title "$URL")
+
+
+# 2️⃣ Extract part before '|'
+RAW_TOPIC=$(echo "$FULL_TITLE" | cut -d '|' -f 1 | sed 's/[[:space:]]*$//')
+
+# 3️⃣ Sanitize for folder name
+SANITIZED_TOPIC=$(echo "$RAW_TOPIC" \
+    | sed 's/std::/std /g' \
+    | sed 's/[^a-zA-Z0-9 +_#-\(\)\[\]]//g' \
+    | sed 's/[[:space:]]\+/ /g' \
+    | sed 's/^ *//; s/ *$//')
+
+
+# 4️⃣ Get next folder number
+LAST_NUM=0
+
+shopt -s nullglob
+for d in [0-9][0-9]*; do
+    num=${d%% -*}     # take number before " - "
+    [[ $num =~ ^[0-9]+$ ]] || continue
+    (( 10#$num > LAST_NUM )) && LAST_NUM=$((10#$num))
+done
+shopt -u nullglob
+
+NEXT_NUM=$(printf "%02d" $((10#$LAST_NUM + 1)))
+
+
+FOLDER_NAME="$NEXT_NUM - $SANITIZED_TOPIC"
+
+# 5️⃣ Create directory
+mkdir "$FOLDER_NAME"
+
+# 6️⃣ Create main.cpp
+cat <<EOF > "$FOLDER_NAME/main.cpp"
+#include <iostream>
+
+int main() {
+    return 0;
+}
+EOF
+
+# 7️⃣ Create Notes.md with UNSANITIZED title
+echo "# $RAW_TOPIC" > "$FOLDER_NAME/Notes.md"
+
+echo "Created: $FOLDER_NAME"
+

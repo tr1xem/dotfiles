@@ -1,7 +1,7 @@
 # systemctl list-paths
 
 > List path units currently in memory, ordered by path.
-> More information: <https://www.freedesktop.org/software/systemd/man/systemctl.html#list-paths%20PATTERN%E2%80%A6>.
+> More information: <https://www.freedesktop.org/software/systemd/man/latest/systemctl.html#list-paths%20PATTERN%E2%80%A6>.
 
 - Show all path units currently in memory:
 
@@ -17,7 +17,7 @@
 
 - Show all path units, including inactive ones:
 
-`systemctl list-paths --all`
+`systemctl list-paths {{[-a|--all]}}`
 
 - Filter path units by state:
 

@@ -1,7 +1,11 @@
 # bindkey
 
-> Add keybindings to Z-Shell.
+> Add hotkeys to Z shell.
 > More information: <https://zsh.sourceforge.io/Guide/zshguide04.html>.
+
+- List all existing hotkeys:
+
+`bindkey`
 
 - Bind a hotkey to a specific command:
 
@@ -15,6 +19,18 @@
 
 `bindkey -l`
 
-- View the hotkey in a key[M]ap:
+- List all hotkeys in a key[M]ap:
 
-`bindkey -M main`
+`bindkey -M {{main}}`
+
+- Enable [v]i mode:
+
+`bindkey -v`
+
+- Enable [e]macs mode (default mode):
+
+`bindkey -e`
+
+- Check which mode is active (vi or emacs):
+
+`bindkey -lL main | grep -Eo 'viins|emacs'`
