@@ -38,6 +38,7 @@ alias checknvidia="cat /proc/driver/nvidia/gpus/0000:01:00.0/power"
 alias dectohex="printf '0x%x\n' $1"
 alias hextodec="printf '%d\n' $1"
 alias vencordinstall='sh -c "$(curl -sS https://vencord.dev/install.sh)"'
+alias mike="mpv https://www.youtube.com/playlist?list=PLvv0ScY6vfd8j-tlhYVPYgiIyXduu6m-L"
 
 function parusweep
     set orphans (paru -Qdtq)
@@ -54,8 +55,8 @@ function fish_user_key_bindings
 end
 
 function __open_todo
-    cd ~/dotfiles/personal/personal/
-    nvim todo.md
+    cd ~/dotfiles/personal/personal/neorg/
+    nvim +"Neorg workspace notes" +"Neorg index"
 end
 
 function run_bash_script

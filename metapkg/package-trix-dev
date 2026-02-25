@@ -22,7 +22,7 @@ depends=(
     cppman
     # gdb
     git-lfs
-    hugo
+    # hugo
     # yazi
     tmux
 )
