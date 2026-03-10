@@ -13,7 +13,8 @@ depends=(
     zen-browser-bin
     ayugram-desktop
     btop
-    eog
+    # eog
+    viewnior
     flameshot
     # mission-center
     gimp
@@ -24,7 +25,6 @@ depends=(
     spotify
     stow
     # udiskie
-    eog
     # evtest
     # fd
     gnome-calculator

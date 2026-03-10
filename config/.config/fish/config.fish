@@ -20,6 +20,7 @@ set -x COLORTERM truecolor
 fish_add_path /home/saumya/.opencode/bin
 fish_add_path /home/saumya/.pixi/bin
 fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/bin/bin
 fish_add_path /home/saumya/.local/bin
 fish_add_path /home/saumya/.spicetify

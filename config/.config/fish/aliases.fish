@@ -55,8 +55,9 @@ function fish_user_key_bindings
 end
 
 function __open_todo
-    cd ~/dotfiles/personal/personal/neorg/
-    nvim +"Neorg workspace notes" +"Neorg index"
+    nvim +"cd $HOME/dotfiles/personal/personal/neorg/" \
+         +"Neorg workspace notes" \
+         +"Neorg index"
 end
 
 function run_bash_script

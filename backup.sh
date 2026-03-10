@@ -23,14 +23,17 @@ encrypt_keys() {
 
     mkdir -p "$KEYS_DIR"
 
-    ARCHIVE="$KEYS_DIR/$VAULT_PREFIX-$TS_SAFE.tar.gpg"
+    TMP_ARCHIVE="/tmp/$VAULT_PREFIX-$TS_SAFE.tar.gpg"
+    FINAL_ARCHIVE="$KEYS_DIR/$VAULT_PREFIX-$TS_SAFE.tar.gpg"
 
     tar -C "$KEYS_DIR" \
         --exclude="*.gpg" \
         -cf - . \
-    | gpg --symmetric --cipher-algo AES256 -o "$ARCHIVE"
+    | gpg --symmetric --cipher-algo AES256 -o "$TMP_ARCHIVE"
 
-    echo "✅ Created $ARCHIVE"
+    mv "$TMP_ARCHIVE" "$FINAL_ARCHIVE"
+
+    echo "✅ Created $FINAL_ARCHIVE"
 }
 
 # --------------------------------------------------

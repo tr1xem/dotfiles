@@ -18,10 +18,12 @@ set -xg CFLAGS "-fdiagnostics-color=always -std=c23"
 set -xg CXXFLAGS "-fdiagnostics-color=always -std=c++23"
 set -gx EDITOR "nvim"  # Replace "nano" with your desired editor (e.g., vim, nvim, etc.)
 set -gx VISUAL "$EDITOR"
-# set -xg CXX "ccache clang++"
-# set -xg CC "ccache clang"
-# set -xg CC "ccache gcc"
-# set -xg CXX "ccache g++"
+set -gx CXX clang++
+set -gx CC clang
+set -gx CCACHE_CPP2 yes
+set -gx CMAKE_C_COMPILER_LAUNCHER ccache
+set -gx CMAKE_CXX_COMPILER_LAUNCHER ccache
+
 
 set -Ux TERM xterm-kitty
 set -g fish_term24bit 1
