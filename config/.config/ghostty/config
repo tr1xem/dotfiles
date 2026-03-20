@@ -25,5 +25,6 @@ window-padding-y = 2
 shell-integration = fish
 shell-integration-features = no-cursor, sudo, title
 keybind = ctrl+shift+i=unbind
+keybind = ctrl+space=unbind
 keybind = ctrl+enter=unbind
 keybind = ctrl+alt+r=reload_config

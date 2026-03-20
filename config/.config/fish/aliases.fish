@@ -55,9 +55,8 @@ function fish_user_key_bindings
 end
 
 function __open_todo
-    nvim +"cd $HOME/dotfiles/personal/personal/neorg/" \
-         +"Neorg workspace notes" \
-         +"Neorg index"
+    nvim +"cd $HOME/dotfiles/personal/personal/orgfiles" \
+        "$HOME/dotfiles/personal/personal/orgfiles/refile.org"
 end
 
 function run_bash_script
@@ -98,4 +97,5 @@ function nspawn
 function nspawn_stop
      sudo machinectl stop $argv[1]
  end
- alias rm='rm -i'
+alias rm='rm -i'
+alias orgmode='nvim -c "cd ~/personal/orgfiles"  -c "Oil"'

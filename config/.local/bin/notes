@@ -56,7 +56,7 @@ int main() {
 EOF
 
 # 7️⃣ Create Notes.md with UNSANITIZED title
-echo "* $RAW_TOPIC" > "$FOLDER_NAME/Notes.norg"
+echo "* $RAW_TOPIC" > "$FOLDER_NAME/Notes.org"
 
 echo "Created: $FOLDER_NAME"
 
