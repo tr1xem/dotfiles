@@ -1,0 +1,84 @@
+Config {
+   -- Appearance
+     font            = "JetBrainsMono Nerd Font Mono Bold 9"
+   , additionalFonts = [ "JetBrainsMono Nerd Font Mono 20" ]
+   , bgColor         = "#1a1b26"
+   , fgColor         = "#a9b1d6"
+   , position        = TopSize C 100 26
+   , border          = BottomB
+   , borderColor     = "#444b6a"
+   , borderWidth     = 2
+
+   -- Layout
+   , sepChar         = "%"
+   , alignSep        = "}{"
+
+   , template =
+       " <fc=#7aa2f7>%XMonadLog%</fc> }{ \
+       \%coretemp% <fc=#444b6a>│</fc> \
+       \%cpu% <fc=#444b6a>│</fc> \
+       \%memory% <fc=#444b6a>│</fc> \
+       \%wlp0s20f3wi% <fc=#444b6a>│</fc> \
+       \%bluetooth% <fc=#444b6a>│</fc> \
+       \%battery% <fc=#444b6a>│</fc> \
+       \%date% "
+
+   -- Commands
+   , commands =
+
+        [ Run XMonadLog
+
+        -- 🌡️ CPU TEMP
+        , Run Com "sh"
+            [ "-c"
+            , "printf \"<fc=#7dcfff></fc> %s\" \"$(sensors | awk '/Package id 0/ {print $4; exit}')\""
+            ]
+            "coretemp" 10
+        -- 🧠 CPU
+        , Run Cpu
+            [ "-t", "<fc=#7aa2f7> </fc><total>%"
+            , "-L", "30"
+            , "-H", "70"
+            , "-l", "#9ece6a"
+            , "-n", "#e0af68"
+            , "-h", "#f7768e"
+            ] 10
+
+        -- 💾 MEMORY
+        , Run Memory
+            [ "-t", "<fc=#bb9af7>󰍛</fc> <usedratio>%"
+            , "-L", "30"
+            , "-H", "70"
+            , "-l", "#9ece6a"
+            , "-n", "#e0af68"
+            , "-h", "#f7768e"
+            ] 10
+
+        -- 📶 WIFI
+        , Run Wireless "wlp0s20f3"
+            [ "-t", "<fc=#7dcfff>󰖩 </fc><ssid> <quality>%"
+            ] 10
+
+        -- 🔵 BLUETOOTH
+        , Run Com "sh"
+        [ "-c", "~/.config/xmobar/scripts/bluetooth.sh" ]
+        "bluetooth" 5
+
+        -- 🔋 BATTERY
+        , Run Battery
+            [ "-t", "<fc=#7aa2f7>󱐋</fc> <acstatus>"
+            , "-L", "20"
+            , "-H", "80"
+            , "-l", "#f7768e"
+            , "-n", "#e0af68"
+            , "-h", "#9ece6a"
+            , "--"
+            , "-o", "<left>% (<timeleft>)"
+            , "-O", "<fc=#e0af68>Charging</fc> <left>%"
+            , "-i", "<fc=#9ece6a>Full</fc>"
+            ] 50
+
+        -- 📅 DATE
+        , Run Date "<fc=#bb9af7> %a %b %_d %I:%M %P</fc>" "date" 10
+        ]
+}
