@@ -6,7 +6,7 @@ Config {
    , fgColor         = "#a9b1d6"
    , position        = TopSize C 100 26
    , border          = BottomB
-   , borderColor     = "#bb9af7"
+   , borderColor     = "#444b6a"
    , borderWidth     = 2
    , lowerOnStart = True
    , overrideRedirect = True
@@ -77,12 +77,17 @@ Config {
             , "-h", "#9ece6a"
             , "--"
             , "-o", "<left>% (<timeleft>)"
-            , "-O", "<fc=#9ece6a>Charging</fc> <left>%"
-            , "-i", "<fc=#9ece6a>Full</fc>"
+            , "-O", "<left>%"
+            , "-i", "<left>%"
             ] 50
 
         -- 📅 DATE
-        , Run Date "<fc=#bb9af7> %a %b %_d %I:%M %P</fc>" "date" 10
+        , Run Date "<fc=#bb9af7>%I:%M • %a,%-d %b</fc>" "date" 10
+        , Run Com "sh"
+            [
+            "-c",
+           "~/.config/xmobar/scripts/playerctl.sh"
+            ] "media" 10
         ]
 }
 

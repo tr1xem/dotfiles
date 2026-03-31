@@ -91,12 +91,12 @@ function pixelmpv
 end
 
 
-function nspawn
-     sudo machinectl start $argv[1] && sleep 2 && sudo machinectl shell saumya@$argv[1]
- end
-function nspawn_stop
-     sudo machinectl stop $argv[1]
- end
+# function nspawn
+#      sudo machinectl start $argv[1] && sleep 2 && sudo machinectl shell saumya@$argv[1]
+#  end
+# function nspawn_stop
+#      sudo machinectl stop $argv[1]
+#  end
 alias rm='rm -i'
 alias orgmode='nvim -c "cd ~/personal/orgfiles"  -c "Oil"'
 alias yay='paru'

@@ -1,14 +1,17 @@
 import Data.Map qualified as M
 import XMonad
+import XMonad.Actions.DwmPromote
 import XMonad.Actions.FlexibleResize qualified as Flex
 import XMonad.Actions.MouseResize
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.InsertPosition
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers (doCenterFloat, doFocus, doRaise)
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.StatusBar.PP qualified as Hacks
+import XMonad.Layout.AutoMaster
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Renamed
@@ -74,6 +77,8 @@ myLayoutHook =
     smartBorders $
       toggleLayouts Full $
         renamed [Replace "Tall"] (mySpacing tall)
+          ||| renamed [Replace "Wide"] (mySpacing (Mirror tall))
+          ||| renamed [Replace "Spiral"] (mySpacing (spiral (6 / 7)))
   where
     tall = ResizableTall 1 (3 / 100) (11 / 20) []
 
@@ -87,9 +92,11 @@ myManageHook =
       className =? "Spotify" --> doShift "0",
       className =? "Thunar" --> doShift "4",
       className =? "mpv" --> doShift "5",
-      className =? "com.mitchellh.ghostty" --> doShift "3"
+      className =? "com.mitchellh.ghostty" --> doShift "3",
+      className =? "Galculator" --> doCenterFloat,
+      className =? "vicinae" --> doFloat <+> doRaise <+> doFocus,
+      className =? "flameshot" --> doFloat <+> doRaise
     ]
-    <+> insertPosition Below Newer
 
 -- Key bindings (matching dwm as closely as possible)
 myKeys =
@@ -111,12 +118,8 @@ myKeys =
     ("M-h", sendMessage Shrink),
     ("M-i", sendMessage (IncMasterN 1)),
     ("M-p", sendMessage (IncMasterN (-1))),
-    -- , -- Layout switching
-    -- ("M-t", sendMessage $ JumpToLayout "Tall")
-    ("M-f", windows W.shiftMaster),
-    -- ("M-c", sendMessage $ JumpToLayout "Spiral"),
-    -- ("M-S-<Return>", sendMessage NextLayout),
-    -- ("M-n", sendMessage NextLayout),
+    -- ("M-n", sendMessage $ JumpToLayout "Tall"),
+    ("M-f", dwmpromote),
     -- Floating
     ("M-S-f", withFocused toggleFloat),
     -- Gaps (z to increase, x to decrease, a to toggle)
@@ -139,9 +142,11 @@ myKeys =
     ("M-b", spawn "zen-browser"),
     ("M-d", spawn "discord"),
     ("M-m", spawn "spotify"),
+    ("M-w", spawn "feh --bg-fill \"$(find ~/Pictures/Wallpapers/ -type f \\( -iname '*.jpg' -o -iname '*.png' -o -iname '*.jpeg' \\) | vicinae dmenu -p 'Pick a wallpaper...')\""),
     ("M-t", spawn "thunar"),
     ("M-y", spawn "curd"),
-    ("M-y", spawn "curd"),
+    ("M-S-t", spawn " maim -s /tmp/screenshot.png && tesseract /tmp/screenshot.png stdout | xclip -selection clipboard"),
+    ("M-e", spawn "~/.local/bin/nspawn menu"),
     ("<Print>", spawn "flameshot gui"),
     -- Volume controls
     ("<XF86AudioRaiseVolume>", spawn "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 1%+"),
@@ -153,6 +158,7 @@ myKeys =
     ("<XF86AudioPrev>", spawn "playerctl previous"),
     ("<XF86AudioPlay>", spawn "playerctl play-pause"),
     ("<XF86AudioPause>", spawn "playerctl play-pause"),
+    ("<XF86Calculator>", spawn "galculator"),
     ( "M1-<Return>",
       do
         sendMessage ToggleStruts -- hide/show xmobar
@@ -218,6 +224,7 @@ myConfig =
         spawnOnce "xset r rate 250 40"
         spawnOnce "setxkbmap -option caps:swapescape"
         spawnOnce "~/.fehbg"
+        spawnOnce "xautolock -detectsleep -time 3 -locker '/usr/bin/betterlockscreen'"
         spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
         spawnOnce "trayer --edge top --align right --widthtype request --width 200 --height 22 --tint 0x000000 --alpha 150 --transparent true --expand true --margin 4 -l"
     }
