@@ -16,15 +16,17 @@ set -Ux fifc_editor nvim
 # starship init fish | source
 zoxide init fish --cmd cd | source
 set -x COLORTERM truecolor
+set -x MANPAGER "nvim +Man!"
 
-fish_add_path /home/saumya/.opencode/bin
-fish_add_path /home/saumya/.pixi/bin
+fish_add_path $HOME/.opencode/bin
+fish_add_path $HOME/.pixi/bin
 fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/bin/bin
-fish_add_path /home/saumya/.local/bin
-fish_add_path /home/saumya/.spicetify
-fish_add_path /home/saumya/.local/bin/statusbar
+fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.spicetify
+fish_add_path $HOME/go/bin
+fish_add_path $HOME/.local/bin/statusbar
 
 source ~/.config/fish/aliases.fish
 source ~/.config/fish/env.fish

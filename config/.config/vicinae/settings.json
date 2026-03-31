@@ -23,6 +23,9 @@
          "icon_theme": "Tela dark"
       }
    },
+   "telemetry": {
+      "system_info": false
+   },
    "launcher_window": {
       "opacity": 0.5
    },

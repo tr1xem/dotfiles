@@ -71,6 +71,6 @@ if pgrep -f "gpu-screen-recorder" >/dev/null; then
     exit 0
 else
     #notify-send -i "screenrecorder" -a "wl-screenrec" "Recording started"
-     gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w portal -ac aac -o $output_file -v no 2>/dev/null
+     gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w portal -ac aac -o $output_file -v no
     #wf-recorder -f "$output_file" -r 60 -i "screenrecorder" -a=$audiodev -g "$(~/.local/bin/slurp.sh -d)" 2>/dev/null
 fi

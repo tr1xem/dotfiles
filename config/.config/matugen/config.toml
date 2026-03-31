@@ -38,10 +38,10 @@ output_path = "~/.config/Equicord/themes/material-you.theme.css"
 # input_path = "~/.config/matugen/templates/pywal-colors"
 # output_path = "~/.cache/wal/colors"
 
-# [templates.pywaljson]
-# input_path = "~/.config/matugen/templates/pywal-colors.json"
-# output_path = "~/.cache/wal/colors.json"
-# post_hook = "pywalfox update &"
+[templates.pywaljson]
+input_path = "~/.config/matugen/templates/pywal-colors.json"
+output_path = "~/.cache/wal/colors.json"
+post_hook = "pywalfox update &"
 
 # [templates.pywalsh]
 # input_path = "~/.config/matugen/templates/colors.sh"

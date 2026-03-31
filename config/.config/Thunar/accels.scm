@@ -48,6 +48,7 @@
 ; (gtk_accel_path "<Actions>/ThunarWindow/close-all-windows" "<Primary><Shift>w")
 ; (gtk_accel_path "<Actions>/ThunarStandardView/create-document" "")
 ; (gtk_accel_path "<Actions>/ThunarWindow/detach-tab" "")
+; (gtk_accel_path "<Actions>/ThunarBookmarks/e967d08e30152cedef378ff94d89ce55" "")
 ; (gtk_accel_path "<Actions>/ThunarBookmarks/c05e68bb0cd560481b439451fc9d3c29" "")
 ; (gtk_accel_path "<Actions>/ThunarWindow/cancel-search" "Escape")
 ; (gtk_accel_path "<Actions>/ThunarWindow/zoom-in-alt2" "<Primary>equal")
