@@ -1,11 +1,14 @@
 import Data.Map qualified as M
 import XMonad
+import XMonad.Actions.FlexibleResize qualified as Flex
+import XMonad.Actions.MouseResize
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.InsertPosition
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
+import XMonad.Hooks.StatusBar.PP qualified as Hacks
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Renamed
@@ -13,8 +16,10 @@ import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
 import XMonad.Layout.Spiral
 import XMonad.Layout.ToggleLayouts
+import XMonad.Layout.WindowArranger
 import XMonad.StackSet qualified as W
 import XMonad.Util.EZConfig (additionalKeysP)
+import XMonad.Util.Hacks qualified as Hacks
 import XMonad.Util.Loggers
 import XMonad.Util.SpawnOnce
 
@@ -69,8 +74,6 @@ myLayoutHook =
     smartBorders $
       toggleLayouts Full $
         renamed [Replace "Tall"] (mySpacing tall)
-          ||| renamed [Replace "Wide"] (mySpacing (Mirror tall))
-          ||| renamed [Replace "Spiral"] (mySpacing (spiral (6 / 7)))
   where
     tall = ResizableTall 1 (3 / 100) (11 / 20) []
 
@@ -111,9 +114,9 @@ myKeys =
     -- , -- Layout switching
     -- ("M-t", sendMessage $ JumpToLayout "Tall")
     ("M-f", windows W.shiftMaster),
-    ("M-c", sendMessage $ JumpToLayout "Spiral"),
-    ("M-S-<Return>", sendMessage NextLayout),
-    ("M-n", sendMessage NextLayout),
+    -- ("M-c", sendMessage $ JumpToLayout "Spiral"),
+    -- ("M-S-<Return>", sendMessage NextLayout),
+    -- ("M-n", sendMessage NextLayout),
     -- Floating
     ("M-S-f", withFocused toggleFloat),
     -- Gaps (z to increase, x to decrease, a to toggle)
@@ -137,6 +140,7 @@ myKeys =
     ("M-d", spawn "discord"),
     ("M-m", spawn "spotify"),
     ("M-t", spawn "thunar"),
+    ("M-y", spawn "curd"),
     ("M-y", spawn "curd"),
     ("<Print>", spawn "flameshot gui"),
     -- Volume controls
@@ -181,7 +185,7 @@ myXmobarPP =
       ppHidden = xmobarColor colorFg "",
       ppHiddenNoWindows = xmobarColor colorBrBlk "",
       ppUrgent = xmobarColor colorRed colorYlw,
-      ppOrder = \[ws, l, _, wins] -> [ws, l, wins],
+      ppOrder = \[ws, l, _, wins] -> [ws, wins],
       ppExtras = [logTitles formatFocused formatUnfocused]
     }
   where
@@ -199,8 +203,13 @@ myConfig =
       borderWidth = myBorderWidth,
       normalBorderColor = myNormalBorderColor,
       focusedBorderColor = myFocusedBorderColor,
-      layoutHook = myLayoutHook,
+      layoutHook = mouseResize $ windowArrange myLayoutHook,
       manageHook = myManageHook <+> manageDocks,
+      handleEventHook =
+        handleEventHook def
+          <> Hacks.fixSteamFlicker
+          <> Hacks.trayerPaddingXmobarEventHook
+          <> Hacks.trayerAboveXmobarEventHook,
       startupHook = do
         spawnOnce "xsetroot -cursor_name left_ptr"
         spawnOnce "vicinae server --replace"
@@ -210,6 +219,7 @@ myConfig =
         spawnOnce "setxkbmap -option caps:swapescape"
         spawnOnce "~/.fehbg"
         spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
+        spawnOnce "trayer --edge top --align right --widthtype request --width 200 --height 22 --tint 0x000000 --alpha 150 --transparent true --expand true --margin 4 -l"
     }
     `additionalKeysP` myKeys
 

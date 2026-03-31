@@ -2,7 +2,7 @@
 
 # Check if Bluetooth is powered on
 if ! bluetoothctl show | grep -q "Powered: yes"; then
-    echo "<fc=#7aa2f7>󰂲</fc> OFF"
+    echo "<fc=#7aa2f7>󰂲 OFF</fc>"
     exit
 fi
 
@@ -12,7 +12,7 @@ device=$(bluetoothctl devices Connected | awk '{print $2}')
 if [ -n "$device" ]; then
     # Get device name
     name=$(bluetoothctl info "$device" | grep "Name:" | cut -d ' ' -f2-)
-    echo "<fc=#7aa2f7>󰂱</fc> $name"
+    echo "<fc=#7aa2f7>󰂱 $name</fc>"
 else
-    echo "<fc=#7aa2f7></fc> ON"
+    echo "<fc=#7aa2f7> ON</fc>"
 fi
