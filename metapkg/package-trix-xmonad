@@ -7,7 +7,6 @@ options=('!debug')
 groups=('trix')
 provides=('trix-xmonad')
 depends=(
-    # pyprland
     xmonad
     xmonad-contrib
     xmobar
@@ -26,6 +25,7 @@ depends=(
     flameshot
     brightnessctl
     wpctl
+    polkit-gnome
 )
 
 # vim:ft=sh

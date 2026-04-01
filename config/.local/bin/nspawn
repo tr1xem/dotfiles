@@ -240,7 +240,7 @@ then
 	$0 "$pick"
 elif [[ "$1" == toggle ]]
 then
-	list=""
+	list=()
 	declare -A machine_map
 
 	while read m
@@ -249,11 +249,11 @@ then
 		machine_active "$m" && s="currently on" || s="currently off"
 		l=$(print_label "$m")
 		display="$l ($s)"
-		list="$list$display\n"
+		list+=("$display")
 		machine_map["$display"]="$m"
 	done < <(list_machines)
 
-	pick=$(echo -en "$list" | vicinae dmenu -p "toggle:")
+	pick=$(printf '%s\n' "${list[@]}" | vicinae dmenu -p "toggle:")
 	
 	[ -z "$pick" ] && exit
 

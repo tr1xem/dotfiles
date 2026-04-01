@@ -1,14 +1,17 @@
 #!/bin/bash
 
 random_string=$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 7)
-focused_window=$(hyprctl activewindow)
-app_name=$(echo "$focused_window" | grep "class:" | awk '{print $2}')
+focused_window=$(xdotool getactivewindow)
+app_name=$(xprop -id "$focused_window" WM_CLASS | grep -oP '(?<=")[^"]*(?=")' | tail -1)
 audiodev="alsa_output.pci-0000_00_1b.0.analog-stereo.monitor"
 
 
-if [[ "$app_name" == "none" ]]; then
+if [[ "$app_name" == "none" ]] || [[ -z "$app_name" ]]; then
     app_name="recording"
 fi
+
+# Escape special characters in app_name for safe filename
+app_name=$(echo "$app_name" | sed 's/[^a-zA-Z0-9._-]/_/g')
 
 file="${random_string}-${app_name}"
 output_file=$HOME/Videos/Recordings/"${file}.mp4"
@@ -61,9 +64,9 @@ if pgrep -f "gpu-screen-recorder" >/dev/null; then
     message=$(echo "$json_data" | jq -r '.message')
     status=$(echo "$json_data" | jq -r '.status')
     if [ "$status" = "success" ]; then
-        echo "$video_url" | xclip
+        echo -n "$video_url" | xclip -selection clipboard
         notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message" "$video_url"
-        rm $LAST_VIDEO
+        rm "$LAST_VIDEO"
     else
         notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
         exit 1
