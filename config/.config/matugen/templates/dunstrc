@@ -1,0 +1,41 @@
+[global]
+frame_width = 1
+frame_color = "#788388"
+font = Noto Sans 10
+format = "<b>%a | %s %p</b>\n%b"
+sort = yes
+indicate_hidden = yes
+alignment = left
+transparency = 30
+progress_bar_corner_radius = 3
+icon_corner_radius = 3
+corner_radius = 5
+frame_color = "{{colors.primary.default.hex}}"
+highlight = "{{colors.primary.default.hex}}"
+separator_color= "{{colors.outline.default.hex}}"
+
+
+[fullscreen]
+fullscreen = show
+
+
+[experimental]
+per_monitor_dpi = false
+
+[urgency_low]
+timeout = 3
+background = "{{colors.surface.default.hex}}"
+foreground = "{{colors.on_surface.default.hex}}"
+highlight = "{{colors.primary_container.default.hex}}"
+
+[urgency_normal]
+timeout = 6
+background = "{{colors.surface.default.hex}}"
+foreground = "{{colors.on_surface.default.hex}}"
+highlight = "{{colors.primary_container.default.hex}}"
+
+[urgency_critical]
+timeout = 0
+background = "{{colors.surface.default.hex}}"
+foreground = "{{colors.on_surface.default.hex}}"
+highlight = "{{colors.error.default.hex}}"

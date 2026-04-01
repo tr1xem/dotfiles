@@ -69,7 +69,7 @@ message=$(echo "$json_data" | jq -r '.message')
 status=$(echo "$json_data" | jq -r '.status')
 if [ "$status" = "success" ]; then
     echo $message
-    wl-copy "$file_url"
+    echo "$file_url" | xclip -selection clipboard
 else
     # notify-send -a "Gpu Screen Recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
     echo $message

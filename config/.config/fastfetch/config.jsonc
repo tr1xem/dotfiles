@@ -14,7 +14,7 @@
       "type": "command",
       "key": "  ",
       "keyColor": "blue",
-      "text": "splash=$(hyprctl splash);echo $splash"
+      "text": "text=$(fortune -s); echo $text"
     },
     {
       "type": "custom",

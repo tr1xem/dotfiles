@@ -26,7 +26,7 @@ if pgrep -f "gpu-screen-recorder" >/dev/null; then
     pkill -SIGINT -f gpu-screen-recorder
     sleep 1
     LAST_VIDEO=$(ls -t "$SAVE_DIR"/*.mp4 2>/dev/null | head -n 1)
-    notify-send -i "screenrecorder" -a "wl-screenrec" "Recording Stopped" "$LAST_VIDEO"
+    notify-send -i "screenrecorder" -a "gpu-screen-recorder" "Recording Stopped" "$LAST_VIDEO"
 
     # EZ
     #json_data=$(curl -X POST -F "file=@/$LAST_VIDEO" -H "$ezauth"  -v $ezuploadurl 2>/dev/null)
@@ -61,16 +61,16 @@ if pgrep -f "gpu-screen-recorder" >/dev/null; then
     message=$(echo "$json_data" | jq -r '.message')
     status=$(echo "$json_data" | jq -r '.status')
     if [ "$status" = "success" ]; then
-        wl-copy "$video_url"
-        notify-send -a "Gpu Screen Recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message" "$video_url"
+        echo "$video_url" | xclip
+        notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message" "$video_url"
         rm $LAST_VIDEO
     else
-        notify-send -a "Gpu Screen Recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
+        notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
         exit 1
     fi
     exit 0
 else
     #notify-send -i "screenrecorder" -a "wl-screenrec" "Recording started"
-     gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w portal -ac aac -o $output_file -v no
+     gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w region -region $(slop -f "%wx%h+%x+%y") -ac aac -o "$output_file" -v no
     #wf-recorder -f "$output_file" -r 60 -i "screenrecorder" -a=$audiodev -g "$(~/.local/bin/slurp.sh -d)" 2>/dev/null
 fi

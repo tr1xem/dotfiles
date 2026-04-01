@@ -1,0 +1,61 @@
+module Colors where
+
+data ColorScheme = ColorScheme
+  { onSurfaceVariant :: String,
+    outline :: String,
+    surfaceDim :: String,
+    surfaceContainerHighest :: String,
+    inverseSurface :: String,
+    tertiaryContainer :: String,
+    secondaryContainer :: String,
+    surfaceContainerLowest :: String,
+    surfaceContainerLow :: String,
+    surfaceContainerHigh :: String,
+    scrim :: String,
+    primaryContainer :: String,
+    secondary :: String,
+    surfaceVariant :: String,
+    inverseOnSurface :: String,
+    tertiary :: String,
+    errorContainer :: String,
+    outlineVariant :: String,
+    primary :: String,
+    onPrimaryContainer :: String,
+    errorColor :: String,
+    inversePrimary :: String,
+    onTertiaryContainer :: String,
+    colorRed :: String,
+    colorYellow :: String,
+    colorGreen :: String
+  }
+
+colors :: ColorScheme
+colors =
+  ColorScheme
+    { onSurfaceVariant = "{{colors.on_surface_variant.default.hex}}",
+      outline = "{{colors.outline.default.hex}}",
+      surfaceDim = "{{colors.surface_dim.default.hex}}",
+      surfaceContainerHighest = "{{colors.surface_container_highest.default.hex}}",
+      inverseSurface = "{{colors.inverse_surface.default.hex}}",
+      tertiaryContainer = "{{colors.tertiary_container.default.hex}}",
+      secondaryContainer = "{{colors.secondary_container.default.hex}}",
+      surfaceContainerLowest = "{{colors.surface_container_lowest.default.hex}}",
+      surfaceContainerLow = "{{colors.surface_container_low.default.hex}}",
+      surfaceContainerHigh = "{{colors.surface_container_high.default.hex}}",
+      scrim = "{{colors.scrim.default.hex}}",
+      primaryContainer = "{{colors.primary_container.default.hex}}",
+      secondary = "{{colors.secondary.default.hex}}",
+      surfaceVariant = "{{colors.surface_variant.default.hex}}",
+      inverseOnSurface = "{{colors.inverse_on_surface.default.hex}}",
+      tertiary = "{{colors.tertiary.default.hex}}",
+      errorContainer = "{{colors.error_container.default.hex}}",
+      outlineVariant = "{{colors.outline_variant.default.hex}}",
+      primary = "{{colors.primary.default.hex}}",
+      onPrimaryContainer = "{{colors.on_primary_container.default.hex}}",
+      errorColor = "{{colors.error.default.hex}}",
+      inversePrimary = "{{colors.inverse_primary.default.hex}}",
+      onTertiaryContainer = "{{colors.on_tertiary_container.default.hex}}",
+      colorRed = "{{colors.red.default.hex}}",
+      colorYellow = "{{colors.yellow.default.hex}}",
+      colorGreen = "{{colors.green.default.hex}}"
+    }

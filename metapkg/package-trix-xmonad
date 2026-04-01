@@ -1,0 +1,31 @@
+pkgname=trix-xmonad
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Xmonad environment"
+options=('!debug')
+groups=('trix')
+provides=('trix-xmonad')
+depends=(
+    # pyprland
+    xmonad
+    xmonad-contrib
+    xmobar
+    xmonad-extras
+    dunst
+    haskell-language-server
+    feh
+    picom
+    xorg-xset
+    trayer
+    xautolock
+    xorg-xsetroot
+    xorg-setxkbmap
+    xclip
+    betterlockscreen
+    flameshot
+    brightnessctl
+    wpctl
+)
+
+# vim:ft=sh
