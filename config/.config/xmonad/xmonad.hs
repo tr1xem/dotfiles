@@ -1,5 +1,4 @@
 import Colors
-import Colors (ColorScheme (surfaceDim))
 import qualified Data.Map as M
 import XMonad
 import XMonad.Actions.DwmPromote
@@ -109,6 +108,9 @@ myManageHook =
         , className =? "flameshot" --> doFloat <+> doRaise
         , className =? "discord" --> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
         , title =? "Floatterm" --> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
+        , className =? "steam_app_default" --> doFullFloat
+        , className =? "Screenkey" --> doFloat
+        , className =? "trayer" --> doIgnore -- Ignore so it doesn't get focus/borders
         ]
 
 -- Key bindings (matching dwm as closely as possible)
@@ -130,9 +132,9 @@ myKeys =
     , -- Master area
       ("M-l", sendMessage Expand)
     , ("M-h", sendMessage Shrink)
-    , ("M-i", sendMessage (IncMasterN 1))
-    , ("M-p", sendMessage (IncMasterN (-1)))
-    , -- ("M-n", sendMessage $ JumpToLayout "Tall"),
+    , -- , ("M-i", sendMessage (IncMasterN 1))
+      -- , ("M-p", sendMessage (IncMasterN (-1)))
+      -- ("M-n", sendMessage $ JumpToLayout "Tall"),
       ("M-f", dwmpromote)
     , -- Floating
       ("M-S-f", withFocused toggleFloat)
@@ -144,6 +146,7 @@ myKeys =
     , -- Quit/Restart
       ("M-S-r", spawn "xmonad --recompile && xmonad --restart")
     , ("M-S-v", spawn "pwvucontrol")
+    , ("M-C-v", spawn "~/.local/bin/change_output.sh")
     , -- Keychords for tag navigation (Mod+Space then number)
       --   ("M-<Space> 1", windows $ W.greedyView "1")
       -- , ("M-<Space> 2", windows $ W.greedyView "2")
@@ -161,7 +164,7 @@ myKeys =
     , ("M-t", spawn "thunar")
     , ("M-y", spawn "curd")
     , ("M-S-t", spawn " maim -s /tmp/screenshot.png && tesseract /tmp/screenshot.png stdout | xclip -selection clipboard")
-    , ("M-e", spawn "~/.local/bin/nspawn menu")
+    , ("M-c", spawn "~/.local/bin/nspawn menu")
     , ("<Print>", spawn "flameshot gui")
     , -- Volume controls
       ("<XF86AudioRaiseVolume>", spawn "control.sh vol-up")
@@ -244,7 +247,7 @@ myConfig =
             spawnOnce "~/.fehbg"
             spawnOnce "xautolock -detectsleep -time 3 -locker '/usr/bin/betterlockscreen'"
             spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
-            spawnOnce "trayer --edge top --align right --widthtype request --width 200 --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 0 --transparent true --expand true --margin 4 -l --iconspacing 3"
+            spawnOnce "trayer --edge top --align right --widthtype request --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 255 --transparent true --expand true --margin 4 -l --iconspacing 3"
         }
         `additionalKeysP` myKeys
 

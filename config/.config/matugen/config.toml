@@ -31,8 +31,8 @@ input_path = "~/.config/matugen/templates/colors-zathura"
 output_path = "~/.config/zathura/zathurarc"
 
 [templates.yazi]
+input_path = "~/.config/matugen/templates/yazi-theme.toml"
 output_path = "~/.config/yazi/theme.toml"
-input_path = "~/.config/matugen/templates/colors-yazi.toml"
 
 [templates.fuzzel]
 input_path = "~/.config/matugen/templates/fuzzel.ini"

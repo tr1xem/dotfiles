@@ -11,7 +11,8 @@ config station =
         , bgColor = surfaceDim colors
         , fgColor = onPrimaryContainer colors
         , position = TopSize C 100 26
-        , border = BottomB
+        , -- , alpha = 200
+          border = BottomB
         , borderColor = inversePrimary colors
         , borderWidth = 1
         , lowerOnStart = True
@@ -64,7 +65,7 @@ config station =
                     , ("considerable cloudiness", "⛈")
                     ]
                     [ "-t"
-                    , "<skyConditionS> <tempC>°"
+                    , "<fc=" <> primary colors <> "><skyConditionS> <tempC>°</fc>"
                     ]
                     18000
             , Run $
@@ -83,13 +84,13 @@ config station =
                     , "-h"
                     , colorRed colors
                     , "-t"
-                    , "<fc=" <> primary colors <> "><fn=2>\xef2a\&</fn></fc> <avg>°C"
+                    , "<fc=" <> primary colors <> "><fn=2>\xef2a\&</fn> <avg>°C</fc>"
                     ]
                     10
             , Run $
                 Cpu
                     [ "-t"
-                    , "<fc=" <> primary colors <> "><fn=1>\xe266\& </fn></fc><total>%"
+                    , "<fc=" <> primary colors <> "><fn=1>\xf035b\& </fn></fc><total>%"
                     , "-L"
                     , "30"
                     , "-H"
@@ -105,7 +106,7 @@ config station =
             , Run $
                 Memory
                     [ "-t"
-                    , "<fc=" <> primary colors <> "><fn=1>\xf035b\&</fn></fc> <usedratio>%"
+                    , "<fc=" <> primary colors <> "><fn=1>\xe266\&</fn></fc> <usedratio>%"
                     , "-L"
                     , "29"
                     , "-H"

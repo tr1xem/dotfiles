@@ -234,33 +234,37 @@ upgrade_all() {
 if [[ "$1" == menu ]]
 then
 	picks="terminal\ntoggle\nshell"
-	pick=$(echo -e "$picks" | dmenu -l 20 -p nspawn:)
+	pick=$(echo -e "$picks" | vicinae dmenu -p "nspawn:")
 	[ -z "$pick" ] && exit
 	echo -e "$picks" | grep -Fxq "$pick" || exit
 	$0 "$pick"
 elif [[ "$1" == toggle ]]
 then
 	list=""
+	declare -A machine_map
 
 	while read m
 	do
 		s=''
 		machine_active "$m" && s="currently on" || s="currently off"
 		l=$(print_label "$m")
-		list="$list$l+$m+($s)\n"
+		display="$l ($s)"
+		list="$list$display\n"
+		machine_map["$display"]="$m"
 	done < <(list_machines)
 
-	list=$(echo -en "$list" | column -t -s +)
-	m=$(echo -en "$list" | dmenu -p toggle: -l 20 | sed 's/\s\+/+/g')
+	pick=$(echo -en "$list" | vicinae dmenu -p "toggle:")
+	
+	[ -z "$pick" ] && exit
 
-	pick=$(echo "$m" | cut -f 2 -d +)
-	machine_exists "$pick" || exit
+	m="${machine_map[$pick]}"
+	machine_exists "$m" || exit
 
-	if machine_active "$pick"
+	if machine_active "$m"
 	then
-		sudo machinectl poweroff "$pick" &&  notify "Powereing off $pick"
+		sudo machinectl poweroff "$m" &&  notify "Powereing off $m"
 	else
-		sudo machinectl start "$pick" && notify "Booting $pick"
+		sudo machinectl start "$m" && notify "Booting $m"
 	fi
 elif [[ "$1" == shell ]]
 then
@@ -276,7 +280,7 @@ then
 		exit 1
 	fi
 
-	pick=$(echo "$terminals" | dmenu -l 20 -p "shell:")
+	pick=$(echo "$terminals" | vicinae dmenu -p "shell:")
 
 	if [ -z "$pick" ]; then
 		exit 0
@@ -304,7 +308,7 @@ then
 		exit 1
 	fi
 
-	pick=$(echo -e "$terminals" | dmenu -l 20 -p "terminal:")
+	pick=$(echo -e "$terminals" | vicinae dmenu -p "terminal:")
 
 	if [ -z "$pick" ]; then
 		exit 0
@@ -319,6 +323,8 @@ then
 	fi
 
 	if wait_machine "$machine"; then
+		export DISPLAY=:0
+		export XAUTHORITY=/tmp/nspawn/xauth
 		sudo machinectl shell "$pick" $0 2>/dev/null
 	else
 		notify "Failed to run terminal on $machine"

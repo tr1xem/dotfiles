@@ -10,8 +10,8 @@ mapfile -t sinks < <(
   done
 )
 
-# Display the list in fuzzel
-selected=$(printf "%s\n" "${sinks[@]}" | fuzzel --dmenu -p "Select Audio Output:")
+# Display the list in vicinae dmenu
+selected=$(printf "%s\n" "${sinks[@]}" | vicinae dmenu -p "Select Audio Output:")
 
 # Exit if nothing selected
 [ -z "$selected" ] && exit 0

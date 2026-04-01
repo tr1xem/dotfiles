@@ -4,7 +4,7 @@ PRIMARY="$1"
 GREEN="$2"
 
 if ! bluetoothctl show | grep -q "Powered: yes"; then
-  echo "<fc=$PRIMARY><fn=1>󰂲</fn> OFF</fc>"
+  echo "<fc=$PRIMARY><fn=3>󰂲 </fn>OFF</fc>"
   exit
 fi
 
@@ -21,5 +21,5 @@ if [ -n "$device" ]; then
     echo "<fc=$PRIMARY><fn=1>󰂱</fn> $name</fc>"
   fi
 else
-  echo "<fc=$PRIMARY><fn=1></fn> ON</fc>"
+  echo "<fc=$PRIMARY><fn=3></fn> ON</fc>"
 fi
