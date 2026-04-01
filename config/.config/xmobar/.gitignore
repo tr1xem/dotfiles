@@ -1,0 +1,13 @@
+# xmobar build artifacts (when using the Haskell config, xmobar.hs)
+xmobar
+xmobar.hi
+xmobar.o
+*.hi
+*.o
+
+# temp / logs
+*.log
+
+# optional: editor junk
+.DS_Store
+.direnv/

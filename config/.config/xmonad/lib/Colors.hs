@@ -1,0 +1,61 @@
+module Colors where
+
+data ColorScheme = ColorScheme
+  { onSurfaceVariant :: String,
+    outline :: String,
+    surfaceDim :: String,
+    surfaceContainerHighest :: String,
+    inverseSurface :: String,
+    tertiaryContainer :: String,
+    secondaryContainer :: String,
+    surfaceContainerLowest :: String,
+    surfaceContainerLow :: String,
+    surfaceContainerHigh :: String,
+    scrim :: String,
+    primaryContainer :: String,
+    secondary :: String,
+    surfaceVariant :: String,
+    inverseOnSurface :: String,
+    tertiary :: String,
+    errorContainer :: String,
+    outlineVariant :: String,
+    primary :: String,
+    onPrimaryContainer :: String,
+    errorColor :: String,
+    inversePrimary :: String,
+    onTertiaryContainer :: String,
+    colorRed :: String,
+    colorYellow :: String,
+    colorGreen :: String
+  }
+
+colors :: ColorScheme
+colors =
+  ColorScheme
+    { onSurfaceVariant = "#bfc8cc",
+      outline = "#8a9296",
+      surfaceDim = "#0f1416",
+      surfaceContainerHighest = "#303638",
+      inverseSurface = "#dee3e6",
+      tertiaryContainer = "#424465",
+      secondaryContainer = "#344a52",
+      surfaceContainerLowest = "#0a0f11",
+      surfaceContainerLow = "#171c1f",
+      surfaceContainerHigh = "#252b2d",
+      scrim = "#000000",
+      primaryContainer = "#004e60",
+      secondary = "#b3cad4",
+      surfaceVariant = "#40484c",
+      inverseOnSurface = "#2c3134",
+      tertiary = "#c2c3eb",
+      errorContainer = "#93000a",
+      outlineVariant = "#40484c",
+      primary = "#87d1eb",
+      onPrimaryContainer = "#b5ebff",
+      errorColor = "#ffb4ab",
+      inversePrimary = "#04677e",
+      onTertiaryContainer = "#e0e0ff",
+      colorRed = "#ffb2b9",
+      colorYellow = "#b8cf84",
+      colorGreen = "#95d5a7"
+    }
