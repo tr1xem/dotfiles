@@ -1,0 +1,22 @@
+pkgname=trix-xmonad-extra
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Xmonad environment extra"
+options=('!debug')
+groups=('trix')
+provides=('trix-xmonad-extra')
+depends=(
+    zen-browser-bin
+    btop
+    ghostty
+    mpv
+    maim
+    curd
+    stow
+    rclone
+    spotify
+    galculator
+)
+
+# vim:ft=sh

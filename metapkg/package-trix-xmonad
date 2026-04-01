@@ -9,23 +9,22 @@ provides=('trix-xmonad')
 depends=(
     xmonad
     xmonad-contrib
-    xmobar
     xmonad-extras
-    dunst
     haskell-language-server
-    feh
-    picom
     xorg-xset
-    trayer
-    xautolock
     xorg-xsetroot
     xorg-setxkbmap
     xclip
-    betterlockscreen
-    flameshot
-    brightnessctl
-    wpctl
-    polkit-gnome
+    xorg-xinit
+    xorg-xrandr
+    xlibre-input-libinput
+    xlibre-xserver
+    xlibre-xserver-common
+    xlibre-xserver-devel
+    ly
+    fastfetch
+    neovim
+    hererocks
 )
 
 # vim:ft=sh

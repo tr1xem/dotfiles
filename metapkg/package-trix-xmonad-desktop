@@ -1,0 +1,31 @@
+pkgname=trix-xmonad-desktop
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Xmonad desktop environment"
+options=('!debug')
+groups=('trix')
+provides=('trix-xmonad-desktop')
+depends=(
+    xmobar
+    dunst
+    feh
+    picom-git
+    trayer
+    betterlockscreen
+    flameshot
+    polkit-gnome
+    vicinae-bin
+    matugen-bin
+    gradience
+    adwaita-qt5
+    adwaita-qt6
+    tela-circle-icon-theme-all
+    nwg-look
+    pwvucontrol
+    viewnior
+    thunar
+    noto-fonts-emoji
+)
+
+# vim:ft=sh

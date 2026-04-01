@@ -1,0 +1,35 @@
+pkgname=trix-xmonad-utils
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Xmonad utils"
+options=('!debug')
+groups=('trix')
+provides=('trix-xmonad-utils')
+depends=(
+    brightnessctl
+    wpctl
+    xorg-xprop
+    xorg-xev
+    xautolock
+    bluez
+    bluez-utils
+    networkmanager
+    pokemon-colorscripts-go
+    nvidia-prime
+    duf
+    bat
+    eza
+    fish
+    fisher
+    tealdeer
+    ffmpegthumbnailer
+    ffmpeg-audio-thumbnailer
+    gpu-screen-recorder
+    zoxide
+    xdg-user-dirs
+    fzf
+
+)
+
+# vim:ft=sh

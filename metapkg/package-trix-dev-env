@@ -7,25 +7,15 @@ options=('!debug')
 groups=('trix')
 provides=('trix-dev-env')
 depends=(
-    base
     neovim
     hererocks
     opencode-bin
-    uv
-    zoxide
-    xdg-user-dirs
-    luarocks
-    ghostty
     tmux
-    fzf
-    ccache
-    cppman
     gdb
+    git
     git-lfs
-    hugo
-    yazi
-    tmux
+    cppman
+    tealdeer
 )
-
 
 # vim:ft=sh

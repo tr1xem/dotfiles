@@ -8,31 +8,22 @@ groups=('trix')
 provides=('trix-cachyos')
 depends=(
     acpi_call-dkms
-    # cachyos-fish-config
-    # cachyos-hyprland-settings
     cachyos-keyring
     cachyos-mirrorlist
     cachyos-rate-mirrors
     cachyos-settings
-    cachyos-snapper-support
     cachyos-v3-mirrorlist
     cachyos-v4-mirrorlist
-    chaotic-keyring
-    chaotic-mirrorlist
-    libva-nvidia-driver
     linux-cachyos-headers
     linux-cachyos-lts-headers
-    linux-cachyos-lts-nvidia-open
-    linux-cachyos-nvidia-open
-    # chwd
+    linux-cachyos
+    linux-cachyos-lts
+    chwd
     sbctl
     scx-manager
-    btrfs-assistant
-    grub-btrfs
     sof-firmware
     intel-ucode
-    lsof
-    paru
+    paru-bin
     ufw
     fwupd
     tlp
