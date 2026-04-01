@@ -123,7 +123,7 @@ config station =
                 Wireless
                     "wlp0s20f3"
                     [ "-t"
-                    , "<fc=" <> primary colors <> "><fn=1>\xf05a9\&</fn></fc><fc=" <> primary colors <> "> <ssid></fc><fc=" <> colorGreen colors <> "> <quality>%</fc>"
+                    , "<fc=" <> primary colors <> "><fn=1>\xf05a9\&</fn></fc><fc=" <> primary colors <> "> <ssid> <quality>%</fc>"
                     ]
                     10
             , Run $
@@ -146,9 +146,9 @@ config station =
                     , "-l"
                     , colorRed colors
                     , "-n"
-                    , primary colors
+                    , colorGreen colors
                     , "-h"
-                    , primary colors
+                    , colorGreen colors
                     , "--"
                     , "-o"
                     , "<fn=3>\xf007f\&</fn> <left>% (<timeleft>)"
