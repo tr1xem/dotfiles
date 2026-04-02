@@ -26,6 +26,7 @@ depends=(
     viewnior
     thunar
     noto-fonts-emoji
+    alsa-utils
 )
 
 # vim:ft=sh

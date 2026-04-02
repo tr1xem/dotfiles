@@ -23,8 +23,6 @@ depends=(
     xlibre-xserver-devel
     ly
     fastfetch
-    neovim
-    hererocks
 )
 
 # vim:ft=sh

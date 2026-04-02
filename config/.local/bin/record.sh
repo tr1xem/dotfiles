@@ -1,79 +1,149 @@
-#!/bin/bash
+#!/bin/sh
 
-random_string=$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 7)
-focused_window=$(xdotool getactivewindow)
-app_name=$(xprop -id "$focused_window" WM_CLASS | grep -oP '(?<=")[^"]*(?=")' | tail -1)
-audiodev="alsa_output.pci-0000_00_1b.0.analog-stereo.monitor"
+# Screen recording script using gpu-screen-recorder
+# Supports region selection, fullscreen, and upload to Monarch API
 
+set -eu
 
-if [[ "$app_name" == "none" ]] || [[ -z "$app_name" ]]; then
-    app_name="recording"
-fi
-
-# Escape special characters in app_name for safe filename
-app_name=$(echo "$app_name" | sed 's/[^a-zA-Z0-9._-]/_/g')
-
-file="${random_string}-${app_name}"
-output_file=$HOME/Videos/Recordings/"${file}.mp4"
+SCRIPTNAME="record.sh"
+PIDFILE="/tmp/$SCRIPTNAME.pid"
 SAVE_DIR="$HOME/Videos/Recordings"
 
+main() {
+	case "${1:-help}" in
+		start) start ;;
+		stop) stop ;;
+		toggle) toggle ;;
+		fullscreen) start_fullscreen ;;
+		status) status "${2:-#ff0000}" ;;
+		help|*) help ;;
+	esac
+}
 
-ezauth="key:$EZAUTH"
-ezuploadurl="https://api.e-z.host/files"
-monarchauth="secret=$MONARCHKEY"
-monarchuploadurl="https://api.monarchupload.cc/v3/upload"
+status() {
+	color="${1:-#ff0000}"
+	if [ -f "$PIDFILE" ]
+	then
+		echo "<fc=$color><fn=1> </fn>REC</fc>"
+	fi
+}
 
-mkdir -p $HOME/Videos/Recordings
-if pgrep -f "gpu-screen-recorder" >/dev/null; then
-   #pkill -SIGINT -f "wf-recorder"
-    pkill -SIGINT -f gpu-screen-recorder
-    sleep 1
-    LAST_VIDEO=$(ls -t "$SAVE_DIR"/*.mp4 2>/dev/null | head -n 1)
-    notify-send -i "screenrecorder" -a "gpu-screen-recorder" "Recording Stopped" "$LAST_VIDEO"
+start() {
+	# Get region via slop (user selects)
+	eval "$(slop -f "W=%w H=%h X=%x Y=%y")"
+	_start_recording "$W" "$H" "$X" "$Y" "region"
+}
 
-    # EZ
-    #json_data=$(curl -X POST -F "file=@/$LAST_VIDEO" -H "$ezauth"  -v $ezuploadurl 2>/dev/null)
-    # MONARCH
-    json_data=$(curl -s -F $monarchauth -F "file=@$LAST_VIDEO" $monarchuploadurl)
+start_fullscreen() {
+	# Get full screen resolution via xrandr
+	res="$(xrandr | head -n1)"
+	res="${res#*current }"
+	res="${res%%, maximum*}"
+	set -- $res
+	W=$1
+	H=$3
+	X=0
+	Y=0
+	_start_recording "$W" "$H" "$X" "$Y" "fullscreen"
+}
 
-    # EZ
-    # status=$(echo "$json_data" | jq -r '.status')
-    # if [[ $status == "error" ]]; then
-    #     message=$(echo "$json_data" | jq -r '.message')
-    #     notify-send -i "screenrecorder" -a "wl-screenrec" "$message"
-    #     exit 1
-    # fi
-    # video_url=$(echo "$json_data" | jq -r '.imageUrl')
-    # d_url=$(echo "$json_data" | jq -r '.deletionUrl')
-    # raw_url=$(echo "$json_data" | jq -r '.rawUrl')
-    # wl-copy "$video_url"
-    # ACTION=$(notify-send -i "screenrecorder" -a "wl-screenrec" "Recording Uploaded" "$video_url" \
-    # -i "screenrecorder" -A "view=View" -A "open=Open Link" -A "raw=Raw Link" -A "delete=Delete")
-    #
-    # if [ "$ACTION" = "view" ] && [ -n "$LAST_VIDEO" ]; then
-    #     xdg-open "$LAST_VIDEO"
-    # elif [ "$ACTION" = "open" ]; then
-    #     xdg-open "$video_url"
-    # elif [ "$ACTION" = "raw" ]; then
-    #     wl-copy "$raw_url"
-    # elif [ "$ACTION" = "delete" ]; then
-    #     curl $d_url && notify-send -i "screenrecorder" -a "wl-screenrec" "Deleted File" "Successfully"
+_start_recording() {
+	W=$1
+	H=$2
+	X=$3
+	Y=$4
+	mode=$5
 
-    # MONARCH
-    video_url=$(echo "$json_data" | jq -r '.data.url')
-    message=$(echo "$json_data" | jq -r '.message')
-    status=$(echo "$json_data" | jq -r '.status')
-    if [ "$status" = "success" ]; then
-        echo -n "$video_url" | xclip -selection clipboard
-        notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message" "$video_url"
-        rm "$LAST_VIDEO"
-    else
-        notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
-        exit 1
-    fi
-    exit 0
-else
-    #notify-send -i "screenrecorder" -a "wl-screenrec" "Recording started"
-     gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w region -region $(slop -f "%wx%h+%x+%y") -ac aac -o "$output_file" -v no
-    #wf-recorder -f "$output_file" -r 60 -i "screenrecorder" -a=$audiodev -g "$(~/.local/bin/slurp.sh -d)" 2>/dev/null
-fi
+	random_string=$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 7)
+	focused_window=$(xdotool getactivewindow)
+	app_name=$(xprop -id "$focused_window" WM_CLASS | grep -oP '(?<=")[^"]*(?=")' | tail -1)
+
+	if [ -z "$app_name" ] || [ "$app_name" = "none" ]
+	then
+		app_name="recording"
+	fi
+
+	# Escape special characters in app_name for safe filename
+	app_name=$(echo "$app_name" | sed 's/[^a-zA-Z0-9._-]/_/g')
+
+	file="${random_string}-${app_name}"
+	output_file="$SAVE_DIR/${file}.mp4"
+
+	mkdir -p "$SAVE_DIR"
+
+	if [ "$mode" = "fullscreen" ]
+	then
+		gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w screen -ac aac -o "$output_file" -v no &
+	else
+		gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w region -region "${W}x${H}+${X}+${Y}" -ac aac -o "$output_file" -v no &
+	fi
+
+	echo "PID=$!" > "$PIDFILE"
+	echo "FILENAME=$output_file" >> "$PIDFILE"
+}
+
+stop() {
+	if [ ! -f "$PIDFILE" ]
+	then
+		echo "No recording in progress"
+		exit 1
+	fi
+
+	. "$PIDFILE"
+	kill -INT "$PID" 2>/dev/null || notify-send "failed to kill recording process"
+	sleep 1
+	rm "$PIDFILE"
+
+	# Upload to Monarch
+	json_data=$(curl -s -F "secret=$MONARCHKEY" -F "file=@$FILENAME" https://api.monarchupload.cc/v3/upload)
+
+	video_url=$(echo "$json_data" | jq -r '.data.url')
+	message=$(echo "$json_data" | jq -r '.message')
+	upload_status=$(echo "$json_data" | jq -r '.status')
+
+	if [ "$upload_status" = "success" ]
+	then
+		echo -n "$video_url" | xclip -selection clipboard
+		notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message" "$video_url"
+		rm "$FILENAME"
+	else
+		notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
+		exit 1
+	fi
+}
+
+toggle() {
+	if [ -f "$PIDFILE" ]
+	then
+		stop
+	else
+		start
+	fi
+}
+
+help() {
+	cat <<EOF
+Usage: $SCRIPTNAME [COMMAND] [OPTIONS]
+
+Commands:
+  start              Start recording with region selection (slop)
+  stop               Stop recording and upload
+  toggle             Toggle recording (stop if running, start if not)
+  fullscreen         Start recording full screen (-w screen)
+  status [COLOR]     Show recording status (defaults to #ff0000)
+  help               Show this help message
+
+Examples:
+  $SCRIPTNAME              # Shows help menu
+  $SCRIPTNAME start        # Start with region selection
+  $SCRIPTNAME fullscreen   # Start full screen recording
+  $SCRIPTNAME status       # Show status with default red color
+  $SCRIPTNAME status #00ff00 # Show status with green color
+  $SCRIPTNAME toggle       # Toggle recording state
+
+Environment Variables:
+  MONARCHKEY         API key for Monarch upload service (required for upload)
+EOF
+}
+
+main "$@"

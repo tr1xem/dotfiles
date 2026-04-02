@@ -1,11 +1,12 @@
 import Colors
 import qualified Data.Map as M
 import XMonad
-import XMonad.Actions.DwmPromote
+import XMonad.Actions.CopyWindow
 import qualified XMonad.Actions.FlexibleResize as Flex
 import XMonad.Actions.MouseResize
+import XMonad.Actions.Promote
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.EwmhDesktops (addEwmhWorkspaceSort, ewmh, ewmhDesktopsManageHook, ewmhDesktopsMaybeManageHook, ewmhFullscreen)
 import XMonad.Hooks.InsertPosition
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -29,6 +30,7 @@ import qualified XMonad.Util.Hacks as Hacks
 import XMonad.Util.Loggers
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.SpawnOnce
+import XMonad.Util.WorkspaceCompare (filterOutWs, getSortByIndex)
 
 -- Appearance
 myBorderWidth = 2
@@ -37,7 +39,7 @@ myNormalBorderColor = primaryContainer colors
 
 myFocusedBorderColor = primary colors
 
--- Gaps (matching dwm: 3px all around)
+-- Gaps (matching : 3px all around)
 mySpacing = spacingWithEdge 3
 
 -- Workspaces
@@ -60,12 +62,15 @@ myLayoutHook =
         smartBorders $
             toggleLayouts Full $
                 renamed [Replace "Tall"] (mySpacing tall)
-                    ||| renamed [Replace "Wide"] (mySpacing (Mirror tall))
-                    ||| renamed [Replace "Spiral"] (mySpacing (spiral (6 / 7)))
+                    ||| renamed [Replace "Full"] (mySpacing Full)
   where
     tall = ResizableTall 1 (3 / 100) (11 / 20) []
 
 -- Scratchpads
+
+isConsole =
+    (className =? "ghostty")
+        <&&> (stringProperty "WM_WINDOW_ROLE" =? "Scratchpad")
 
 scratchpads =
     [ -- run htop in xterm, find it by title, use default floating window placement
@@ -79,52 +84,95 @@ scratchpads =
       --   (className =? "Stardict")
       --   (customFloating $ W.RationalRect (1 / 6) (1 / 6) (2 / 3) (2 / 3)),
       -- run gvim, find by role, don't float
-      NS "notes" "ghostty -e nvim -c 'cd ~/personal/orgfiles'  -c 'Oil'" (title =? "nvim") (customFloating $ W.RationalRect (1 / 6) (1 / 6) (2 / 3) (2 / 3))
+      NS "notes" "ghostty -e nvim -c 'cd ~/personal/orgfiles'  -c 'Oil'" isConsole (customFloating $ W.RationalRect (1 / 6) (1 / 6) (2 / 3) (2 / 3))
     , NS "discord" "discord" (className =? "discord") defaultFloating
     , NS "calculator" "galculator" (className =? "Galculator") defaultFloating
-    , NS
-        "ghostty"
-        "ghostty -e sh -c 'printf \"\\033]0;Floatterm\\007\";fish'"
-        (title =? "Floatterm")
-        defaultFloating
+    , NS "music" "spotify" (className =? "Spotify") defaultFloating
     ]
   where
     role = stringProperty "WM_WINDOW_ROLE"
 
--- Window rules (matching dwm config)
-myManageHook =
-    composeAll
-        [ className =? "zen" --> doShift "2"
-        , className =? "firefox" --> doShift "3"
-        , className =? "Slack" --> doShift "4"
-        , className =? "kdenlive" --> doShift "8"
-        , className =? "Spotify" --> doShift "0"
-        , className =? "Thunar" --> doShift "4"
-        , className =? "mpv" --> doShift "5"
-        , className =? "com.mitchellh.ghostty" --> doShift "3"
-        , className =? "Galculator" --> doCenterFloat
-        , className =? "pwvucontrol" --> doCenterFloat
-        , className =? "vicinae" --> doFloat <+> doRaise <+> doFocus
-        , className =? "flameshot" --> doFloat <+> doRaise
-        , className =? "discord" --> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
-        , title =? "Floatterm" --> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
-        , className =? "steam_app_default" --> doFullFloat
-        , className =? "Screenkey" --> doFloat
-        , className =? "trayer" --> doIgnore -- Ignore so it doesn't get focus/borders
-        ]
+-- Window rules
 
--- Key bindings (matching dwm as closely as possible)
+forceCenterFloat :: ManageHook
+forceCenterFloat = doFloatDep move
+  where
+    move :: W.RationalRect -> W.RationalRect
+    move _ = W.RationalRect x y w h
+
+    w, h, x, y :: Rational
+    w = 1 / 3
+    h = 1 / 2
+    x = (1 - w) / 2
+    y = (1 - h) / 2
+
+myManageHook :: ManageHook
+myManageHook =
+    manageSpecific
+        <+> manageDocks
+        <+> namedScratchpadManageHook scratchpads
+        <+> manageSpawn
+  where
+    manageSpecific =
+        composeOne
+            [ className =? "zen" -?> doShift "2"
+            , className =? "firefox" -?> doShift "3"
+            , className =? "Slack" -?> doShift "4"
+            , className =? "kdenlive" -?> doShift "8"
+            , className =? "Thunar" -?> doShift "4"
+            , className =? "mpv" -?> doShift "5"
+            , className =? "com.mitchellh.ghostty" -?> doShift "3"
+            , className =? "Galculator" -?> doCenterFloat
+            , className =? "pwvucontrol" -?> doCenterFloat
+            , appName =? "vicinae" -?> doFloat <+> doRaise <+> doFocus
+            , className =? "flameshot" -?> doFloat <+> doRaise
+            , className =? "discord" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
+            , className =? "Spotify" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
+            , title =? "Floatterm" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
+            , className =? "steam_app_default" -?> doFullFloat
+            , className =? "Screenkey" -?> doFloat
+            , className =? "trayer" -?> doIgnore
+            , transience
+            , isBrowserDialog -?> forceCenterFloat
+            , isRole =? gtkFile -?> forceCenterFloat
+            , isDialog -?> doCenterFloat
+            , isRole =? "pop-up" -?> doCenterFloat
+            , isInProperty
+                "_NET_WM_WINDOW_TYPE"
+                "_NET_WM_WINDOW_TYPE_SPLASH"
+                -?> doCenterFloat
+            , isFullscreen -?> doFullFloat
+            ]
+    isBrowserDialog = isDialog <&&> className =? "zen-browser"
+    gtkFile = "GtkFileChooserDialog"
+    isRole = stringProperty "WM_WINDOW_ROLE"
+
+-- Key bindings
+
+swapDownNoMaster :: W.StackSet i l a s sd -> W.StackSet i l a s sd
+swapDownNoMaster s =
+    case W.stack (W.workspace (W.current s)) of
+        Nothing -> s
+        Just st ->
+            if null (W.up st)
+                then s -- focused is master: don't swap
+                else case W.down st of
+                    [] -> s -- bottom slave: don't wrap into master
+                    _ -> W.swapDown s
+
+swapUpNoMaster :: W.StackSet i l a s sd -> W.StackSet i l a s sd
+swapUpNoMaster s =
+    case W.stack (W.workspace (W.current s)) of
+        Nothing -> s
+        Just st ->
+            if null (W.up st)
+                then s -- focused is master: don't swap
+                else case W.up st of
+                    [_] -> s -- top slave (directly above is master): don't swap into master
+                    (_ : _ : _) -> W.swapUp s
+                    [] -> s
 myKeys =
-    -- Launch applications
-    [ ("M-<Return>", spawn myTerminal)
-    , ("M-<Space>", spawn "vicinae toggle")
-    , ("M-v", spawn "vicinae vicinae://extensions/vicinae/clipboard/history")
-    , ("M-.", spawn "vicinae vicinae://extensions/vicinae/core/search-emojis")
-    , ("M-r", spawn "dmenu_run")
-    , ("M-<End>", spawn "betterlockscreen -l")
-    , ("C-<Print>", spawn "maim -s | xclip -selection clipboard -t image/png")
-    , ("M-<Print>", spawn "record.sh")
-    , -- Window management
+    [ -- Window management
       ("M-q", kill)
     , ("M-j", windows W.focusDown)
     , ("M-k", windows W.focusUp)
@@ -132,12 +180,13 @@ myKeys =
     , -- Master area
       ("M-l", sendMessage Expand)
     , ("M-h", sendMessage Shrink)
-    , -- , ("M-i", sendMessage (IncMasterN 1))
-      -- , ("M-p", sendMessage (IncMasterN (-1)))
-      -- ("M-n", sendMessage $ JumpToLayout "Tall"),
-      ("M-f", dwmpromote)
-    , -- Floating
-      ("M-S-f", withFocused toggleFloat)
+    , ("M-S-j", windows swapDownNoMaster)
+    , ("M-S-k", windows swapUpNoMaster)
+    , -- Layouts
+      ("M-p", promote)
+        ("M-S-p", copytoAll)
+    , ("M-S-f", withFocused toggleFloat)
+    , ("M-f", sendMessage ToggleLayout)
     , -- Gaps (z to increase, x to decrease, a to toggle)
       ("M-z", incWindowSpacing 3)
     , ("M-x", decWindowSpacing 3)
@@ -145,28 +194,23 @@ myKeys =
     , ("M-S-a", setWindowSpacing (Border 3 3 3 3) >> setScreenSpacing (Border 3 3 3 3))
     , -- Quit/Restart
       ("M-S-r", spawn "xmonad --recompile && xmonad --restart")
-    , ("M-S-v", spawn "pwvucontrol")
+    , -- Apps
+      ("M-S-v", spawn "pwvucontrol")
     , ("M-C-v", spawn "~/.local/bin/change_output.sh")
-    , -- Keychords for tag navigation (Mod+Space then number)
-      --   ("M-<Space> 1", windows $ W.greedyView "1")
-      -- , ("M-<Space> 2", windows $ W.greedyView "2")
-      -- , ("M-<Space> 3", windows $ W.greedyView "3")
-      -- , ("M-<Space> 4", windows $ W.greedyView "4")
-      -- , ("M-<Space> 5", windows $ W.greedyView "5")
-      -- , ("M-<Space> 6", windows $ W.greedyView "6")
-      -- , ("M-<Space> 7", windows $ W.greedyView "7")
-      -- , ("M-<Space> 8", windows $ W.greedyView "8")
-      -- , ("M-<Space> 9", windows $ W.greedyView "9")
-      ("M-b", spawn "zen-browser")
-    , ("M-d", namedScratchpadAction scratchpads "discord")
-    , ("M-m", spawn "spotify")
-    , ("M-w", spawn "~/.local/bin/wallpaper.sh")
-    , ("M-t", spawn "thunar")
+    , ("M-b", spawn "zen-browser")
+    , -- , ("M-m", spawn "spotify")
+      ("M-t", spawn "thunar")
     , ("M-y", spawn "curd")
     , ("M-S-t", spawn " maim -s /tmp/screenshot.png && tesseract /tmp/screenshot.png stdout | xclip -selection clipboard")
     , ("M-c", spawn "~/.local/bin/nspawn menu")
     , ("<Print>", spawn "flameshot gui")
-    , -- Volume controls
+    , ("M-w", spawn "~/.local/bin/wallpaper.sh")
+    , ("M-<Space>", spawn "vicinae toggle")
+    , ("M-v", spawn "vicinae vicinae://extensions/vicinae/clipboard/history")
+    , ("M-.", spawn "vicinae vicinae://extensions/vicinae/core/search-emojis")
+    , ("M-<Return>", spawn myTerminal)
+    , ("M-<End>", spawn "betterlockscreen -l")
+    , -- Utils
       ("<XF86AudioRaiseVolume>", spawn "control.sh vol-up")
     , ("<XF86AudioLowerVolume>", spawn "control.sh vol-down")
     , ("<XF86AudioMute>", spawn "control.sh vol-mute")
@@ -177,6 +221,11 @@ myKeys =
     , ("<XF86AudioPlay>", spawn "playerctl play-pause")
     , ("<XF86AudioPause>", spawn "playerctl play-pause")
     , ("<XF86Calculator>", namedScratchpadAction scratchpads "calculator")
+    , ("C-<Print>", spawn "maim -s | xclip -selection clipboard -t image/png")
+    , ("M-<Print>", spawn "record.sh toggle")
+    , -- Scratchpads
+      ("M-d", namedScratchpadAction scratchpads "discord")
+    , ("M-m", namedScratchpadAction scratchpads "music")
     , ("M-s n", namedScratchpadAction scratchpads "notes")
     , ("M-s g", namedScratchpadAction scratchpads "ghostty")
     ,
@@ -223,36 +272,37 @@ myXmobarPP =
 
 -- Main configuration
 myConfig =
-    def
-        { modMask = myModMask
-        , terminal = myTerminal
-        , XMonad.workspaces = myWorkspaces
-        , borderWidth = myBorderWidth
-        , normalBorderColor = myNormalBorderColor
-        , focusedBorderColor = myFocusedBorderColor
-        , layoutHook = mouseResize $ windowArrange myLayoutHook
-        , manageHook = myManageHook <+> manageDocks <+> namedScratchpadManageHook scratchpads
-        , handleEventHook =
-            handleEventHook def
-                <> Hacks.fixSteamFlicker
-                <> Hacks.trayerPaddingXmobarEventHook
-                <> Hacks.trayerAboveXmobarEventHook
-        , startupHook = do
-            spawnOnce "xsetroot -cursor_name left_ptr"
-            spawnOnce "vicinae server --replace"
-            spawnOnce "picom"
-            spawnOnce "dunst"
-            spawnOnce "xset r rate 250 40"
-            spawnOnce "setxkbmap -option caps:swapescape"
-            spawnOnce "~/.fehbg"
-            spawnOnce "xautolock -detectsleep -time 3 -locker '/usr/bin/betterlockscreen'"
-            spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
-            spawnOnce "trayer --edge top --align right --widthtype request --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 255 --transparent true --expand true --margin 4 -l --iconspacing 3"
-        }
-        `additionalKeysP` myKeys
+    ewmhFullscreen $
+        def
+            { modMask = myModMask
+            , terminal = myTerminal
+            , XMonad.workspaces = myWorkspaces
+            , borderWidth = myBorderWidth
+            , normalBorderColor = myNormalBorderColor
+            , focusedBorderColor = myFocusedBorderColor
+            , layoutHook = mouseResize $ windowArrange myLayoutHook
+            , manageHook = myManageHook
+            , handleEventHook =
+                handleEventHook def
+                    <> Hacks.fixSteamFlicker
+                    <> Hacks.trayerPaddingXmobarEventHook
+                    <> Hacks.trayerAboveXmobarEventHook
+            , startupHook = do
+                spawnOnce "xsetroot -cursor_name left_ptr"
+                spawnOnce "vicinae server --replace"
+                spawnOnce "picom"
+                spawnOnce "dunst"
+                spawnOnce "xset r rate 250 40"
+                spawnOnce "setxkbmap -option caps:swapescape"
+                spawnOnce "~/.fehbg"
+                spawnOnce "xautolock -detectsleep -time 3 -locker '/usr/bin/betterlockscreen'"
+                spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
+                spawnOnce "trayer --edge top --align right --widthtype request --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 255 --transparent true --expand true --margin 4 -l --iconspacing 3"
+            }
+            `additionalKeysP` myKeys
 
 -- XMobar status bar configuration
 myStatusBar = statusBarProp "xmobar ~/.config/xmobar/xmobar.hs" (pure myXmobarPP)
 
 main :: IO ()
-main = xmonad . ewmhFullscreen . ewmh . withEasySB myStatusBar (const (0, xK_VoidSymbol)) $ myConfig
+main = xmonad . ewmh . withEasySB myStatusBar (const (0, xK_VoidSymbol)) $ myConfig

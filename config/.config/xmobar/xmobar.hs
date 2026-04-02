@@ -21,7 +21,13 @@ config station =
         , alignSep = "}{"
         , template =
             "%XMonadLog% }{ \
-            \%multicoretemp% <fc="
+            \%screencast% <fc="
+                <> secondaryContainer colors
+                -- <> ">│</fc> \
+                --    \%alsa:default:Master% <fc="
+                -- <> secondaryContainer colors
+                <> ">│</fc> \
+                   \%multicoretemp% <fc="
                 <> secondaryContainer colors
                 <> ">│</fc> \
                    \%cpu% <fc="
@@ -159,6 +165,23 @@ config station =
                     ]
                     50
             , Run $ Date ("<fc=" <> primary colors <> ">%I:%M \x2022\& %a,%-d %b</fc>") "date" 10
+            , Run $
+                Alsa
+                    "default"
+                    "Master"
+                    [ "--template"
+                    , "<fc=" <> primary colors <> "><fn=1><status></fn> <volume>%</fc>"
+                    , "--"
+                    , "-O"
+                    , "\61480"
+                    , "-o"
+                    , "\61160"
+                    , "-C"
+                    , primary colors
+                    , "-c"
+                    , colorRed colors
+                    ]
+            , Run $ Com "record.sh" ["status", colorRed colors] "screencast" 10
             ]
         }
 
