@@ -30,9 +30,10 @@ fish_add_path $HOME/.local/bin/statusbar
 
 source ~/.config/fish/aliases.fish
 source ~/.config/fish/env.fish
-source ~/.config/fish/auto-Hypr.fish
 if test -f ~/.config/fish/keys.fish
     source ~/.config/fish/keys.fish
 end
 
-eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+if test $HOME/perl5
+    eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+end

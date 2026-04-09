@@ -184,9 +184,9 @@ myKeys =
     , ("M-S-k", windows swapUpNoMaster)
     , -- Layouts
       ("M-p", promote)
-        ("M-S-p", copytoAll)
+    , ("M-S-p", toggleCopyToAll)
     , ("M-S-f", withFocused toggleFloat)
-    , ("M-f", sendMessage ToggleLayout)
+    , ("M-f", sendMessage (Toggle "Full"))
     , -- Gaps (z to increase, x to decrease, a to toggle)
       ("M-z", incWindowSpacing 3)
     , ("M-x", decWindowSpacing 3)
@@ -231,8 +231,8 @@ myKeys =
     ,
         ( "M1-<Return>"
         , do
-            sendMessage ToggleStruts -- hide/show xmobar
-            sendMessage (Toggle "Full") -- toggle fullscreen layout
+            sendMessage ToggleStruts
+            sendMessage (Toggle "Full")
         )
     ]
         ++
@@ -241,15 +241,22 @@ myKeys =
         | (tag, key) <- zip myWorkspaces "1234567890"
         , (action, mask) <- [(W.greedyView, ""), (W.shift, "S-")]
         ]
+  where
+    toggleCopyToAll :: X ()
+    toggleCopyToAll = do
+        wss <- wsContainingCopies
+        if null wss
+            then windows copyToAll
+            else killAllOtherCopies
+    toggleFloat w =
+        windows
+            ( \s ->
+                if M.member w (W.floating s)
+                    then W.sink w s
+                    else W.float w (W.RationalRect 0.10 0.10 0.5 0.5) s
+            )
 
 -- Helper function for toggling float
-toggleFloat w =
-    windows
-        ( \s ->
-            if M.member w (W.floating s)
-                then W.sink w s
-                else W.float w (W.RationalRect 0.10 0.10 0.5 0.5) s
-        )
 
 -- XMobar PP (Pretty Printer) configuration
 myXmobarPP :: PP
@@ -297,7 +304,7 @@ myConfig =
                 spawnOnce "~/.fehbg"
                 spawnOnce "xautolock -detectsleep -time 3 -locker '/usr/bin/betterlockscreen'"
                 spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
-                spawnOnce "trayer --edge top --align right --widthtype request --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 255 --transparent true --expand true --margin 4 -l --iconspacing 3"
+                spawnOnce "trayer --edge top --align right --widthtype request --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 0 --transparent true --expand true --margin 4 -l --iconspacing 3"
             }
             `additionalKeysP` myKeys
 

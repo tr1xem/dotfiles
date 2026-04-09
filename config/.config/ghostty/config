@@ -14,9 +14,6 @@ macos-option-as-alt = true
 mouse-hide-while-typing = true
 confirm-close-surface = false
 
-# Auto-update Ghostty when a new release is available.
-auto-update = download
-
 term = xterm-256color
 
 window-padding-balance = true

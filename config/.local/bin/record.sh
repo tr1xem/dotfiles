@@ -8,6 +8,8 @@ set -eu
 SCRIPTNAME="record.sh"
 PIDFILE="/tmp/$SCRIPTNAME.pid"
 SAVE_DIR="$HOME/Videos/Recordings"
+MAX_WIDTH=1920
+MAX_HEIGHT=1080
 
 main() {
 	case "${1:-help}" in
@@ -30,7 +32,11 @@ status() {
 
 start() {
 	# Get region via slop (user selects)
-	eval "$(slop -f "W=%w H=%h X=%x Y=%y")"
+	slop_output=$(slop -f "W=%w H=%h X=%x Y=%y")
+	W=$(echo "$slop_output" | grep -oP 'W=\K[0-9]+')
+	H=$(echo "$slop_output" | grep -oP 'H=\K[0-9]+')
+	X=$(echo "$slop_output" | grep -oP 'X=\K[0-9]+')
+	Y=$(echo "$slop_output" | grep -oP 'Y=\K[0-9]+')
 	_start_recording "$W" "$H" "$X" "$Y" "region"
 }
 
@@ -54,13 +60,25 @@ _start_recording() {
 	Y=$4
 	mode=$5
 
-	random_string=$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 7)
-	focused_window=$(xdotool getactivewindow)
-	app_name=$(xprop -id "$focused_window" WM_CLASS | grep -oP '(?<=")[^"]*(?=")' | tail -1)
+	# Clamp dimensions to max resolution
+	if [ "$W" -gt "$MAX_WIDTH" ]; then
+		W=$MAX_WIDTH
+	fi
+	if [ "$H" -gt "$MAX_HEIGHT" ]; then
+		H=$MAX_HEIGHT
+	fi
 
-	if [ -z "$app_name" ] || [ "$app_name" = "none" ]
+	random_string=$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 7)
+	focused_window=$(xdotool getactivewindow 2>/dev/null) || focused_window=""
+	if [ -z "$focused_window" ]; then
+		app_name="none"
+	else
+		app_name=$(xprop -id "$focused_window" WM_CLASS | grep -oP '(?<=")[^"]*(?=")' | tail -1)
+	fi
+
+	if [ -z "$app_name" ]
 	then
-		app_name="recording"
+		app_name="none"
 	fi
 
 	# Escape special characters in app_name for safe filename

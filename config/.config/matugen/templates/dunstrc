@@ -13,7 +13,8 @@ corner_radius = 5
 frame_color = "{{colors.primary.default.hex}}"
 highlight = "{{colors.primary.default.hex}}"
 separator_color= "{{colors.outline.default.hex}}"
-
+offset = (0, 30)
+orgin=top-right
 
 [fullscreen]
 fullscreen = show

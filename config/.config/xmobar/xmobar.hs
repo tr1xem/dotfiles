@@ -21,7 +21,7 @@ config station =
         , alignSep = "}{"
         , template =
             "%XMonadLog% }{ \
-            \%screencast% <fc="
+            \%screencast% %spotify% <fc="
                 <> secondaryContainer colors
                 -- <> ">│</fc> \
                 --    \%alsa:default:Master% <fc="
@@ -182,6 +182,15 @@ config station =
                     , colorRed colors
                     ]
             , Run $ Com "record.sh" ["status", colorRed colors] "screencast" 10
+            , Run $
+                Com
+                    "/bin/bash"
+                    [ "/home/saumya/.config/xmobar/scripts/spotify.sh"
+                    , secondaryContainer colors
+                    , colorGreen colors
+                    ]
+                    "spotify"
+                    10
             ]
         }
 
