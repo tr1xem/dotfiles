@@ -93,7 +93,7 @@ _start_recording() {
 	then
 		gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w screen -ac aac -o "$output_file" -v no &
 	else
-		gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w region -region "${W}x${H}+${X}+${Y}" -ac aac -o "$output_file" -v no &
+		gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w region -region "${W}x${H}+${X}+${Y}" -ac aac -o "$output_file" -v no -ab 320k &
 	fi
 
 	echo "PID=$!" > "$PIDFILE"

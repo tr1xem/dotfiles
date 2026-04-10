@@ -34,6 +34,14 @@ if test -f ~/.config/fish/keys.fish
     source ~/.config/fish/keys.fish
 end
 
-if test $HOME/perl5
-    eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+# Start X automatically on tty1
+if status is-login
+    if test (tty) = "/dev/tty1"
+        if not set -q DISPLAY
+            exec startx
+        end
+    end
 end
+# if test $HOME/perl5
+#     eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+# end

@@ -295,12 +295,12 @@ myConfig =
                     <> Hacks.trayerPaddingXmobarEventHook
                     <> Hacks.trayerAboveXmobarEventHook
             , startupHook = do
-                spawnOnce "xsetroot -cursor_name left_ptr"
-                spawnOnce "vicinae server --replace"
+                spawn "xsetroot -cursor_name left_ptr"
+                spawn "vicinae server --replace"
                 spawnOnce "picom"
                 spawnOnce "dunst"
-                spawnOnce "xset r rate 250 40"
-                spawnOnce "setxkbmap -option caps:swapescape"
+                spawn "xset r rate 250 40"
+                spawn "setxkbmap -option caps:swapescape"
                 spawnOnce "~/.fehbg"
                 spawnOnce "xautolock -detectsleep -time 3 -locker '/usr/bin/betterlockscreen'"
                 spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"

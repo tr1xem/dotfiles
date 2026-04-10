@@ -33,8 +33,10 @@
    "providers": {
       "clipboard": {
          "preferences": {
-            "encryption": true,
-            "monitoring": true
+            "encryption": false,
+            "monitoring": true,
+            "eraseOnStartup": false,
+            "ignorePasswords": true
          }
       }
    }

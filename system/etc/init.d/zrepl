@@ -1,0 +1,34 @@
+#!/sbin/openrc-run
+
+description="zrepl daemon"
+cfgfile="/etc/zrepl/zrepl.yml"
+command="/usr/bin/zrepl"
+command_args="--config $cfgfile daemon"
+pidfile="/run/zrepl.pid"
+command_background="yes"
+
+# Handles the systemd 'RuntimeDirectory' logic
+# zrepl needs these directories for its control sockets
+zrepl_runtime_dir="/run/zrepl"
+zrepl_stdin_dir="/run/zrepl/stdinserver"
+
+depend() {
+    need localmount
+    after bootmisc
+}
+
+start_pre() {
+    # 1. Equivalent to 'ExecStartPre' (Config Check)
+    $command --config $cfgfile configcheck
+    if [ $? -ne 0 ]; then
+        eerror "zrepl configuration check failed!"
+        return 1
+    fi
+
+    # 2. Equivalent to 'RuntimeDirectory' and 'RuntimeDirectoryMode'
+    checkpath -d -m 0700 -o root:root "$zrepl_runtime_dir"
+    checkpath -d -m 0700 -o root:root "$zrepl_stdin_dir"
+
+    # 3. Equivalent to 'Environment=GOTRACEBACK=crash'
+    export GOTRACEBACK='crash'
+}

@@ -1,0 +1,17 @@
+* NOTES
+# SETTING ATTR
+- sudo zfs set acltype=posixacl tank/lxc
+- sudo zfs set aclinherit=passthrough tank/lxc
+# NEEDED TO MAKE SAFE UNPRIVILEGED CONTAINERS
+- echo "root:100000:65536" | sudo tee -a /etc/subuid
+- echo "root:100000:65536" | sudo tee -a /etc/subgid
+
+- need lxc net service
+
+   sudo lxc-attach -n mycontainer -u 1000 -v HOME=/home/saumya -- /usr/bin/fish
+
+sudo rm /etc/resolv.conf # FOR OPENRC
+- # Force-write a known DNS server to resolv.conf
+echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+# Run this on your host for shared mounts
+sudo zfs set acltype=posixacl tank/lxc

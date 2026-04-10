@@ -36,7 +36,7 @@ config station =
                    \%memory% <fc="
                 <> secondaryContainer colors
                 <> ">│</fc> \
-                   \%wlp0s20f3wi% <fc="
+                   \%wlan0wi% <fc="
                 <> secondaryContainer colors
                 <> ">│</fc> \
                    \%bluetooth% <fc="
@@ -127,7 +127,7 @@ config station =
                     10
             , Run $
                 Wireless
-                    "wlp0s20f3"
+                    "wlan0"
                     [ "-t"
                     , "<fc=" <> primary colors <> "><fn=1>\xf05a9\&</fn></fc><fc=" <> primary colors <> "> <ssid> <quality>%</fc>"
                     ]
