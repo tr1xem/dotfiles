@@ -21,7 +21,7 @@ depends=(
     xlibre-xserver
     xlibre-xserver-common
     xlibre-xserver-devel
-    ly
+    # ly
     fastfetch
 )
 

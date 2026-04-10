@@ -1,0 +1,22 @@
+pkgname=trix-artix
+pkgver=1
+pkgrel=17
+arch=('any')
+pkgdesc="Trix Artix environment"
+options=('!debug')
+groups=('trix')
+provides=('trix-artix')
+depends=(
+    connman
+    connman-openrc
+    fakeroot
+    efibootmgr
+    git
+    sudo
+    sof-frimware
+    wget
+    unzip
+    archzfs-dkms
+)
+
+# vim:ft=sh

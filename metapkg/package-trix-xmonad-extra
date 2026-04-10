@@ -1,6 +1,6 @@
 pkgname=trix-xmonad-extra
 pkgver=1
-pkgrel=17
+pkgrel=19
 arch=('any')
 pkgdesc="Trix Xmonad environment extra"
 options=('!debug')
@@ -17,6 +17,11 @@ depends=(
     rclone
     spotify
     galculator
+    scx-scheds
+    scx-openrc
+    scx-tools
+    zramen
+    zramen-openrc
 )
 
 # vim:ft=sh

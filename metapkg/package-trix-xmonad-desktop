@@ -27,6 +27,8 @@ depends=(
     thunar
     noto-fonts-emoji
     alsa-utils
+    cronie
+    cronie-openrc
 )
 
 # vim:ft=sh

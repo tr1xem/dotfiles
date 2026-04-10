@@ -8,13 +8,20 @@ groups=('trix')
 provides=('trix-xmonad-utils')
 depends=(
     brightnessctl
-    wpctl
+    wireplumber
+    wireplumber-openrc
+    pipewire
+    pipewire-openrc
+    pipewire-pulse
+    pipewire-pulse-openrc
     xorg-xprop
     xorg-xev
     xautolock
     bluez
     bluez-utils
-    networkmanager
+    bluez-openrc
+    iwd
+    iwd-openrc
     pokemon-colorscripts-go
     nvidia-prime
     duf
@@ -29,7 +36,9 @@ depends=(
     zoxide
     xdg-user-dirs
     fzf
-
+    tlp
+    # tlp-rdw
+    tlp-openrc
 )
 
 # vim:ft=sh
