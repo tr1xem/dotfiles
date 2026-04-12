@@ -1,0 +1,406 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+CALLER_USER="${SUDO_USER:-$USER}"
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || realpath "$0")"
+
+LABELS_FILE="/etc/lxc/labels"
+TERMINALS_FILE="/etc/lxc/terminals"
+UPGRADE_BASE_DIR="/etc/lxc/upgrade"
+
+LXC_ROOTFS_BASE="/var/lib/lxc"
+
+notify() {
+	local msg="$*"
+	# Always emit to stderr so there's *some* feedback.
+	echo "$SCRIPT_NAME: $msg" >&2
+
+	# Best-effort desktop notification (won't fail the script).
+	command -v dunstify >/dev/null 2>&1 || return 0
+	local display="${DISPLAY:-:0}"
+
+	local uid
+	uid=$(id -u "$CALLER_USER")
+	local runtime_dir="/run/user/$uid"
+	local bus_addr="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$runtime_dir/bus}"
+
+	# If we're already the caller user, avoid sudo (and potential prompts).
+	if [ "$(id -un)" = "$CALLER_USER" ]; then
+		DISPLAY="$display" XDG_RUNTIME_DIR="$runtime_dir" DBUS_SESSION_BUS_ADDRESS="$bus_addr" \
+			dunstify "  $SCRIPT_NAME" "$msg" >/dev/null 2>&1 || true
+	else
+		sudo -u "$CALLER_USER" DISPLAY="$display" XDG_RUNTIME_DIR="$runtime_dir" DBUS_SESSION_BUS_ADDRESS="$bus_addr" \
+			dunstify "  $SCRIPT_NAME" "$msg" >/dev/null 2>&1 || true
+	fi
+}
+
+ensure_lxc_net() {
+	# Host-only preflight (OpenRC). Containers are configured to use lxcbr0.
+	# lxc-net isn't a persistent daemon on many setups, and "status" may not exist.
+	if ip link show lxcbr0 >/dev/null 2>&1; then
+		return 0
+	fi
+
+	if command -v rc-service >/dev/null 2>&1; then
+		if rc-service -e lxc-net >/dev/null 2>&1; then
+			# Start bridge; some init scripts return non-zero even when already started.
+			sudo /usr/bin/rc-service lxc-net start >/dev/null 2>&1 || true
+		fi
+	fi
+
+	if ! ip link show lxcbr0 >/dev/null 2>&1; then
+		notify "lxcbr0 bridge not found (lxc-net?)"
+		return 1
+	fi
+}
+
+machine_exists() {
+	local m="${1#*@}"
+	sudo lxc-info -n "$m" >/dev/null 2>&1
+}
+
+machine_active() {
+	local m="${1#*@}"
+	sudo lxc-info -n "$m" -sH 2>/dev/null | grep -Fxq RUNNING
+}
+
+list_machines() {
+	sudo lxc-ls -1 2>/dev/null | sort
+}
+
+have_label() {
+	local m="${1#*@}"
+	[ -f "$LABELS_FILE" ] && grep -Fq "$m" "$LABELS_FILE"
+}
+
+print_label() {
+	local m="${1#*@}"
+	have_label "$1" && ( grep -F "$m" "$LABELS_FILE" | cut -f 2- -d ' ' ) || echo "$m"
+}
+
+have_terminal() {
+	local m="${1#*@}"
+	local rootfs="$LXC_ROOTFS_BASE/$m/rootfs"
+	( sudo pacman -Qs --sysroot "$rootfs" gaspar-device-gpu >/dev/null 2>&1 && sudo test -f "$rootfs/usr/bin/ghostty" ) || sudo test -f "$rootfs/usr/bin/ghostty"
+}
+
+wait_machine() {
+	local machine="${1#*@}"
+	local c=0
+	while :;
+	do
+		c=$(( c + 1 ))
+		if machine_active "$machine"; then
+			if ! sudo lxc-attach -n "$machine" -- /usr/bin/true >/dev/null 2>&1; then
+				sleep 1
+				continue
+			fi
+			return 0
+		elif [[ "$c" -ge 5 ]]; then
+			return 1
+		fi
+	done
+}
+
+attach_user() {
+	# Prefer explicit env + fish, matching existing workflow.
+	# UID is intentionally hardcoded to 1000.
+	local machine="$1"
+	local user="$2"
+	shift 2
+
+	sudo lxc-attach -n "$machine" --clear-env \
+		--set-var "HOME=/home/$user" \
+		--set-var "USER=$user" \
+		--set-var "LOGNAME=$user" \
+		--set-var "XDG_RUNTIME_DIR=/tmp/xdg-runtime-$user" \
+		--set-var "DISPLAY=${DISPLAY:-:0}" \
+		-u 1000 -g 1000 -- "$@"
+}
+
+select_terminal() {
+	if [ ! -f "$TERMINALS_FILE" ]; then
+		echo "$SCRIPT_NAME: $TERMINALS_FILE not found" >&2
+		return 1
+	fi
+
+	local terminals
+	terminals=$(cat "$TERMINALS_FILE" | sort -t @ -k 2n)
+	if [ -z "$terminals" ]; then
+		echo "$SCRIPT_NAME: no terminals configured" >&2
+		return 1
+	fi
+
+	local pick
+	pick=$(echo "$terminals" | vicinae dmenu -p "container:" || true)
+	[ -z "${pick:-}" ] && return 1
+	echo "$pick"
+}
+
+desktop_name() {
+	:
+}
+
+strip_desktop_exec() {
+	:
+}
+
+desktop_entries_from_container() {
+	:
+}
+
+list_executables_from_container() {
+	local machine="$1"
+	local user="$2"
+
+	# Print executable basenames from common bin dirs.
+	attach_user "$machine" "$user" /usr/bin/bash -lc '
+		set -euo pipefail
+		dirs=(/usr/local/bin /usr/bin "$HOME/.local/bin")
+		for d in "${dirs[@]}"; do
+			[ -d "$d" ] || continue
+			find "$d" -maxdepth 1 -type f -perm -111 -printf "%f\n" 2>/dev/null || true
+			done | sort -u
+	'
+}
+
+run_in_container() {
+	local pick="$1"
+	shift
+	local user machine
+	user=${pick%@*}
+	machine=${pick#*@}
+
+	machine_exists "$machine" || { echo "$SCRIPT_NAME: no such container $machine" >&2; return 1; }
+	if ! machine_active "$machine"; then
+		ensure_lxc_net || return 1
+		sudo lxc-start -n "$machine" >/dev/null 2>&1 || true
+	fi
+	wait_machine "$machine" || return 1
+
+	# Fire and forget.
+	# Also provide a writable XDG_RUNTIME_DIR so GUI apps don't trip on /run/user/*.
+	attach_user "$machine" "$user" /usr/bin/bash -lc "\
+		set -euo pipefail
+		mkdir -p \"\$XDG_RUNTIME_DIR\" && chmod 700 \"\$XDG_RUNTIME_DIR\" || true
+		nohup $* >/tmp/$SCRIPT_NAME.$machine.$user.log 2>&1 &
+	" >/dev/null 2>&1
+}
+
+app_menu() {
+	local pick
+	pick=$(select_terminal) || return 1
+
+	local user machine
+	user=${pick%@*}
+	machine=${pick#*@}
+
+	machine_exists "$machine" || { echo "$SCRIPT_NAME: no such container $machine" >&2; return 1; }
+
+	local list
+	list=$(list_executables_from_container "$machine" "$user" || true)
+	[ -n "${list:-}" ] || { echo "$SCRIPT_NAME: no executables found in $machine" >&2; return 1; }
+
+	local bin
+	bin=$(echo "$list" | vicinae dmenu -p "app:" || true)
+	[ -z "${bin:-}" ] && return 0
+
+	run_in_container "$pick" "$bin"
+}
+
+device_mount() {
+	echo "device_mount is not supported for LXC via this script."
+	echo "Configure device access via container config (lxc.mount.entry + lxc.cgroup2.devices.allow)."
+	exit 1
+}
+
+upgrade() {
+	local m="${1#*@}"
+
+	local active=false
+	machine_active "$m" && active=true
+
+	if [ false = "$active" ]; then
+		ensure_lxc_net || return 1
+		sudo lxc-start -n "$m" && echo "$SCRIPT_NAME" "Booting $m"
+	fi
+
+	if wait_machine "$m"; then
+		sudo lxc-attach -n "$m" -- /usr/bin/pacman -Syyw
+		sudo lxc-attach -n "$m" -- /usr/bin/pacman -Suu
+		sudo lxc-attach -n "$m" -- /usr/bin/pacman -Scc
+
+		if [ -d "$UPGRADE_BASE_DIR/$m" ] ; then
+			sudo lxc-attach -n "$m" -- /usr/bin/mkdir -p /tmp/upgrade
+			( cd "$UPGRADE_BASE_DIR/$m" && tar -cf - . ) | sudo lxc-attach -n "$m" -- /usr/bin/tar -C /tmp/upgrade -xf -
+
+			for f in $(find "$UPGRADE_BASE_DIR/$m" -type f -name "*.sh" | sort)
+			do
+				local fname
+				fname=$(basename "$f")
+				if echo "$fname" | grep -Fq @; then
+					local uname
+					uname=${fname#*@}
+					uname=${uname%%.*}
+					attach_user "$m" "$uname" /usr/bin/bash "/tmp/upgrade/$fname"
+				else
+					sudo lxc-attach -n "$m" -- /usr/bin/bash "/tmp/upgrade/$fname"
+				fi
+			done
+		fi
+	else
+		notify "Failed to upgrade the machine $m"
+	fi
+
+	if [ false = "$active" ]; then
+		sudo lxc-stop -n "$m" &&  notify "Powering off $m"
+	else
+		notify "Upgrade complete for $m"
+	fi
+}
+
+list_terminals() {
+	local terminals=""
+	if [ ! -f "$TERMINALS_FILE" ]; then
+		return 1
+	fi
+	while read -r s
+	do
+		have_terminal "$s" && terminals="$terminals$s\n"
+	done < <(cat "$TERMINALS_FILE" | sort -t @ -k 2n)
+	echo -en "$terminals"
+}
+
+show_help() {
+	cat << EOF
+$SCRIPT_NAME - classic LXC container management script
+
+USAGE:
+  $SCRIPT_NAME [COMMAND] [OPTIONS]
+
+COMMANDS:
+  menu              Open interactive dmenu with available options
+  toggle            Toggle machine on/off via dmenu selection
+  shell             Open a shell in a selected machine
+  app               Launch an executable from a selected container
+  run [u@c] <cmd>    Launch a command inside a container
+  upgrade <machine> Upgrade packages in a specified machine
+  upgrade_all       Upgrade packages in all machines
+  help, -h, --help  Show this help message
+  (empty)           Start default terminal (ghostty)
+
+CONFIGURATION FILES:
+  $LABELS_FILE
+  $TERMINALS_FILE
+  $UPGRADE_BASE_DIR/<m>
+
+For more information, see: lxc(7), lxc-attach(1), lxc-start(1)
+EOF
+}
+
+upgrade_all() {
+	local m
+	for m in $(list_machines); do
+		figlet "upgrading $m"
+		upgrade "$m"
+	done
+}
+
+if [[ "${1:-}" == menu ]]; then
+	picks="app\ntoggle\nshell"
+	# vicinae may exit non-zero even when it printed a selection; don't let `set -e` kill us.
+	pick=$(echo -e "$picks" | vicinae dmenu -p "$SCRIPT_NAME:" || true)
+	[ -z "${pick:-}" ] && exit
+	echo -e "$picks" | grep -Fxq "$pick" || exit
+	"$0" "$pick"
+elif [[ "${1:-}" == toggle ]]; then
+	list=()
+	declare -A machine_map
+
+	while read -r m
+	do
+		s=''
+		machine_active "$m" && s="currently on" || s="currently off"
+		l=$(print_label "$m")
+		display="$l ($s)"
+		list+=("$display")
+		machine_map["$display"]="$m"
+	done < <(list_machines)
+
+	pick=$(printf '%s\n' "${list[@]}" | vicinae dmenu -p "toggle:" || true)
+	[ -z "${pick:-}" ] && exit
+
+	m="${machine_map[$pick]}"
+	machine_exists "$m" || exit
+
+	if machine_active "$m"; then
+		sudo lxc-stop -n "$m" && notify "Powering off $m"
+	else
+		ensure_lxc_net || exit 1
+		sudo lxc-start -n "$m" && notify "Booting $m"
+	fi
+elif [[ "${1:-}" == shell ]]; then
+	if [ ! -f "$TERMINALS_FILE" ]; then
+		echo "Error: $TERMINALS_FILE not found"
+		exit 1
+	fi
+
+	terminals=$(cat "$TERMINALS_FILE" | sort -t @ -k 2n)
+	if [ -z "$terminals" ]; then
+		echo "Error: No terminals configured"
+		exit 1
+	fi
+
+	pick=$(echo "$terminals" | vicinae dmenu -p "shell:" || true)
+	[ -z "${pick:-}" ] && exit 0
+
+	user=${pick%@*}
+	machine=${pick#*@}
+	machine_exists "$machine" || exit 1
+
+	if ! machine_active "$machine"; then
+		ensure_lxc_net || exit 1
+		sudo lxc-start -n "$machine" && notify "Booting $machine"
+	fi
+
+	if wait_machine "$machine"; then
+		# Keep quoting sane by avoiding nested quoting within the string.
+		sudo -u "$CALLER_USER" ghostty -e sudo lxc-attach -n "$machine" --clear-env \
+			--set-var "HOME=/home/$user" \
+			--set-var "USER=$user" \
+			--set-var "LOGNAME=$user" \
+			--set-var "DISPLAY=${DISPLAY:-:0}" \
+			-u 1000 -- /usr/bin/fish
+	else
+		echo "$SCRIPT_NAME: failed to run shell inside $machine" >&2
+	fi
+elif [[ "${1:-}" == app ]]; then
+	app_menu
+elif [[ "${1:-}" == run ]]; then
+	shift || true
+	if [ "${1:-}" = "" ]; then
+		echo "$SCRIPT_NAME: run requires a command" >&2
+		exit 1
+	fi
+
+	if echo "${1:-}" | grep -Fq @; then
+		pick="$1"
+		shift
+	else
+		pick=$(select_terminal) || exit 1
+	fi
+
+	[ "${1:-}" = "" ] && { echo "$SCRIPT_NAME: run requires a command" >&2; exit 1; }
+	run_in_container "$pick" "$*"
+elif [[ "${1:-}" == help ]] || [[ "${1:-}" == -h ]] || [[ "${1:-}" == --help ]]; then
+	show_help
+elif [[ "${1:-}" == upgrade_all ]]; then
+	upgrade_all
+elif [[ "${1:-}" == '' ]]; then
+	# If this script is executed inside a container, we want it to just open the terminal.
+	command -v ghostty >/dev/null 2>&1 && ghostty || true
+else
+	"$1" "${@:2}"
+fi

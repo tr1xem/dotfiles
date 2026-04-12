@@ -13,13 +13,11 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import qualified XMonad.Hooks.StatusBar.PP as Hacks
-import XMonad.Layout.AutoMaster
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Renamed
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
-import XMonad.Layout.Spiral
 import XMonad.Layout.ToggleLayouts
 import XMonad.Layout.WindowArranger
 import XMonad.ManageHook
@@ -45,16 +43,13 @@ mySpacing = spacingWithEdge 3
 -- Workspaces
 myWorkspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
 
--- myWorkspaces = ["", "󰊯", "", "", "󰙯", "󱇤", "", "󱘶", "󰧮"]
--- myWorkspaces = [ "\xf489"  , "\xf268"  , "\xe749" , "\xf198" , "\xf120" , "\xf1bc" , "\xf03d" , "\xf1fc" , "\xf11b" ]
-
--- myWorkspaces = ["\xf489", "\xf02af", "\xe749", "\xf198", "\xf067f", "\xfb64", "\xf167", "\xf1f6", "\xf86e"]
-
 -- Mod key (Super/Windows key)
 myModMask = mod4Mask
 
--- Terminal
+-- Presets
 myTerminal = "ghostty"
+myBrowser = "zen-browser"
+myFileManager = "thunar"
 
 -- Layouts
 myLayoutHook =
@@ -93,18 +88,10 @@ scratchpads =
     role = stringProperty "WM_WINDOW_ROLE"
 
 -- Window rules
-
-forceCenterFloat :: ManageHook
-forceCenterFloat = doFloatDep move
-  where
-    move :: W.RationalRect -> W.RationalRect
-    move _ = W.RationalRect x y w h
-
-    w, h, x, y :: Rational
-    w = 1 / 3
-    h = 1 / 2
-    x = (1 - w) / 2
-    y = (1 - h) / 2
+--
+-- Spawn a new window in the given workspace and switch to it
+doShiftAndGo :: WorkspaceId -> ManageHook
+doShiftAndGo ws = doF (W.greedyView ws) <+> doShift ws
 
 myManageHook :: ManageHook
 myManageHook =
@@ -115,16 +102,29 @@ myManageHook =
   where
     manageSpecific =
         composeOne
-            [ className =? "zen" -?> doShift "2"
-            , className =? "firefox" -?> doShift "3"
-            , className =? "Slack" -?> doShift "4"
-            , className =? "kdenlive" -?> doShift "8"
-            , className =? "Thunar" -?> doShift "4"
-            , className =? "mpv" -?> doShift "5"
-            , className =? "com.mitchellh.ghostty" -?> doShift "3"
+            [ -- Basic window rules
+              isDialog -?> doCenterFloat
+            , isInProperty "_NET_WM_STATE" "_NET_WM_STATE_MODAL" -?> doCenterFloat
+            , isRole =? "pop-up" -?> doCenterFloat
+            , isBrowserDialog -?> doCenterFloat
+            , isRole =? gtkFile -?> doCenterFloat
+            , isInProperty
+                "_NET_WM_WINDOW_TYPE"
+                "_NET_WM_WINDOW_TYPE_SPLASH"
+                -?> doCenterFloat
+            , isFullscreen -?> doFullFloat
+            , -- App specific rules
+              className =? "zen" -?> doShiftAndGo "2"
+            , className =? "firefox" -?> doShiftAndGo "3"
+            , className =? "Slack" -?> doShiftAndGo "4"
+            , className =? "kdenlive" -?> doShiftAndGo "8"
+            , className =? "Thunar" -?> doShiftAndGo "4"
+            , className =? "mpv" -?> doShiftAndGo "5"
+            , className =? "com.mitchellh.ghostty" -?> doShiftAndGo "3"
             , className =? "Galculator" -?> doCenterFloat
             , className =? "pwvucontrol" -?> doCenterFloat
-            , appName =? "vicinae" -?> doFloat <+> doRaise <+> doFocus
+            , className =? "Xarchiver" -?> doCenterFloat
+            , appName =? "vicinae" -?> doCenterFloat <+> doRaise <+> doFocus
             , className =? "flameshot" -?> doFloat <+> doRaise
             , className =? "discord" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
             , className =? "Spotify" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
@@ -133,17 +133,8 @@ myManageHook =
             , className =? "Screenkey" -?> doFloat
             , className =? "trayer" -?> doIgnore
             , transience
-            , isBrowserDialog -?> forceCenterFloat
-            , isRole =? gtkFile -?> forceCenterFloat
-            , isDialog -?> doCenterFloat
-            , isRole =? "pop-up" -?> doCenterFloat
-            , isInProperty
-                "_NET_WM_WINDOW_TYPE"
-                "_NET_WM_WINDOW_TYPE_SPLASH"
-                -?> doCenterFloat
-            , isFullscreen -?> doFullFloat
             ]
-    isBrowserDialog = isDialog <&&> className =? "zen-browser"
+    isBrowserDialog = isDialog <&&> className =? "zen"
     gtkFile = "GtkFileChooserDialog"
     isRole = stringProperty "WM_WINDOW_ROLE"
 
@@ -197,12 +188,11 @@ myKeys =
     , -- Apps
       ("M-S-v", spawn "pwvucontrol")
     , ("M-C-v", spawn "~/.local/bin/change_output.sh")
-    , ("M-b", spawn "zen-browser")
-    , -- , ("M-m", spawn "spotify")
-      ("M-t", spawn "thunar")
+    , ("M-b", spawn myBrowser)
+    , ("M-t", spawn myFileManager)
     , ("M-y", spawn "curd")
     , ("M-S-t", spawn " maim -s /tmp/screenshot.png && tesseract /tmp/screenshot.png stdout | xclip -selection clipboard")
-    , ("M-c", spawn "~/.local/bin/nspawn menu")
+    , ("M-c", spawn "~/.local/bin/lxc-machines menu")
     , ("<Print>", spawn "flameshot gui")
     , ("M-w", spawn "~/.local/bin/wallpaper.sh")
     , ("M-<Space>", spawn "vicinae toggle")
@@ -256,8 +246,6 @@ myKeys =
                     else W.float w (W.RationalRect 0.10 0.10 0.5 0.5) s
             )
 
--- Helper function for toggling float
-
 -- XMobar PP (Pretty Printer) configuration
 myXmobarPP :: PP
 myXmobarPP =
@@ -299,11 +287,9 @@ myConfig =
                 spawn "vicinae server --replace"
                 spawnOnce "picom"
                 spawnOnce "dunst"
-                spawn "xset r rate 250 40"
-                spawn "setxkbmap -option caps:swapescape"
                 spawnOnce "~/.fehbg"
-                spawnOnce "xautolock -detectsleep -time 3 -locker '/usr/bin/betterlockscreen'"
-                spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/libexec/polkit-gnome-authentication-agent-1"
+                spawnOnce "keepassxc --minimized"
+                spawnOnce "lxqt-policykit-agent"
                 spawnOnce "trayer --edge top --align right --widthtype request --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 0 --transparent true --expand true --margin 4 -l --iconspacing 3"
             }
             `additionalKeysP` myKeys

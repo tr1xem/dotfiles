@@ -19,6 +19,7 @@ jobs:
           "tank<": true
 
           "tank/games": false
+          "tank/lxc": false
           "rpool/DATA/artix/var/tmp": false
           "rpool/DATA/artix/var/log": false
           "rpool/DATA/artix/var/spool": false
@@ -31,7 +32,7 @@ jobs:
       pruning:
           keep:
               - type: grid
-                grid: 1x1h(keep=all) | 24x1h | 14x1d
+                grid: 2x30m(keep=all) | 1x24h(keep=1) | 7x1d
                 regex: "^zrepl_.*"
               - type: regex
                 negate: true

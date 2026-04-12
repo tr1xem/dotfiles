@@ -20,7 +20,7 @@
    "theme": {
       "dark": {
          "name": "matugen",
-         "icon_theme": "Tela dark"
+         "icon_theme": "Tela circle dark"
       }
    },
    "telemetry": {
@@ -31,12 +31,27 @@
    },
    "favorites": [],
    "providers": {
+      "@dagimg-dot/store.vicinae.wifi-commander": {
+         "preferences": {
+            "network-cli-tool": "iwctl"
+         }
+      },
       "clipboard": {
          "preferences": {
-            "encryption": false,
+            "encryption": true,
             "monitoring": true,
             "eraseOnStartup": false,
             "ignorePasswords": true
+         }
+      },
+      "power": {
+         "entrypoints": {
+            "lock": {
+               "preferences": {
+                  "confirm": false,
+                  "customProgram": "betterlockscreen -l"
+               }
+            }
          }
       }
    }

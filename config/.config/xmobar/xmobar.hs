@@ -47,33 +47,13 @@ config station =
                 <> ">│</fc> \
                    \%date% <fc="
                 <> secondaryContainer colors
-                <> ">│</fc> %"
-                <> station
-                <> "%<fc="
+                <> ">│</fc> \
+                   \%weather% <fc="
                 <> secondaryContainer colors
                 <> ">│</fc> \
                    \%_XMONAD_TRAYPAD%"
         , commands =
             [ Run XMonadLog
-            , Run $
-                WeatherX
-                    station
-                    [ ("clear", "🌣")
-                    , ("sunny", "🌣")
-                    , ("mostly clear", "🌤")
-                    , ("mostly sunny", "🌤")
-                    , ("partly sunny", "⛅")
-                    , ("fair", "🌑")
-                    , ("cloudy", "☁")
-                    , ("overcast", "☁")
-                    , ("partly cloudy", "⛅")
-                    , ("mostly cloudy", "🌧")
-                    , ("considerable cloudiness", "⛈")
-                    ]
-                    [ "-t"
-                    , "<fc=" <> primary colors <> "><skyConditionS> <tempC>°</fc>"
-                    ]
-                    18000
             , Run $
                 XPropertyLog
                     "_XMONAD_TRAYPAD"
@@ -129,7 +109,7 @@ config station =
                 Wireless
                     "wlan0"
                     [ "-t"
-                    , "<fc=" <> primary colors <> "><fn=1>\xf05a9\&</fn></fc><fc=" <> primary colors <> "> <ssid> <quality>%</fc>"
+                    , "<fc=" <> primary colors <> "><fn=1>\xf05a9\&</fn></fc><fc=" <> primary colors <> "> <ssid></fc>"
                     ]
                     10
             , Run $
@@ -182,6 +162,14 @@ config station =
                     , colorRed colors
                     ]
             , Run $ Com "record.sh" ["status", colorRed colors] "screencast" 10
+            , Run $
+                Com
+                    "/bin/bash"
+                    [ "/home/saumya/.config/xmobar/scripts/weather.sh"
+                    , primary colors
+                    ]
+                    "weather"
+                    18000
             , Run $
                 Com
                     "/bin/bash"
