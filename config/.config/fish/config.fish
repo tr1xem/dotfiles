@@ -27,6 +27,7 @@ fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.spicetify
 fish_add_path $HOME/go/bin
 fish_add_path $HOME/.local/bin/statusbar
+fish_add_path $HOME/.ghcup/bin
 
 source ~/.config/fish/aliases.fish
 source ~/.config/fish/env.fish

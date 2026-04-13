@@ -14,7 +14,6 @@ depends=(
     trayer
     betterlockscreen
     flameshot
-    # polkit-gnome
     vicinae-bin
     matugen-bin
     gradience
@@ -30,7 +29,8 @@ depends=(
     cronie
     cronie-openrc
     qt6ct
-    keepassxc
+    gnome-keyring
+    lxqt-policykit
 )
 
 # vim:ft=sh

@@ -50,6 +50,7 @@ myModMask = mod4Mask
 myTerminal = "ghostty"
 myBrowser = "zen-browser"
 myFileManager = "thunar"
+userName = "saumya"
 
 -- Layouts
 myLayoutHook =
@@ -79,7 +80,8 @@ scratchpads =
       --   (className =? "Stardict")
       --   (customFloating $ W.RationalRect (1 / 6) (1 / 6) (2 / 3) (2 / 3)),
       -- run gvim, find by role, don't float
-      NS "notes" "ghostty -e nvim -c 'cd ~/personal/orgfiles'  -c 'Oil'" isConsole (customFloating $ W.RationalRect (1 / 6) (1 / 6) (2 / 3) (2 / 3))
+      NS "orgmode" "ghostty +new-window --title=orgmode -e nvim ~/dotfiles/personal/personal/orgfiles/refile.org" (title =? "orgmode") defaultFloating
+    , NS "floatterm" "ghostty +new-window --title=floatterm " (title =? "floatterm") defaultFloating
     , NS "discord" "discord" (className =? "discord") defaultFloating
     , NS "calculator" "galculator" (className =? "Galculator") defaultFloating
     , NS "music" "spotify" (className =? "Spotify") defaultFloating
@@ -104,6 +106,7 @@ myManageHook =
         composeOne
             [ -- Basic window rules
               isDialog -?> doCenterFloat
+            , isNotification -?> doRaise
             , isInProperty "_NET_WM_STATE" "_NET_WM_STATE_MODAL" -?> doCenterFloat
             , isRole =? "pop-up" -?> doCenterFloat
             , isBrowserDialog -?> doCenterFloat
@@ -113,6 +116,12 @@ myManageHook =
                 "_NET_WM_WINDOW_TYPE_SPLASH"
                 -?> doCenterFloat
             , isFullscreen -?> doFullFloat
+            , className
+                =? "com.mitchellh.ghostty"
+                <&&> title
+                =? "orgmode"
+                -?> doRectFloat (W.RationalRect 0.15 0.15 0.7 0.7)
+            , title =? "floatterm" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
             , -- App specific rules
               className =? "zen" -?> doShiftAndGo "2"
             , className =? "firefox" -?> doShiftAndGo "3"
@@ -126,9 +135,8 @@ myManageHook =
             , className =? "Xarchiver" -?> doCenterFloat
             , appName =? "vicinae" -?> doCenterFloat <+> doRaise <+> doFocus
             , className =? "flameshot" -?> doFloat <+> doRaise
-            , className =? "discord" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
-            , className =? "Spotify" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
-            , title =? "Floatterm" -?> doRectFloat (W.RationalRect 0.10 0.10 0.5 0.5)
+            , className =? "discord" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
+            , className =? "Spotify" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
             , className =? "steam_app_default" -?> doFullFloat
             , className =? "Screenkey" -?> doFloat
             , className =? "trayer" -?> doIgnore
@@ -216,8 +224,8 @@ myKeys =
     , -- Scratchpads
       ("M-d", namedScratchpadAction scratchpads "discord")
     , ("M-m", namedScratchpadAction scratchpads "music")
-    , ("M-s n", namedScratchpadAction scratchpads "notes")
-    , ("M-s g", namedScratchpadAction scratchpads "ghostty")
+    , ("M-s o", namedScratchpadAction scratchpads "orgmode")
+    , ("M-s g", namedScratchpadAction scratchpads "floatterm")
     ,
         ( "M1-<Return>"
         , do

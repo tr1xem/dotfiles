@@ -24,6 +24,7 @@ set -gx CC clang
 set -gx CCACHE_CPP2 yes
 set -gx CMAKE_C_COMPILER_LAUNCHER ccache
 set -gx CMAKE_CXX_COMPILER_LAUNCHER ccache
+set -gx TERM xterm-256color
 
 
 set -Ux TERM xterm-kitty
