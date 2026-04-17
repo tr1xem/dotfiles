@@ -70,7 +70,7 @@ isConsole =
 
 scratchpads =
     [ -- run htop in xterm, find it by title, use default floating window placement
-      NS "htop" "xterm -e htop" (title =? "htop") defaultFloating
+      NS "btop" "ghostty +new-window --title=btop -e btop" (title =? "btop") defaultFloating
     , -- run stardict, find it by class name, place it in the floating window
       -- 1/6 of screen width from the left, 1/6 of screen height
       -- from the top, 2/3 of screen width by 2/3 of screen height
@@ -83,7 +83,7 @@ scratchpads =
       NS "orgmode" "ghostty +new-window --title=orgmode -e nvim ~/dotfiles/personal/personal/orgfiles/refile.org" (title =? "orgmode") defaultFloating
     , NS "floatterm" "ghostty +new-window --title=floatterm " (title =? "floatterm") defaultFloating
     , NS "discord" "discord" (className =? "discord") defaultFloating
-    , NS "calculator" "galculator" (className =? "Galculator") defaultFloating
+    , NS "calculator" "qalculate-gtk" (className =? "Qalculate-gtk") defaultFloating
     , NS "music" "spotify" (className =? "Spotify") defaultFloating
     ]
   where
@@ -122,6 +122,14 @@ myManageHook =
                 =? "orgmode"
                 -?> doRectFloat (W.RationalRect 0.15 0.15 0.7 0.7)
             , title =? "floatterm" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
+            , className
+                =? "com.mitchellh.ghostty"
+                <&&> title
+                =? "btop"
+                -?> doRectFloat (W.RationalRect 0.15 0.15 0.7 0.7)
+            , className
+                =? "Spotify"
+                -?> doRectFloat (W.RationalRect 0.15 0.15 0.7 0.7)
             , -- App specific rules
               className =? "zen" -?> doShiftAndGo "2"
             , className =? "firefox" -?> doShiftAndGo "3"
@@ -136,10 +144,11 @@ myManageHook =
             , appName =? "vicinae" -?> doCenterFloat <+> doRaise <+> doFocus
             , className =? "flameshot" -?> doFloat <+> doRaise
             , className =? "discord" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
-            , className =? "Spotify" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
             , className =? "steam_app_default" -?> doFullFloat
             , className =? "Screenkey" -?> doFloat
             , className =? "trayer" -?> doIgnore
+            , className =? "Qalculate-gtk" -?> doCenterFloat
+            , className =? "Alienware Command Centre - Dell G15 5530" -?> doCenterFloat
             , transience
             ]
     isBrowserDialog = isDialog <&&> className =? "zen"
@@ -201,7 +210,7 @@ myKeys =
     , ("M-y", spawn "curd")
     , ("M-S-t", spawn " maim -s /tmp/screenshot.png && tesseract /tmp/screenshot.png stdout | xclip -selection clipboard")
     , ("M-c", spawn "~/.local/bin/lxc-machines menu")
-    , ("<Print>", spawn "flameshot gui")
+    , ("<Print>", spawn "dbus-launch flameshot gui")
     , ("M-w", spawn "~/.local/bin/wallpaper.sh")
     , ("M-<Space>", spawn "vicinae toggle")
     , ("M-v", spawn "vicinae vicinae://extensions/vicinae/clipboard/history")
@@ -226,6 +235,7 @@ myKeys =
     , ("M-m", namedScratchpadAction scratchpads "music")
     , ("M-s o", namedScratchpadAction scratchpads "orgmode")
     , ("M-s g", namedScratchpadAction scratchpads "floatterm")
+    , ("C-S-\\", namedScratchpadAction scratchpads "btop")
     ,
         ( "M1-<Return>"
         , do
@@ -257,16 +267,17 @@ myKeys =
 -- XMobar PP (Pretty Printer) configuration
 myXmobarPP :: PP
 myXmobarPP =
-    def
-        { ppSep = xmobarColor (outline colors) "" " │ "
-        , ppTitleSanitize = xmobarStrip
-        , ppCurrent = xmobarColor (primary colors) ""
-        , ppHidden = xmobarColor (inversePrimary colors) ""
-        , ppHiddenNoWindows = xmobarColor (outline colors) ""
-        , ppUrgent = xmobarColor (colorRed colors) (colorYellow colors)
-        , ppOrder = \[ws, l, _, wins] -> [ws, wins]
-        , ppExtras = [logTitles formatFocused formatUnfocused]
-        }
+    filterOutWsPP [scratchpadWorkspaceTag] $
+        def
+            { ppSep = xmobarColor (outline colors) "" " │ "
+            , ppTitleSanitize = xmobarStrip
+            , ppCurrent = xmobarColor (primary colors) ""
+            , ppHidden = xmobarColor (inversePrimary colors) ""
+            , ppHiddenNoWindows = xmobarColor (outline colors) ""
+            , ppUrgent = xmobarColor (colorRed colors) (colorYellow colors)
+            , ppOrder = \[ws, l, _, wins] -> [ws, wins]
+            , ppExtras = [logTitles formatFocused formatUnfocused]
+            }
   where
     formatFocused = wrap (xmobarColor (primary colors) "" "[") (xmobarColor (primary colors) "" "]") . xmobarColor (onPrimaryContainer colors) "" . ppWindow
     formatUnfocused = wrap (xmobarColor (outline colors) "" "[") (xmobarColor (outline colors) "" "]") . xmobarColor (outline colors) "" . ppWindow
@@ -298,7 +309,7 @@ myConfig =
                 spawnOnce "~/.fehbg"
                 spawnOnce "keepassxc --minimized"
                 spawnOnce "lxqt-policykit-agent"
-                spawnOnce "trayer --edge top --align right --widthtype request --height 22 --tint 0x' <> surfaceDim colors <> ' --alpha 0 --transparent true --expand true --margin 4 -l --iconspacing 3"
+                spawnOnce "trayer --edge top --align right --widthtype request --height 24 --tint 0x' <> surfaceDim colors <> ' --alpha 0 --transparent true --expand true --margin 4 -l --iconspacing 3"
             }
             `additionalKeysP` myKeys
 

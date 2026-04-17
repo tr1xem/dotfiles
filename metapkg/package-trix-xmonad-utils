@@ -39,6 +39,8 @@ depends=(
     tlp
     # tlp-rdw
     tlp-openrc
+    mtpfs
+    gvfs-mtp
 )
 
 # vim:ft=sh

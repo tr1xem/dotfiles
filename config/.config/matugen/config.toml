@@ -77,6 +77,10 @@ input_path = '~/.config/matugen/templates/dunstrc'
 output_path = '~/.config/dunst/dunstrc'
 post_hook = 'dunstctl reload'
 
+[templates.rofi]
+input_path = '~/.config/matugen/templates/colors.rasi'
+output_path = '~/.config/rofi/colors.rasi'
+
 [config.custom_colors.red]
 color = "#FF0000"
 blend = true

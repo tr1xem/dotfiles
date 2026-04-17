@@ -16,7 +16,7 @@ depends=(
     stow
     rclone
     spotify
-    galculator
+    qalculate-gtk
     scx-scheds
     scx-openrc
     scx-tools

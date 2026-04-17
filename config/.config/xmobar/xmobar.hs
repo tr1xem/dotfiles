@@ -76,7 +76,7 @@ config station =
             , Run $
                 Cpu
                     [ "-t"
-                    , "<fc=" <> primary colors <> "><fn=1>\xf035b\& </fn></fc><total>%"
+                    , "<fc=" <> primary colors <> "><fn=1>\xf035b\&</fn> <total>%</fc>"
                     , "-L"
                     , "30"
                     , "-H"
@@ -92,7 +92,7 @@ config station =
             , Run $
                 Memory
                     [ "-t"
-                    , "<fc=" <> primary colors <> "><fn=1>\xe266\&</fn></fc> <usedratio>%"
+                    , "<fc=" <> primary colors <> "><fn=1>\xe266\&</fn> <usedratio>%</fc>"
                     , "-L"
                     , "29"
                     , "-H"
