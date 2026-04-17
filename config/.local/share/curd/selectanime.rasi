@@ -1,0 +1,80 @@
+@import "~/.config/rofi/colors.rasi"
+
+/*****----- Configuration -----*****/
+configuration {
+    font:           "JetBrainsMono Nerd Font 12";
+    show-icons:     false;
+    location:       0;
+    width:          50%;
+    height:         50%;
+    yoffset:        -50;
+    lines:          5;
+}
+
+* {
+
+    background-color: transparent;
+    text-color:       @primary;
+}
+
+/*****----- Main Window -----*****/
+window {
+    transparency:     true;
+    background-color: @surface;
+    border:           2px;
+    border-color:     @on-primary;
+    border-radius:    8px;
+    height:           30%;
+    width:            25%;
+    padding:          12px;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    children:         [ inputbar, listview ];
+    spacing:          10px;
+    background-color: transparent;
+}
+
+/*****----- Inputbar -----*****/
+inputbar {
+    background-color: @on-secondary;
+    border:           1px;
+    border-color:     @primary;
+    border-radius:    6px;
+    padding:          6px 12px;
+    spacing:          12px;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @secondary;
+}
+
+/*****----- List of items -----*****/
+listview {
+    scrollbar:        false;
+    spacing:          4px;
+    padding:          4px 0px;
+    layout:           vertical;
+    background-color: transparent;
+}
+
+/*****----- Elements -----*****/
+element {
+    padding:          6px 12px;
+    border-radius:    6px;
+    spacing:          10px;
+    background-color: transparent;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color:       @primary;
+}
+
+element selected.normal {
+    background-color: @inverse-primary;
+    text-color:       @on-primary-fixed;
+}

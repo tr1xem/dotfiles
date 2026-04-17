@@ -1,0 +1,70 @@
+@import "~/.config/rofi/colors.rasi"
+
+/*****----- Configuration -----*****/
+configuration {
+    font:"JetBrainsMono Nerd Font 12";
+}
+
+/*****----- Global Properties -----*****/
+* {
+
+    background-color: transparent;
+}
+
+/*****----- Main Window -----*****/
+window {
+    transparency:     "real";
+    location:         center;
+    anchor:           center;
+    fullscreen:       false;
+
+    border:           2px;
+    border-color:     @primary;
+    border-radius:    8px;
+    padding:          20px;
+    background-color: @surface;
+    width:            25%;
+    // height:           10%;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    children:         [ message, inputbar ];
+    spacing:          20px;
+    background-color: transparent;
+}
+
+/*****----- Message (The Main Question, uses -mesg) -----*****/
+message {
+    padding:          10px;
+    border-radius:    8px;
+    background-color: @on-secondary-fixed;
+    text-color:       @primary;
+}
+
+textbox {
+    horizontal-align: 0.5;
+    background-color: transparent;
+    text-color:       inherit;
+}
+
+/*****----- Inputbar (Contains the title and entry field) -----*****/
+inputbar {
+    padding:          8px 12px;
+    border:           1px;
+    border-radius:    6px;
+    border-color:     @primary;
+    background-color: @on-secondary;
+    spacing:          10px;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @primary-fixed-dim;
+}
+
+entry {
+    background-color:  transparent;
+    text-color:        @primary;
+}
