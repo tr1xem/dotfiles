@@ -8,6 +8,6 @@
 ** Start lxc-net service =rc-service lxc-net start=
 ** For internet to work
 #+begin_src bash
-  sudo rm /etc/resolv.conf # FOR OPENRC
+  sudo rm /etc/resolv.conf
   echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 #+end_src

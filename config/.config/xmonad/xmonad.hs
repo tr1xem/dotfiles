@@ -70,7 +70,7 @@ isConsole =
 
 scratchpads =
     [ -- run htop in xterm, find it by title, use default floating window placement
-      NS "btop" "ghostty +new-window --title=btop -e btop" (title =? "btop") defaultFloating
+      NS "btop" "dbus-launch ghostty +new-window --title=btop -e btop" (title =? "btop") defaultFloating
     , -- run stardict, find it by class name, place it in the floating window
       -- 1/6 of screen width from the left, 1/6 of screen height
       -- from the top, 2/3 of screen width by 2/3 of screen height
@@ -80,8 +80,8 @@ scratchpads =
       --   (className =? "Stardict")
       --   (customFloating $ W.RationalRect (1 / 6) (1 / 6) (2 / 3) (2 / 3)),
       -- run gvim, find by role, don't float
-      NS "orgmode" "ghostty +new-window --title=orgmode -e nvim ~/dotfiles/personal/personal/orgfiles/refile.org" (title =? "orgmode") defaultFloating
-    , NS "floatterm" "ghostty +new-window --title=floatterm " (title =? "floatterm") defaultFloating
+      NS "orgmode" "dbus-launch ghostty +new-window --title=orgmode -e nvim ~/dotfiles/personal/personal/orgfiles/refile.org" (title =? "orgmode") defaultFloating
+    , NS "floatterm" "dbus-launch ghostty +new-window --title=floatterm " (title =? "floatterm") defaultFloating
     , NS "discord" "discord" (className =? "discord") defaultFloating
     , NS "calculator" "qalculate-gtk" (className =? "Qalculate-gtk") defaultFloating
     , NS "music" "spotify" (className =? "Spotify") defaultFloating
@@ -106,6 +106,7 @@ myManageHook =
         composeOne
             [ -- Basic window rules
               isDialog -?> doCenterFloat
+            , isPiP -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
             , isNotification -?> doRaise
             , isInProperty "_NET_WM_STATE" "_NET_WM_STATE_MODAL" -?> doCenterFloat
             , isRole =? "pop-up" -?> doCenterFloat
@@ -154,6 +155,7 @@ myManageHook =
     isBrowserDialog = isDialog <&&> className =? "zen"
     gtkFile = "GtkFileChooserDialog"
     isRole = stringProperty "WM_WINDOW_ROLE"
+    isPiP = title =? "Picture-in-Picture"
 
 -- Key bindings
 
@@ -309,6 +311,8 @@ myConfig =
                 spawnOnce "~/.fehbg"
                 spawnOnce "keepassxc --minimized"
                 spawnOnce "lxqt-policykit-agent"
+                spawnOnce "xautolock -detectsleep -time 2 -locker '/usr/bin/betterlockscreen'"
+                spawnOnce "xss-lock -- betterlockscreen -l"
                 spawnOnce "trayer --edge top --align right --widthtype request --height 24 --tint 0x' <> surfaceDim colors <> ' --alpha 0 --transparent true --expand true --margin 4 -l --iconspacing 3"
             }
             `additionalKeysP` myKeys
