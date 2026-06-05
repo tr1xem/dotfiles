@@ -39,6 +39,7 @@ alias dectohex="printf '0x%x\n' $1"
 alias hextodec="printf '%d\n' $1"
 alias vencordinstall='sh -c "$(curl -sS https://vencord.dev/install.sh)"'
 alias mike="mpv https://www.youtube.com/playlist?list=PLvv0ScY6vfd8j-tlhYVPYgiIyXduu6m-L"
+alias snapshotclean="sudo zfs list -H -o name -t snapshot | grep '@zrepl_' | xargs -n1 sudo zfs destroy"
 
 function parusweep
     set orphans (paru -Qdtq)

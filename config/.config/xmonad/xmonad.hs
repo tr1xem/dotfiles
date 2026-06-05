@@ -215,8 +215,8 @@ myKeys =
     , ("<Print>", spawn "dbus-launch flameshot gui")
     , ("M-w", spawn "~/.local/bin/wallpaper.sh")
     , ("M-<Space>", spawn "vicinae toggle")
-    , ("M-v", spawn "vicinae vicinae://extensions/vicinae/clipboard/history")
-    , ("M-.", spawn "vicinae vicinae://extensions/vicinae/core/search-emojis")
+    , ("M-v", spawn "vicinae vicinae://launch/clipboard/history")
+    , ("M-.", spawn "vicinae vicinae://launch/core/search-emojis")
     , ("M-<Return>", spawn myTerminal)
     , ("M-<End>", spawn "betterlockscreen -l")
     , -- Utils

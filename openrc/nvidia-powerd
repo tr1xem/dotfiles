@@ -1,0 +1,12 @@
+#!/usr/bin/openrc-run
+
+description="NVIDIA Power Management Daemon"
+
+command="/usr/bin/nvidia-powerd"
+command_background="true"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+    need localmount
+    after bootmisc
+}

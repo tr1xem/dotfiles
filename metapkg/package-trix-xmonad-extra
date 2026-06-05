@@ -21,7 +21,7 @@ depends=(
     scx-openrc
     scx-tools
     zramen
-    zramen-openrc
+    # zramen-openrc
 )
 
 # vim:ft=sh

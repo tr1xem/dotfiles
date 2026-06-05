@@ -23,7 +23,6 @@ depends=(
     iwd
     iwd-openrc
     pokemon-colorscripts-go
-    nvidia-prime
     duf
     bat
     eza

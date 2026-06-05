@@ -28,6 +28,8 @@ fish_add_path $HOME/.spicetify
 fish_add_path $HOME/go/bin
 fish_add_path $HOME/.local/bin/statusbar
 fish_add_path $HOME/.ghcup/bin
+fish_add_path $HOME/flutter/bin
+fish_add_path /run/media/saumya/tank/public/Android/SDK/platform-tools
 
 source ~/.config/fish/aliases.fish
 source ~/.config/fish/env.fish
@@ -39,7 +41,7 @@ end
 if status is-login
     if test (tty) = "/dev/tty1"
         if not set -q DISPLAY
-            exec startx
+            exec startx 2>&1 > ~/.xlogfile
         end
     end
 end

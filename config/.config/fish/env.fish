@@ -20,6 +20,7 @@ set -xg CXXFLAGS "-fdiagnostics-color=always -std=c++23"
 set -gx EDITOR "nvim"  # Replace "nano" with your desired editor (e.g., vim, nvim, etc.)
 set -gx VISUAL "$EDITOR"
 set -gx CXX clang++
+set -gx CHROME_EXECUTABLE /usr/bin/thorium-browser
 set -gx CC clang
 set -gx CCACHE_CPP2 yes
 set -gx CMAKE_C_COMPILER_LAUNCHER ccache
@@ -46,3 +47,6 @@ set -x OPENAI_BASE_URL http://0.0.0.0:4141
 # set -xg DISPLAY :0         # match the XWayland display
 # set -xg XAUTHORITY /run/user/1000/.Xauthority  # optional, if X server requires auth
 
+set -xg ANDROID_HOME /run/media/saumya/tank/public/Android/SDK
+set -xg ANDROID_SDK_ROOT /run/media/saumya/tank/public/Android/SDK
+set -xg JAVA_HOME /usr/lib/jvm/default

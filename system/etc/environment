@@ -1,5 +1,3 @@
-# DXVK_FILTER_DEVICE_NAME=Intel
-# VKD3D_FILTER_DEVICE_NAME=Intel
 # MESA_VK_DEVICE_SELECT=8086:a78b
 # __GLX_VENDOR_LIBRARY_NAME=mesa
 # __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
@@ -15,4 +13,9 @@ XCURSOR_SIZE=20
 # GSK_RENDERER=cairo
 # LD_LIBRARY_PATH=/usr/local/lib
 
+# DXVK_FILTER_DEVICE_NAME=Intel
+# VKD3D_FILTER_DEVICE_NAME=Intel
+__EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
+VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/intel_icd.json
+__GLX_VENDOR_LIBRARY_NAME=mesa
 # vim:ft=bash

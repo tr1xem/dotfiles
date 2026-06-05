@@ -1,2 +1,2 @@
 #!/bin/bash
-prime-run /usr/bin/mpv "$@"
+/usr/bin/prime-run /usr/bin/mpv "$@"

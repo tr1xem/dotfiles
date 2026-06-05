@@ -5,6 +5,6 @@ LastActiveRenamer=ThunarSbrReplaceRenamer
 [ThunarSbrReplaceRenamer]
 CaseSensitive=FALSE
 Replacement=
-Pattern=compressed_
+Pattern=TEST00000-0_
 Regexp=FALSE
 
