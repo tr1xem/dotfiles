@@ -1,0 +1,31 @@
+pkgname=gaspar-device-gpu
+pkgver=1
+pkgrel=5
+arch=('any')
+options=('!debug')
+groups=('gaspar')
+provides=('gaspar-device-gpu')
+depends=(
+	intel-compute-runtime
+	intel-gpu-tools
+	intel-media-driver
+	libva
+	libva-utils
+	libvdpau
+	libvdpau-va-gl
+	mesa
+	mesa-utils
+	# nvidia-prime
+	# nvidia-utils
+	nvtop
+	opencl-nvidia
+	vdpauinfo
+	vpl-gpu-rt
+	vulkan-headers
+	vulkan-icd-loader
+	vulkan-intel
+	vulkan-mesa-layers
+	vulkan-tools
+)
+
+# vim:ft=sh

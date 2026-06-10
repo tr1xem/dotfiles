@@ -10,7 +10,11 @@ PIDFILE="/tmp/$SCRIPTNAME.pid"
 SAVE_DIR="$HOME/Videos/Recordings"
 MAX_WIDTH=1920
 MAX_HEIGHT=1080
-MIC_NAME="alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__Mic1__source"
+# MIC_NAME="alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__Mic1__source"
+MIC_NAME="@DEFAULT_SOURCE@"
+VIDEO_CODEC="hevc_nvenc"
+VIDEO_PRESET="p5"
+VIDEO_CQ=28
 
 main() {
 	case "${1:-help}" in
@@ -102,9 +106,14 @@ _start_recording() {
 		-f pulse -i $MIC_NAME \
 		-filter_complex "[1:a][2:a]amix=inputs=2[a]" \
 		-map 0:v -map "[a]" \
-		-c:v libx264 \
-		-preset superfast \
-		-crf 23 \
+		-c:v "$VIDEO_CODEC" \
+		-preset "$VIDEO_PRESET" \
+		-rc vbr \
+		-cq "$VIDEO_CQ" \
+		-b:v 0 \
+		-profile:v main \
+		-pix_fmt yuv420p \
+		-tag:v hvc1 \
 		-c:a aac \
 		-b:a 128k \
 		-movflags +faststart \
