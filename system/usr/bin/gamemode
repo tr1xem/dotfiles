@@ -61,3 +61,6 @@ if [ "$currentpl" != "$pl1" ]; then
 else
     echo "[tr1x_em] :powerlimits already set for gaming "
 fi
+
+xset s off
+xset -dpms

@@ -83,6 +83,7 @@ scratchpads =
       NS "orgmode" "dbus-launch ghostty +new-window --title=orgmode -e nvim ~/dotfiles/personal/personal/orgfiles/refile.org" (title =? "orgmode") defaultFloating
     , NS "floatterm" "dbus-launch ghostty +new-window --title=floatterm " (title =? "floatterm") defaultFloating
     , NS "discord" "discord" (className =? "discord") defaultFloating
+    , NS "equibop" "equibop" (className =? "equibop") defaultFloating
     , NS "calculator" "qalculate-gtk" (className =? "Qalculate-gtk") defaultFloating
     , NS "music" "spotify" (className =? "Spotify") defaultFloating
     ]
@@ -145,6 +146,7 @@ myManageHook =
             , appName =? "vicinae" -?> doCenterFloat <+> doRaise <+> doFocus
             , className =? "flameshot" -?> doFloat <+> doRaise
             , className =? "discord" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
+            , className =? "equibop" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
             , className =? "steam_app_default" -?> doFullFloat
             , className =? "Screenkey" -?> doFloat
             , className =? "trayer" -?> doIgnore
@@ -233,11 +235,13 @@ myKeys =
     , ("C-<Print>", spawn "maim -s | xclip -selection clipboard -t image/png")
     , ("M-<Print>", spawn "record.sh toggle")
     , -- Scratchpads
-      ("M-d", namedScratchpadAction scratchpads "discord")
+      -- ("M-d", namedScratchpadAction scratchpads "discord")
+      ("M-d", namedScratchpadAction scratchpads "equibop")
     , ("M-m", namedScratchpadAction scratchpads "music")
     , ("M-s o", namedScratchpadAction scratchpads "orgmode")
     , ("M-s g", namedScratchpadAction scratchpads "floatterm")
     , ("C-S-\\", namedScratchpadAction scratchpads "btop")
+    , ("M-S-.", sendMessage (IncMasterN (-1)))
     ,
         ( "M1-<Return>"
         , do
@@ -311,7 +315,7 @@ myConfig =
                 spawnOnce "~/.fehbg"
                 spawnOnce "keepassxc --minimized"
                 spawnOnce "lxqt-policykit-agent"
-                spawnOnce "xautolock -detectsleep -time 2 -locker '/usr/bin/betterlockscreen'"
+                -- spawnOnce "xautolock -detectsleep -time 2 -locker '/usr/bin/betterlockscreen'"
                 spawnOnce "xss-lock -- betterlockscreen -l"
                 spawnOnce "trayer --edge top --align right --widthtype request --height 24 --tint 0x' <> surfaceDim colors <> ' --alpha 0 --transparent true --expand true --margin 4 -l --iconspacing 3"
             }

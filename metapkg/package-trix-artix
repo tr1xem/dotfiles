@@ -13,10 +13,10 @@ depends=(
     efibootmgr
     git
     sudo
-    sof-frimware
+    sof-firmware
     wget
     unzip
-    archzfs-dkms
+    zfs-utils
 )
 
 # vim:ft=sh

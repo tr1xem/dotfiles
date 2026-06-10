@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Screen recording script using gpu-screen-recorder
-# Supports region selection, fullscreen, and upload to Monarch API
+
+
 
 set -eu
 
@@ -10,6 +10,7 @@ PIDFILE="/tmp/$SCRIPTNAME.pid"
 SAVE_DIR="$HOME/Videos/Recordings"
 MAX_WIDTH=1920
 MAX_HEIGHT=1080
+MIC_NAME="alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__Mic1__source"
 
 main() {
 	case "${1:-help}" in
@@ -26,22 +27,25 @@ status() {
 	color="${1:-#ff0000}"
 	if [ -f "$PIDFILE" ]
 	then
-		echo "<fc=$color><fn=1> </fn>REC</fc>"
+		. "$PIDFILE"
+		if [ -n "${STARTTIME:-}" ]
+		then
+			elapsed=$(( $(date +%s) - STARTTIME ))
+			minutes=$(( elapsed / 60 ))
+			seconds=$(( elapsed % 60 ))
+            printf '<fc=%s><fn=1> </fn>REC %02d:%02d</fc>' "$color" "$minutes" "$seconds"
+		else
+			echo "<fc=$color><fn=1> </fn>REC</fc>"
+		fi
 	fi
 }
 
 start() {
-	# Get region via slop (user selects)
-	slop_output=$(slop -f "W=%w H=%h X=%x Y=%y")
-	W=$(echo "$slop_output" | grep -oP 'W=\K[0-9]+')
-	H=$(echo "$slop_output" | grep -oP 'H=\K[0-9]+')
-	X=$(echo "$slop_output" | grep -oP 'X=\K[0-9]+')
-	Y=$(echo "$slop_output" | grep -oP 'Y=\K[0-9]+')
+	eval "$(slop -f 'X=%x Y=%y W=%w H=%h')"
 	_start_recording "$W" "$H" "$X" "$Y" "region"
 }
 
 start_fullscreen() {
-	# Get full screen resolution via xrandr
 	res="$(xrandr | head -n1)"
 	res="${res#*current }"
 	res="${res%%, maximum*}"
@@ -60,7 +64,7 @@ _start_recording() {
 	Y=$4
 	mode=$5
 
-	# Clamp dimensions to max resolution
+
 	if [ "$W" -gt "$MAX_WIDTH" ]; then
 		W=$MAX_WIDTH
 	fi
@@ -81,7 +85,7 @@ _start_recording() {
 		app_name="none"
 	fi
 
-	# Escape special characters in app_name for safe filename
+
 	app_name=$(echo "$app_name" | sed 's/[^a-zA-Z0-9._-]/_/g')
 
 	file="${random_string}-${app_name}"
@@ -89,15 +93,26 @@ _start_recording() {
 
 	mkdir -p "$SAVE_DIR"
 
-	if [ "$mode" = "fullscreen" ]
-	then
-		gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w screen -ac aac -o "$output_file" -v no &
-	else
-		gpu-screen-recorder -f 60 -q high -a "default_output|default_input" -w region -region "${W}x${H}+${X}+${Y}" -ac aac -o "$output_file" -v no -ab 320k &
-	fi
+	ffmpeg \
+		-f x11grab \
+		-framerate 30 \
+		-video_size "${W}x${H}" \
+		-i ":0.0+${X},${Y}" \
+		-f pulse -i @DEFAULT_MONITOR@ \
+		-f pulse -i $MIC_NAME \
+		-filter_complex "[1:a][2:a]amix=inputs=2[a]" \
+		-map 0:v -map "[a]" \
+		-c:v libx264 \
+		-preset superfast \
+		-crf 23 \
+		-c:a aac \
+		-b:a 128k \
+		-movflags +faststart \
+		"$output_file" &
 
-	echo "PID=$!" > "$PIDFILE"
-	echo "FILENAME=$output_file" >> "$PIDFILE"
+		echo "PID=$!" > "$PIDFILE"
+		echo "STARTTIME=$(date +%s)" >> "$PIDFILE"
+		echo "FILENAME=$output_file" >> "$PIDFILE"
 }
 
 stop() {
@@ -112,7 +127,7 @@ stop() {
 	sleep 1
 	rm "$PIDFILE"
 
-	# Upload to Monarch
+
 	json_data=$(curl -s -F "secret=$MONARCHKEY" -F "file=@$FILENAME" https://api.monarchupload.cc/v3/upload)
 
 	video_url=$(echo "$json_data" | jq -r '.data.url')
@@ -122,10 +137,10 @@ stop() {
 	if [ "$upload_status" = "success" ]
 	then
 		echo -n "$video_url" | xclip -selection clipboard
-		notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message" "$video_url"
+		notify-send -a "record.sh" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message" "$video_url"
 		rm "$FILENAME"
 	else
-		notify-send -a "gpu-screen-recorder" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
+		notify-send -a "record.sh" -i "screenrecorder" -u critical -t 10000 -h string:x-canonical-private-synchronous:shot-notify "$message"
 		exit 1
 	fi
 }

@@ -76,6 +76,8 @@ fi
 #
 
 
+xset s on
+xset +dpms
 
 
 
@@ -103,4 +105,5 @@ fi
 
 # sudo nvidia-smi -lgc 210,2580
 # sudo nvidia-smi --reset-gpu-clocks
+
 
