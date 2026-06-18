@@ -16,7 +16,7 @@ depends=(
     pipewire-pulse-openrc
     xorg-xprop
     xorg-xev
-    xautolock
+    # xautolock
     bluez
     bluez-utils
     bluez-openrc

@@ -119,7 +119,14 @@ _start_recording() {
 		-movflags +faststart \
 		"$output_file" &
 
-		echo "PID=$!" > "$PIDFILE"
+		FF_PID=$!
+		sleep 0.5
+		if ! kill -0 "$FF_PID" 2>/dev/null; then
+			echo "ffmpeg failed to start" >&2
+			exit 1
+		fi
+
+		echo "PID=$FF_PID" > "$PIDFILE"
 		echo "STARTTIME=$(date +%s)" >> "$PIDFILE"
 		echo "FILENAME=$output_file" >> "$PIDFILE"
 }

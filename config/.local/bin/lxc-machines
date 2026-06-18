@@ -36,6 +36,17 @@ notify() {
 	fi
 }
 
+check_vicinae() {
+	if ! command -v vicinae >/dev/null 2>&1; then
+		echo "$SCRIPT_NAME: vicinae not found" >&2
+		return 1
+	fi
+	if ! vicinae ping >/dev/null 2>&1; then
+		echo "$SCRIPT_NAME: vicinae server not running" >&2
+		return 1
+	fi
+}
+
 ensure_lxc_net() {
 	# Host-only preflight (OpenRC). Containers are configured to use lxcbr0.
 	# lxc-net isn't a persistent daemon on many setups, and "status" may not exist.
@@ -115,9 +126,8 @@ attach_user() {
 		--set-var "HOME=/home/$user" \
 		--set-var "USER=$user" \
 		--set-var "LOGNAME=$user" \
-		--set-var "XDG_RUNTIME_DIR=/tmp/xdg-runtime-$user" \
 		--set-var "DISPLAY=${DISPLAY:-:0}" \
-		-u 1000 -g 1000 -- "$@"
+		-u 1000 -g 1000 --  "$@"
 }
 
 select_terminal() {
@@ -134,7 +144,10 @@ select_terminal() {
 	fi
 
 	local pick
-	pick=$(echo "$terminals" | vicinae dmenu -p "container:" || true)
+	pick=$(echo "$terminals" | vicinae dmenu -p "container:" 2>/dev/null) || {
+		echo "$SCRIPT_NAME: dmenu cancelled or failed" >&2
+		return 1
+	}
 	[ -z "${pick:-}" ] && return 1
 	echo "$pick"
 }
@@ -204,7 +217,10 @@ app_menu() {
 	[ -n "${list:-}" ] || { echo "$SCRIPT_NAME: no executables found in $machine" >&2; return 1; }
 
 	local bin
-	bin=$(echo "$list" | vicinae dmenu -p "app:" || true)
+	bin=$(echo "$list" | vicinae dmenu -p "app:" 2>/dev/null) || {
+		echo "$SCRIPT_NAME: dmenu cancelled or failed" >&2
+		return 1
+	}
 	[ -z "${bin:-}" ] && return 0
 
 	run_in_container "$pick" "$bin"
@@ -309,9 +325,12 @@ upgrade_all() {
 }
 
 if [[ "${1:-}" == menu ]]; then
+	check_vicinae || exit 1
 	picks="app\ntoggle\nshell"
-	# vicinae may exit non-zero even when it printed a selection; don't let `set -e` kill us.
-	pick=$(echo -e "$picks" | vicinae dmenu -p "$SCRIPT_NAME:" || true)
+	pick=$(echo -e "$picks" | vicinae dmenu -p "$SCRIPT_NAME:" 2>/dev/null) || {
+		echo "$SCRIPT_NAME: dmenu cancelled or failed" >&2
+		exit 1
+	}
 	[ -z "${pick:-}" ] && exit
 	echo -e "$picks" | grep -Fxq "$pick" || exit
 	"$0" "$pick"
@@ -329,7 +348,10 @@ elif [[ "${1:-}" == toggle ]]; then
 		machine_map["$display"]="$m"
 	done < <(list_machines)
 
-	pick=$(printf '%s\n' "${list[@]}" | vicinae dmenu -p "toggle:" || true)
+	pick=$(printf '%s\n' "${list[@]}" | vicinae dmenu -p "toggle:" 2>/dev/null) || {
+		echo "$SCRIPT_NAME: dmenu cancelled or failed" >&2
+		exit 1
+	}
 	[ -z "${pick:-}" ] && exit
 
 	m="${machine_map[$pick]}"
@@ -353,7 +375,10 @@ elif [[ "${1:-}" == shell ]]; then
 		exit 1
 	fi
 
-	pick=$(echo "$terminals" | vicinae dmenu -p "shell:" || true)
+	pick=$(echo "$terminals" | vicinae dmenu -p "shell:" 2>/dev/null) || {
+		echo "$SCRIPT_NAME: dmenu cancelled or failed" >&2
+		exit 1
+	}
 	[ -z "${pick:-}" ] && exit 0
 
 	user=${pick%@*}
@@ -372,7 +397,8 @@ elif [[ "${1:-}" == shell ]]; then
 			--set-var "USER=$user" \
 			--set-var "LOGNAME=$user" \
 			--set-var "DISPLAY=${DISPLAY:-:0}" \
-			-u 1000 -- /usr/bin/fish
+			-u 1000 -- \
+            /usr/bin/fish -lc 'cd ~; exec fish -l'
 	else
 		echo "$SCRIPT_NAME: failed to run shell inside $machine" >&2
 	fi

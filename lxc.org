@@ -1,13 +1,71 @@
-* NOTES
-** Setting attr - on ZFS partion
+* Steps to make a container
+** Preprations
+*** Create a zfs partion for lxc
+by using the command ~sudo zfs create -o mountpoint=/var/lib/lxc tank/lxc~
+*** Apply zfs optimizations for to lxc
 #+begin_src sh
-  sudo zfs set acltype=posixacl tank/lxc
-  sudo zfs set aclinherit=passthrough tank/lxc
+sudo zfs set recordsize=16k tank/lxc
+sudo zfs set acltype=posixacl tank/lxc
+sudo zfs set aclinherit=passthrough tank/lxc
+#+end_src
+*** Start lxc-net service on host
+Run the command =rc-service lxc-net start= and it should create a network named =lxcbr0= in ur config
+
+** Setps to setup a unprivilaged container for dev workflow
+*** Setting up the container config
+- If we are going to create a unprivilaged container then you have make a file with unprivilaged system config as follows
+#+begin_src conf
+lxc.net.0.type = veth
+lxc.net.0.link = lxcbr0
+lxc.net.0.flags = up
+lxc.net.0.hwaddr = 10:66:6a:xx:xx:xx
+lxc.idmap = u 0 100000 65536
+lxc.idmap = g 0 100000 65536
+#+end_src
+*** Creating the container
+- Use the command =sudo lxc-create --name <container-name> --config /etc/lxc/unprivileged.conf --template download= to interactively download system image or you can use pre configured command such as =sudo lxc-create --template download --name <container-name> --config /etc/lxc/unprivileged.conf -- -d archlinux -r current -a amd64=
+** Inside the container
+*** Creating a normal user
+- attach to the container and create a user for yourself
+- run =sudo lxc-start -n <container-name> && sudo lxc-attach -n <container-name>= on host to attach yourself to the container and then run the following commands
+#+begin_src sh
+useradd -m -u 1000 <username> # create a user for yourself
+passwd <username> # to set the password
+usermod -aG wheel <username> # add your user to wheel
+#+end_src
+- Now set up the user
+#+begin_src sh
+pacman -S vim # install a editor
+EDITOR=vim visudo
+# and uncomment %wheel ALL=(ALL:ALL) ALL
+#+end_src
+*** For internet to work (you may not need it)
+#+begin_src sh
+rm /etc/resolv.conf
+echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+#+end_src
+*** enable sessions for for the uid
+#+begin_src sh
+loginctl enable-linger <username>
+systemctl start user-runtime-dir@1000.service
+systemctl start user@1000.service
 #+end_src
 
-** Start lxc-net service =rc-service lxc-net start=
-** For internet to work
-#+begin_src bash
-  sudo rm /etc/resolv.conf
-  echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+voila !! now you can login to ur container using just
+=sudo lxc-attach -n <container-name> -- su <username>=
+** Tips and tricks
+*** Including your configs
+You can include your config in any container by just adding =/var/lib/lxc/<container-name>/config= in here just add
+#+begin_src conf
+#container specitifc config
+lxc.include = /etc/lxc/includes/containers/work.conf
 #+end_src
+see the =lxc/etc/= folder of my repo
+
+*** Mounting volumes
+In unprivilaged containers you have to use =idmap=
+Example ~lxc.mount.entry = /home/host/StudioProjects/ home/container/projects none bind,create=dir,idmap=container 0 0~
+
+This way it would mount correct permissions to even unprivileged conatiners
+*** The greatest script that ever lived
+Check out my =lxc-machine= script from the folder =config/.local/bin/= It does and contains pretty much every thing you ever need while using my workflow
