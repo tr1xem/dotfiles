@@ -349,7 +349,7 @@ myConfig =
           spawnOnce "lxqt-policykit-agent"
           -- spawnOnce "xautolock -detectsleep -time 2 -locker '/usr/bin/betterlockscreen'"
           spawnOnce "xss-lock -- betterlockscreen -l"
-          spawn "killall stalonetray; stalonetray &"
+          spawn "killall stalonetray; sleep 1 && stalonetray &"
       }
       `additionalKeysP` myKeys
 
