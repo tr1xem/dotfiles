@@ -1,61 +1,61 @@
 module Colors where
 
 data ColorScheme = ColorScheme
-  { onSurfaceVariant :: String,
-    outline :: String,
-    surfaceDim :: String,
-    surfaceContainerHighest :: String,
-    inverseSurface :: String,
-    tertiaryContainer :: String,
-    secondaryContainer :: String,
-    surfaceContainerLowest :: String,
-    surfaceContainerLow :: String,
-    surfaceContainerHigh :: String,
-    scrim :: String,
-    primaryContainer :: String,
-    secondary :: String,
-    surfaceVariant :: String,
-    inverseOnSurface :: String,
-    tertiary :: String,
-    errorContainer :: String,
-    outlineVariant :: String,
-    primary :: String,
-    onPrimaryContainer :: String,
-    errorColor :: String,
-    inversePrimary :: String,
-    onTertiaryContainer :: String,
-    colorRed :: String,
-    colorYellow :: String,
-    colorGreen :: String
+  { onSurfaceVariant :: String
+  , outline :: String
+  , surfaceDim :: String
+  , surfaceContainerHighest :: String
+  , inverseSurface :: String
+  , tertiaryContainer :: String
+  , secondaryContainer :: String
+  , surfaceContainerLowest :: String
+  , surfaceContainerLow :: String
+  , surfaceContainerHigh :: String
+  , scrim :: String
+  , primaryContainer :: String
+  , secondary :: String
+  , surfaceVariant :: String
+  , inverseOnSurface :: String
+  , tertiary :: String
+  , errorContainer :: String
+  , outlineVariant :: String
+  , primary :: String
+  , onPrimaryContainer :: String
+  , errorColor :: String
+  , inversePrimary :: String
+  , onTertiaryContainer :: String
+  , colorRed :: String
+  , colorYellow :: String
+  , colorGreen :: String
   }
 
 colors :: ColorScheme
 colors =
   ColorScheme
-    { onSurfaceVariant = "#c6c5d0",
-      outline = "#90909a",
-      surfaceDim = "#121318",
-      surfaceContainerHighest = "#34343a",
-      inverseSurface = "#e3e1e9",
-      tertiaryContainer = "#5c3c55",
-      secondaryContainer = "#434659",
-      surfaceContainerLowest = "#0d0e13",
-      surfaceContainerLow = "#1b1b21",
-      surfaceContainerHigh = "#292a2f",
-      scrim = "#000000",
-      primaryContainer = "#384379",
-      secondary = "#c3c5dd",
-      surfaceVariant = "#45464f",
-      inverseOnSurface = "#303036",
-      tertiary = "#e5bad8",
-      errorContainer = "#93000a",
-      outlineVariant = "#45464f",
-      primary = "#b9c3ff",
-      onPrimaryContainer = "#dde1ff",
-      errorColor = "#ffb4ab",
-      inversePrimary = "#505b92",
-      onTertiaryContainer = "#ffd7f2",
-      colorRed = "#ffb2b9",
-      colorYellow = "#b8cf84",
-      colorGreen = "#95d5a7"
+    { onSurfaceVariant = "#c6c5d0"
+    , outline = "#90909a"
+    , surfaceDim = "#121318"
+    , surfaceContainerHighest = "#34343a"
+    , inverseSurface = "#e3e1e9"
+    , tertiaryContainer = "#5c3c55"
+    , secondaryContainer = "#434659"
+    , surfaceContainerLowest = "#0d0e13"
+    , surfaceContainerLow = "#1b1b21"
+    , surfaceContainerHigh = "#292a2f"
+    , scrim = "#000000"
+    , primaryContainer = "#384379"
+    , secondary = "#c3c5dd"
+    , surfaceVariant = "#45464f"
+    , inverseOnSurface = "#303036"
+    , tertiary = "#e5bad8"
+    , errorContainer = "#93000a"
+    , outlineVariant = "#45464f"
+    , primary = "#b9c3ff"
+    , onPrimaryContainer = "#dde1ff"
+    , errorColor = "#ffb4ab"
+    , inversePrimary = "#505b92"
+    , onTertiaryContainer = "#ffd7f2"
+    , colorRed = "#ffb2b9"
+    , colorYellow = "#b8cf84"
+    , colorGreen = "#95d5a7"
     }
