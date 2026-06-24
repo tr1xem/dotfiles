@@ -168,7 +168,6 @@ myManageHook =
         , className =? "flameshot" -?> doFloat <+> doRaise
         , className =? "discord" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
         , className =? "equibop" -?> doRectFloat (W.RationalRect 0.25 0.25 0.5 0.5)
-        , className =? "steam_app_default" -?> doFullFloat
         , className =? "Screenkey" -?> doFloat
         , className =? "stalonetray" -?> doIgnore
         , className =? "Qalculate-gtk" -?> doCenterFloat
@@ -381,7 +380,7 @@ myConfig =
           spawnOnce "keepassxc --minimized"
           spawnOnce "lxqt-policykit-agent"
           spawnOnce "xss-lock -- betterlockscreen -l"
-          spawn "killall stalonetray;stalonetray"
+          spawnOnce "stalonetray"
       }
       `additionalKeysP` myKeys
 
