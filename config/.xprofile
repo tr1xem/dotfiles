@@ -1,6 +1,1 @@
-# container   visuals
-xhost +local:
-# container audio
-pactl load-module module-native-protocol-tcp port=4656 listen=0.0.0.0 auth-anonymous=true 2>&1 >/dev/null &
-# bluetooth
-rfkill unblock bluetooth
+xautolock -detectsleep -time 3 -locker "betterlockscreen -l" &

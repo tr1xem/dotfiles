@@ -8,6 +8,8 @@ import XMonad.Actions.Promote
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops (addEwmhWorkspaceSort, ewmh, ewmhDesktopsManageHook, ewmhDesktopsMaybeManageHook, ewmhFullscreen)
 import XMonad.Hooks.InsertPosition
+import XMonad.Layout.WindowSwitcherDecoration
+import XMonad.Layout.DraggingVisualizer
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.StatusBar
@@ -42,7 +44,7 @@ mySpacing = smartSpacingWithEdge 3
 myTitleLength = 30
 
 -- Workspaces
-myWorkspaces = ["sys", "www", "dev", "man", "vid", "gfx", "wrk:7", "wrk:8", "wrk:9", "wrk:0"]
+myWorkspaces = ["sys", "www", "dev", "man", "vid", "gfx", "wrk:7", "wrk:8", "wrk:9", "arc"]
 
 -- Mod key (Super/Windows key)
 myModMask = mod4Mask
@@ -157,6 +159,7 @@ myManageHook =
         , className =? "Gimp" -?> doShiftAndGo (myWorkspaces !! 5)
         , className =? "Thunar" -?> doShiftAndGo (myWorkspaces !! 3)
         , className =? "mpv" -?> doShiftAndGo (myWorkspaces !! 4)
+        , className =? "steam_app_default" -?> doShiftAndGo (myWorkspaces !! 9)
         , className =? "com.mitchellh.ghostty" -?> doShiftAndGo (myWorkspaces !! 2)
         , className =? "Galculator" -?> doCenterFloat
         , className =? "pwvucontrol" -?> doCenterFloat
@@ -300,21 +303,51 @@ myXmobarPP =
       { ppSep = xmobarColor (outline colors) "" " │ "
       , ppTitleSanitize = xmobarStrip
       , ppCurrent = xmobarColor (primary colors) ""
-      , ppHidden = xmobarColor (inversePrimary colors) ""
-      , -- , ppHiddenNoWindows = xmobarColor (outline colors) ""
-        ppHiddenNoWindows = \ws ->
-          if ws `elem` drop 6 myWorkspaces
+      , ppHidden = \ws ->
+            if ws `elem` init (drop 6 myWorkspaces)
+            then ""
+            else xmobarColor (inversePrimary colors) "" ws
+      , ppHiddenNoWindows = \ws ->
+            if ws `elem` init (drop 6 myWorkspaces)
             then ""
             else xmobarColor (outline colors) "" ws
       , ppUrgent = xmobarColor (colorRed colors) (colorYellow colors)
       , ppOrder = \[ws, l, _, wins] -> [ws, wins]
-      , ppExtras = [logTitles formatFocused formatUnfocused]
+      , ppExtras = [logTitlesPinned]
       }
   where
     formatFocused = wrap (xmobarColor (primary colors) "" "[") (xmobarColor (primary colors) "" "]") . xmobarColor (onPrimaryContainer colors) "" . ppWindow
     formatUnfocused = wrap (xmobarColor (outline colors) "" "[") (xmobarColor (outline colors) "" "]") . xmobarColor (outline colors) "" . ppWindow
     ppWindow :: String -> String
     ppWindow = xmobarRaw . (\w -> if null w then "untitled" else w) . shorten myTitleLength
+    logTitlesPinned :: Logger
+    logTitlesPinned = do
+        ws <- gets windowset
+        let currWs = W.workspace (W.current ws)
+            focused = fmap W.focus (W.stack currWs)
+            currTag = W.tag currWs
+            stackWins Nothing = []
+            stackWins (Just s) = W.up s ++ [W.focus s] ++ W.down s
+            wins = stackWins (W.stack currWs)
+            otherWins = concatMap (\s -> if W.tag s /= currTag then stackWins (W.stack s) else []) (W.workspaces ws)
+            isCopied w = w `elem` otherWins
+        titles <- mapM (runQuery title) wins
+        let ppCop t =
+                wrap (xmobarColor (tertiary colors) "" "[") (xmobarColor (tertiary colors) "" "]")
+                    . xmobarColor (tertiary colors) ""
+                    . ppWindow
+                    $ t
+            ppFocCop t =
+                wrap (xmobarColor (tertiary colors) "" "<") (xmobarColor (tertiary colors) "" ">")
+                    . xmobarColor (tertiary colors) ""
+                    . ppWindow
+                    $ t
+            formatOne w t
+                | Just w == focused, isCopied w = ppFocCop t
+                | Just w == focused = formatFocused t
+                | isCopied w = ppCop t
+                | otherwise = formatUnfocused t
+        return . Just . unwords . Prelude.filter (not . null) $ zipWith formatOne wins titles
 
 -- Main configuration
 myConfig =
@@ -347,9 +380,8 @@ myConfig =
           spawnOnce "~/.fehbg"
           spawnOnce "keepassxc --minimized"
           spawnOnce "lxqt-policykit-agent"
-          -- spawnOnce "xautolock -detectsleep -time 2 -locker '/usr/bin/betterlockscreen'"
           spawnOnce "xss-lock -- betterlockscreen -l"
-          spawn "killall stalonetray; sleep 1 && stalonetray &"
+          spawn "killall stalonetray;stalonetray"
       }
       `additionalKeysP` myKeys
 

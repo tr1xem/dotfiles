@@ -44,7 +44,7 @@ EDITOR=vim visudo
 rm /etc/resolv.conf
 echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 #+end_src
-*** Enable sessions for for the uid
+*** enable sessions for for the uid
 #+begin_src sh
 loginctl enable-linger <username>
 systemctl start user-runtime-dir@1000.service

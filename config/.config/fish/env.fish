@@ -26,7 +26,6 @@ set -gx CCACHE_CPP2 yes
 set -gx CMAKE_C_COMPILER_LAUNCHER ccache
 set -gx CMAKE_CXX_COMPILER_LAUNCHER ccache
 set -gx TERM xterm-256color
-set -gx SHELL /bin/fish
 set -gx DBUS_SESSION_BUS_ADDRESS "unix:path=/run/user/1000/bus"
 
 set -Ux TERM xterm-kitty
