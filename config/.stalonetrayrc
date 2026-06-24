@@ -29,11 +29,11 @@ dockapp_mode simple
                              # can be from 0 (disabled) to 3; this setting works
                              # with tinting and/or transparent and/or pixmap
                              # backgrounds
-fuzzy_edges 0
+fuzzy_edges 1
 
 # geometry <geometry>        # tray's geometry in standard X notation; width and
                              # height are specified in slot_size multiples
-geometry 1x1-6+2
+geometry 1x1-4+2
 
 # grow_gravity <gravity>     # one of N, S, E, W, NW, NE, SW, SE; tray will grow
                              # in the direction opposite to one specified by
@@ -43,16 +43,16 @@ geometry 1x1-6+2
 grow_gravity SE
 
 # icon_gravity <gravity>     # icon placement gravity, one of NW, NE, SW, SE
-icon_gravity NW
+icon_gravity SW
 
 # icon_size <int>            # specifies dimensions of an icon
-icon_size 18
+icon_size 20
 
 # slot_size <w>[x<h>]        # specifies width and hight of an icon slot that
                              # contains icon; must be larger than icon size;
                              # height is set to width if it is omitted;
                              # defaults to icon size
-slot_size 22
+slot_size 20x20
 
 # slot_gap <pixels>          # gap in pixels inserted between adjacent icons;
                              # no gap is added before the first or after the
@@ -64,7 +64,7 @@ slot_size 22
                              # when stalonetray configured with --enable-debug)
 log_level err
 
-kludges force_icons_size,use_icons_hints
+kludges force_icons_size
 # kludges kludge[,kludge]    # enable specific kludges to work around
                              # non-conforming WMs and/or stalonetray bugs.
                              # Argument is a comma-separated list of
@@ -78,7 +78,7 @@ kludges force_icons_size,use_icons_hints
 
 # max_geometry <geometry>    # maximal tray dimensions; 0 in width/height means
                              # no limit
-max_geometry 0x0
+max_geometry 21x21
 
 # monitor <int>              # specifies which monitor to draw the tray in
 # monitor 0
@@ -144,7 +144,7 @@ sticky true
 # transparent [<bool>]       # whether to use root-transparency (background
                              # image must be set with Esetroot or compatible
                              # utility)
-transparent false
+transparent true
 
 # vertical [<bool>]          # whether to use vertical layout (horisontal layout
                              # is used by default)

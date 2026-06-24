@@ -381,6 +381,7 @@ myConfig =
           spawnOnce "lxqt-policykit-agent"
           spawnOnce "xss-lock -- betterlockscreen -l"
           spawnOnce "stalonetray"
+          spawnOnce "snixembed --fork"
       }
       `additionalKeysP` myKeys
 

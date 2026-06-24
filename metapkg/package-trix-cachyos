@@ -29,6 +29,7 @@ depends=(
     tlp
     tlpui
     tlp-rdw
+man-pages
 )
 
 # vim:ft=sh

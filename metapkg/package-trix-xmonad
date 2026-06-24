@@ -10,7 +10,7 @@ depends=(
     xmonad
     xmonad-contrib
     xmonad-extras
-    haskell-language-server
+    # haskell-language-server
     xorg-xset
     xorg-xsetroot
     xorg-setxkbmap
@@ -21,7 +21,7 @@ depends=(
     xlibre-xserver
     xlibre-xserver-common
     xlibre-xserver-devel
-    # ly
+    ly-openrc
     fastfetch
 )
 
