@@ -302,10 +302,7 @@ myXmobarPP =
       { ppSep = xmobarColor (outline colors) "" " │ "
       , ppTitleSanitize = xmobarStrip
       , ppCurrent = xmobarColor (primary colors) ""
-      , ppHidden = \ws ->
-            if ws `elem` init (drop 6 myWorkspaces)
-            then ""
-            else xmobarColor (inversePrimary colors) "" ws
+      , ppHidden = xmobarColor (inversePrimary colors) ""
       , ppHiddenNoWindows = \ws ->
             if ws `elem` init (drop 6 myWorkspaces)
             then ""
