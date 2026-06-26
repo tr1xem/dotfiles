@@ -6,17 +6,17 @@ span_image=false
 lock_timeout=300
 fx_list=(dim blur dimblur pixel dimpixel color)
 dim_level=40
-blur_level=1
+blur_level=8
 pixel_scale=10,1000
 solid_color=333333
 wallpaper_cmd="feh --bg-fill"
 quiet=false
 
 # default theme
-loginbox=00000066
+loginbox=22222255
 loginshadow=00000000
-locktext="Type password to unlock..."
-font="sans-serif"
+locktext="Touch ID or Enter Password"
+font="Roboto"
 ringcolor=ffffffff
 insidecolor=00000000
 separatorcolor=00000000
