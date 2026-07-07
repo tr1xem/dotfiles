@@ -1,10 +1,16 @@
 [Configuration]
-LastActiveMode=THUNAR_RENAMER_MODE_NAME
+LastActiveMode=THUNAR_RENAMER_MODE_BOTH
 LastActiveRenamer=ThunarSbrReplaceRenamer
+
+[ThunarSbrInsertRenamer]
+Offset=0
+Text=.bak
+Mode=THUNAR_SBR_INSERT_MODE_INSERT
+OffsetMode=THUNAR_SBR_OFFSET_MODE_RIGHT
 
 [ThunarSbrReplaceRenamer]
 CaseSensitive=FALSE
 Replacement=
-Pattern=_compressed
-Regexp=FALSE
+Pattern=\ \\(copy 1\\)
+Regexp=TRUE
 

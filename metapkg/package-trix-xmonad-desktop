@@ -12,7 +12,7 @@ depends=(
     dunst
     feh
     picom-git
-    trayer
+    # trayer
     betterlockscreen
     flameshot
     vicinae-bin
@@ -21,7 +21,7 @@ depends=(
     adwaita-qt5
     adwaita-qt6
     tela-circle-icon-theme-all
-    nwg-look
+    # nwg-look
     pwvucontrol
     viewnior
     thunar
@@ -30,7 +30,7 @@ depends=(
     cronie
     cronie-openrc
     qt6ct
-    gnome-keyring
+    # gnome-keyring
     lxqt-policykit
 )
 

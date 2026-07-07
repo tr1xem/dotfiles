@@ -48,12 +48,12 @@ else
         exit 1
     fi
 fi
-pl1=80000000
+# pl1=80000000
 pl2=100000000
 currentpl=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw)
 if [ "$currentpl" != "$pl1" ]; then
     echo "Setting PL1 to 80W"
-    echo $pl1 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
+    # echo $pl1 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
     echo $pl2 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw
     sudo chmod o+r /sys/class/powercap/intel-rapl\:0/energy_uj
     echo "[tr1x_em] :powerlimits set for gaming " | tee /dev/kmsg

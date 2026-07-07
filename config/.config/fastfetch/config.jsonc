@@ -98,7 +98,7 @@
     },
     {
       "type": "command",
-      "key": "  󱦟 OS Age ",
+      "key": "  󱦟 Age ",
       "keyColor": "red",
       "text": "echo $(( ( $(date +%s) - 1734570000 ) / 86400 )) days"
     },

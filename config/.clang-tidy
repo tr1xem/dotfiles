@@ -1,0 +1,27 @@
+Checks: >
+    bugprone-*,
+    clang-analyzer-*,
+    performance-*,
+    portability-*,
+    readability-*,
+    modernize-*,
+    misc-*,
+    hicpp-*,
+    cppcoreguidelines-*,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-owning-memory,
+    -readability-magic-numbers,
+    -readability-identifier-length,
+    -modernize-use-trailing-return-type,
+    -modernize-use-auto,
+    -performance-avoid-endl,
+    -cppcoreguidelines-avoid-c-arrays,
+    -cppcoreguidelines-pro-type-vararg,
+    -readability-function-cognitive-complexity,
+    -readability-function-size,
+    -readability-isolate-declaration,
+    -readability-implicit-bool-conversion,
+
+WarningsAsErrors: "bugprone-*,clang-analyzer-*"
+
+FormatStyle: file

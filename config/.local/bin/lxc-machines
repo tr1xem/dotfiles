@@ -397,7 +397,9 @@ elif [[ "${1:-}" == shell ]]; then
 			--set-var "USER=$user" \
 			--set-var "LOGNAME=$user" \
 			--set-var "DISPLAY=${DISPLAY:-:0}" \
-			-u 1000 --  /usr/bin/fish
+			-u 1000 -- \
+            /usr/bin/fish -c "cd \$HOME; exec fish"
+
 	else
 		echo "$SCRIPT_NAME: failed to run shell inside $machine" >&2
 	fi

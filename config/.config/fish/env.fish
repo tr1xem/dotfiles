@@ -47,6 +47,8 @@ set -x OPENAI_BASE_URL http://0.0.0.0:4141
 # set -xg DISPLAY :0         # match the XWayland display
 # set -xg XAUTHORITY /run/user/1000/.Xauthority  # optional, if X server requires auth
 
-set -xg ANDROID_HOME /run/media/saumya/tank/public/Android/SDK
-set -xg ANDROID_SDK_ROOT /run/media/saumya/tank/public/Android/SDK
-set -xg JAVA_HOME /usr/lib/jvm/default
+export ANDROID_HOME=/opt/android-sdk
+export ANDROID_SDK_ROOT=$ANDROID_HOME
+fish_add_path $ANDROID_HOME/platform-tools
+fish_add_path $ANDROID_HOME/cmdline-tools/latest/bin
+fish_add_path $ANDROID_HOME/emulator

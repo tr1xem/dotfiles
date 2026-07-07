@@ -101,5 +101,6 @@ end
 alias rm='rm -i'
 alias orgmode='nvim -c "cd ~/personal/orgfiles"  -c "Oil"'
 alias yay='paru'
+alias flutter='fvm flutter'
 
 

@@ -15,7 +15,7 @@ quiet=false
 # default theme
 loginbox=22222255
 loginshadow=00000000
-locktext="Touch ID or Enter Password"
+locktext="Enter Password"
 font="Roboto"
 ringcolor=ffffffff
 insidecolor=00000000

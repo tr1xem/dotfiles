@@ -159,7 +159,9 @@ myManageHook =
         , className =? "Gimp" -?> doShiftAndGo (myWorkspaces !! 5)
         , className =? "Thunar" -?> doShiftAndGo (myWorkspaces !! 3)
         , className =? "mpv" -?> doShiftAndGo (myWorkspaces !! 4)
+        , className =? "heroic" -?> doShiftAndGo (myWorkspaces !! 9)
         , className =? "steam_app_default" -?> doShiftAndGo (myWorkspaces !! 9)
+        , className =? "steam" -?> doShiftAndGo (myWorkspaces !! 9)
         , className =? "com.mitchellh.ghostty" -?> doShiftAndGo (myWorkspaces !! 2)
         , className =? "Galculator" -?> doCenterFloat
         , className =? "pwvucontrol" -?> doCenterFloat
@@ -236,6 +238,7 @@ myKeys =
   , ("M-c", spawn "~/.local/bin/lxc-machines menu")
   , ("<Print>", spawn "dbus-launch flameshot gui")
   , ("M-w", spawn "~/.local/bin/wallpaper.sh")
+  , ("M-g", spawn "heroic")
   , ("M-<Space>", spawn "vicinae toggle")
   , ("<F23>", spawn "vicinae toggle")
   , ("M-v", spawn "vicinae vicinae://launch/clipboard/history")
@@ -368,12 +371,12 @@ myConfig =
           <> Hacks.fixSteamFlicker
           <> Hacks.windowedFullscreenFixEventHook
       , startupHook = do
+          spawnOnce "~/.fehbg"
           spawn "xsetroot -cursor_name left_ptr"
           spawn "vicinae server --replace"
           spawnOnce "picom"
           spawnOnce "dunst"
           spawnOnce "udiskie -s -a"
-          spawnOnce "~/.fehbg"
           spawnOnce "keepassxc --minimized"
           spawnOnce "lxqt-policykit-agent"
           spawnOnce "xss-lock -- betterlockscreen -l"

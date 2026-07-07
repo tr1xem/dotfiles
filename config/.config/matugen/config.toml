@@ -129,6 +129,14 @@ blend = true
 color = "#A52A2A"
 blend = true
 
+[templates.stalonetrayrc]
+input_path = '~/.config/matugen/templates/.stalonetrayrc'
+output_path = '~/dotfiles/config/.stalonetrayrc'
+post_hook = 'killall stalonetray; nohup stalonetray >/dev/null 2>&1 &'
+
+[templates.iconicul]
+input_path = '~/.config/matugen/templates/iconicul.json'
+output_path = '~/.cache/iconicul.json'
 # [templates.rewaita]
 # input_path = '~/.config/matugen/templates/matugen 😎.css'
 # output_path = '~/.local/share/dark/Matugen 😎.css'
