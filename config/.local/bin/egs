@@ -1,0 +1,710 @@
+#!/usr/bin/env bash
+
+# EGSwitcher - A lightweight Bash utility for managing multiple Epic Games accounts on Heroic Games Launcher.
+# Copyright (C) 2025 doccy-doc
+# Copyright (C) 2026 tr1x_em
+# SPDX-License-Identifier: GPL-3.0-only
+
+set -euo pipefail
+
+# =========================
+# USER PERMS CHECK
+# =========================
+
+[[ $(id -u) -ne 0 ]] || { echo "ERROR: Cannot run as root." >&2; exit 1; }
+[[ $(whoami) == "$USER" ]] || { echo "ERROR: User mismatch ($USER vs $(whoami))." >&2; exit 1; }
+
+# =========================
+# GLOBAL VARIABLES
+# =========================
+
+# PROGRAM
+# ========
+PROG_NAME=$(basename -- "$0")
+PROG_XDG_NAME="egswitcher"
+VERSION="1.1.0"
+
+# XDG FILES
+# ==========
+PROG_XDG_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/${PROG_XDG_NAME}"
+PROG_XDG_TMP="${PROG_XDG_CACHE}/tmp"
+PROG_XDG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/${PROG_XDG_NAME}"
+PROG_XDG_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/${PROG_XDG_NAME}"
+ACCOUNTS_FILE="${PROG_XDG_DIR}/accounts.state"
+CONFIG_FILE="${PROG_XDG_CONFIG}/${PROG_XDG_NAME}.conf"
+
+# CONFIG VARIABLES
+# =================
+CONFIG_VARS=("EGS_DEBUG")
+
+# FIRST-RUN INSTALL
+# ==================
+[[ -d "$PROG_XDG_TMP" ]] || mkdir -p "$PROG_XDG_TMP"
+[[ -d "$PROG_XDG_DIR" ]] || mkdir -p "$PROG_XDG_DIR"
+[[ -d "$PROG_XDG_CONFIG" ]] || mkdir -p "$PROG_XDG_CONFIG"
+[[ -f "$CONFIG_FILE" ]] || install -m 644 -D <(printf "%s=\n" "${CONFIG_VARS[@]}") "$CONFIG_FILE"
+[[ -f "$ACCOUNTS_FILE" ]] || install -m 600 -D /dev/null "$ACCOUNTS_FILE"
+
+# SOURCE CONFIG FILE
+# ===================
+# shellcheck source=/dev/null
+. "${CONFIG_FILE}"
+
+# FLAGS & PATHS
+# ======
+: "${EGS_DEBUG:=0}"
+EGS_DEBUG="${EGSDEBUG:-$EGS_DEBUG}"
+
+HEROIC_CONFIG_DIR="${HOME}/.config/heroic/legendaryConfig/legendary"
+HEROIC_CONFIG_FILE="${HEROIC_CONFIG_DIR}/user.json"
+
+SHUTDOWN_TIMEOUT=15
+
+# =========================
+# MESSAGE HANDLERS
+# =========================
+
+die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+warn() { printf 'WARNING: %s\n' "$*" >&2; }
+info() { printf 'INFO: %s\n' "$*" >&2; }
+success() { printf 'SUCCESS: %s\n' "$*" >&2; }
+debug() { [[ "$EGS_DEBUG" = "1" ]] && printf 'DEBUG: %s \n' "$@" >&2 || true; }
+
+# =========================
+# BOOTSTRAP
+# =========================
+
+check_dep() {
+    command -v "$1" &>/dev/null || die "Missing dependency: $1 not installed"
+}
+
+init_deps() {
+    check_dep "rsync"
+    check_dep "pgrep"
+    check_dep "pkill"
+}
+
+trap 'rm -rf "${PROG_XDG_TMP}"' EXIT
+
+# =========================
+# VALIDATION
+# =========================
+
+sanitise_sed_path() {
+    local path="$1"
+    path="${path%/}"
+    path="${path%\\}"
+    printf '%s\n' "$path" | sed "s/[\\\\&/'\$\`]/\\\\&/g; s/'/'\\\\\\\''/g"
+}
+
+guard_config_file() {
+    for var in "${CONFIG_VARS[@]}"; do
+         grep -q "^${var}=" "$CONFIG_FILE" || die "Config corrupted: missing $var"
+    done
+    return 0
+}
+
+validate_account_name() {
+    local name="$1"
+    [[ "$name" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$ ]] || return 1
+    return 0
+}
+
+guard_accounts_file() {
+    local marks names ids
+    [[ -s "$ACCOUNTS_FILE" ]] || return 0
+
+    marks=$(grep -c '^\* ' "$ACCOUNTS_FILE" || true)
+    [[ "$marks" -le 1 ]] || die "accounts.db corrupted: multiple active (*) entries"
+
+    names=$(awk '{print $2}' "$ACCOUNTS_FILE" | sort | uniq -d || true)
+    [[ -z "$names" ]] || die "accounts.db corrupted: duplicate account names"
+
+    ids=$(awk '{print $3}' "$ACCOUNTS_FILE" | sort | uniq -d || true)
+    [[ -z "$ids" ]] || die "accounts.db corrupted: duplicate account IDs"
+
+    awk '
+        NF==0 {next}
+        NF!=3 {exit 1}
+        $1!="*" && $1!="-" {exit 1}
+    ' "$ACCOUNTS_FILE" || die "accounts.db corrupted: invalid line format"
+}
+
+guard_heroic_config() {
+    [[ -d "$HEROIC_CONFIG_DIR" ]] || die "Heroic/Legendary config directory not found at $HEROIC_CONFIG_DIR. Is Heroic installed?"
+}
+
+# =========================
+# CRUD
+# =========================
+
+account_by_id() {
+    guard_accounts_file
+    awk -v id="$1" '$3==id {print $2; exit}' "$ACCOUNTS_FILE"
+}
+
+account_by_name() {
+    guard_accounts_file
+    awk -v n="$1" '$2==n {print $3; exit}' "$ACCOUNTS_FILE"
+}
+
+account_exists() {
+    guard_accounts_file
+    awk -v n="$1" '$2==n {found=1; exit} END {exit found ? 0 : 1}' "$ACCOUNTS_FILE"
+}
+
+active_account() {
+    guard_accounts_file
+    awk '$1=="*" {print $2; exit}' "$ACCOUNTS_FILE"
+}
+
+construct_entry() {
+    local name="$1" uuid="$2" active="$3" mark="-"
+    [[ "$active" == "true" ]] && mark="*"
+    printf "%s %s %s\n" "$mark" "$name" "$uuid"
+}
+
+commit_entry() {
+    guard_accounts_file
+    local name="$1" uuid="$2" active="${3:-true}" tmp="${PROG_XDG_TMP}/accounts-upsert.tmp.$$"  line
+    line=$(construct_entry "$name" "$uuid" "$active")
+
+    awk -v n="$name" -v L="$line" '
+        BEGIN { found=0 }
+        $2 == n { print L; found=1; next }
+        { print }
+        END { if (!found) print L }
+    ' "$ACCOUNTS_FILE" > "$tmp" && mv "$tmp" "$ACCOUNTS_FILE"
+}
+
+set_inactive() {
+    guard_accounts_file
+    local name="$1" uuid
+    uuid="$(account_by_name "$name")"
+
+    [[ -n "$uuid" ]] || die "Cannot disable non-existent account: '$name'"
+    commit_entry "$name" "$uuid" "false"
+}
+
+set_active() {
+    guard_accounts_file
+    local name="$1" uuid old_name
+    uuid="$(account_by_name "$name")"
+    old_name="$(active_account)"
+
+    [[ -n "$uuid" ]] || die "Cannot activate non-existent account: '$name'"
+    [[ -n "$old_name" ]] && set_inactive "$old_name"
+    commit_entry "$name" "$uuid" "true"
+}
+
+delete_entry() {
+    guard_accounts_file
+    local name="$1" tmp="${PROG_XDG_TMP}/accounts-delete.tmp.$$"
+
+    awk -v n="$name" '$2 != n {print}' "$ACCOUNTS_FILE" >"$tmp" || die "Failed to create temp file"
+    mv -- "$tmp" "$ACCOUNTS_FILE" || die "Failed to update accounts file"
+}
+
+# =========================
+# FILE MANIPULATION
+# =========================
+
+save_account_files() {
+    guard_accounts_file
+    guard_heroic_config
+    local name="$1"
+    local store="${PROG_XDG_DIR}/${name}"
+
+    debug "Syncing $name from $HEROIC_CONFIG_FILE to $store"
+    mkdir -p "$store"
+    [[ -f "$HEROIC_CONFIG_FILE" ]] || die "No user.json to save. Are you logged in?"
+    rsync -a "$HEROIC_CONFIG_FILE" "$store/"
+}
+
+load_account_files() {
+    guard_accounts_file
+    guard_heroic_config
+    local name="$1"
+    local store="${PROG_XDG_DIR}/${name}"
+
+    debug "Syncing $name from $store to $HEROIC_CONFIG_FILE"
+    mkdir -p "$HEROIC_CONFIG_DIR"
+    rsync -a "${store}/$(basename "$HEROIC_CONFIG_FILE")" "$HEROIC_CONFIG_DIR/"
+    debug "Account \"$name\" synced"
+}
+
+save_config_files() {
+    guard_config_file
+    local key="$1" value="$2" san_value
+    san_value=$(sanitise_sed_path "$value")
+
+    debug "Updating ${key} to ${value}"
+    sed -i "s/^${key}=.*/${key}='${san_value}'/" "$CONFIG_FILE"
+    debug "Config ${key} updated"
+}
+
+# =========================
+# HEROIC PROCESS MANAGEMENT
+# =========================
+
+is_heroic_running() {
+    if pgrep -x "heroic" >/dev/null || pgrep -f "legendary" >/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+kill_heroic() {
+    local tries=15 i
+    local delay=$((SHUTDOWN_TIMEOUT / tries))
+
+    ! is_heroic_running && { debug "No Heroic process found. Skipping kill"; return 0; }
+
+    info "Attempting to close Heroic Games Launcher..."
+    pkill -x "heroic" || true
+
+    printf "Waiting" >&2
+    for ((i= 1; i<=tries; i++)); do
+        sleep "$delay"
+        printf "." >&2
+        ! is_heroic_running && printf "\n" >&2 && success "Heroic Closed" && return 0
+    done
+
+    printf "\n" >&2
+    warn "Heroic did not exit gracefully. Force killing..."
+    pkill -9 -x "heroic" || true
+    pkill -9 -f "legendary" || true
+    ! is_heroic_running && success "Heroic Force Closed" && return 0
+
+    die "Failed to terminate Heroic Games Launcher. Aborted."
+}
+
+get_hkey_id() {
+    guard_heroic_config
+    local hkey
+
+    if [[ -f "$HEROIC_CONFIG_FILE" ]]; then
+        hkey=$(grep -oP '"account_id"\s*:\s*"\K[^"]+' "$HEROIC_CONFIG_FILE" 2>/dev/null || echo "")
+
+        if [[ -n "$hkey" ]]; then
+            debug "Extracted account_id: ${hkey:0:4}****${hkey: -4}"
+        else
+            debug "Could not extract account_id from user.json"
+        fi
+
+        printf '%s' "$hkey"
+        return 0
+    else
+        return 1
+    fi
+}
+
+set_hkey_id() {
+    guard_heroic_config
+    local uuid="${1:-}"
+
+    if [[ -f "$HEROIC_CONFIG_FILE" ]]; then
+        sed -i -E 's/("account_id"\s*:\s*")[^"]+(")/\1'"$uuid"'\2/' "$HEROIC_CONFIG_FILE"
+    fi
+}
+
+# =========================
+# COMMANDS
+# =========================
+
+handle_unknown_session() {
+    init_deps
+    guard_accounts_file
+    local hkey="$1" target_name="${2:-}" new_name
+
+    if [[ -n "$target_name" ]] && validate_account_name "$target_name" && ! account_exists "$target_name"; then
+        new_name="$target_name"
+    else
+        [[ -n "$target_name" ]] && warn "Invalid account name: ${target_name}. Please try again."
+        while true; do
+            read -rp "Account name: " new_name
+            if ! validate_account_name "$new_name"; then
+                warn "Invalid account name: ${new_name}. Please try again: "
+            elif account_exists "$new_name"; then
+                warn "The name ${new_name} already exists. Please try again: "
+            else
+                break
+            fi
+        done
+    fi
+
+    save_account_files "$new_name"
+    commit_entry "$new_name" "$hkey" "true"
+    set_active "$new_name"
+    success "Registered unknown session as '$new_name'."
+    return 0
+}
+
+cmd_new() {
+    [[ "$#" -le 1 ]] || die "Usage: ${PROG_NAME} new [name]"
+    init_deps
+    guard_accounts_file
+    local new_name="${1:-}" old_name hkey existing ans
+
+    if [[ -n "$new_name" ]] && ! validate_account_name "$new_name"; then
+        warn "Invalid name: ${new_name}"
+        new_name=""
+    fi
+
+    if [[ -z "$new_name" ]]; then
+        while true; do
+            read -rp "Enter name for new account: " new_name
+            validate_account_name "$new_name" && break
+            warn "Invalid account name. Please try again:"
+        done
+    fi
+
+    old_name=$(active_account)
+    hkey=$(get_hkey_id) || warn "Heroic config not found. Assuming fresh setup."
+
+    validate_account_name "$new_name" || die "invalid account name: $new_name"
+    account_exists "$new_name" && die "Name already exists"
+    kill_heroic
+
+    if [[ -n "$hkey" ]]; then
+        existing=$(account_by_id "$hkey")
+        if [[ -n "$existing" ]]; then
+            save_account_files "$existing"
+        else
+            while true; do
+                read -rp "Unrecognised session detected. Claim as '$new_name'? [y/N] " ans
+                case "$ans" in
+                    y|Y)
+                        info "Creating new account: $new_name"
+                        handle_unknown_session "$hkey" "$new_name" || die "Aborted. Unable to claim account."
+                        exit 0
+                        ;;
+                    x|X|n|N)
+                        warn "Abandoned existing account"
+                        break
+                        ;;
+                    *)
+                        warn "Unrecognised input: $ans. Please enter Y or N: "
+                        ;;
+                esac
+            done
+        fi
+    fi
+
+    [[ -n "$old_name" ]] && set_inactive "$old_name"
+    rm -f "${HEROIC_CONFIG_FILE}"
+
+    success "Heroic cleared. Please login to Epic Games via Heroic Launcher now."
+    while true; do
+        read -rp "Done logging in? [y/X] " ans
+        case "$ans" in
+            y|Y)
+                info "Finalizing new account: $new_name"
+                hkey=$(get_hkey_id) || die "account_id not found in user.json. Did you log in?"
+                [[ -n "$hkey" ]] || die "Account ID is empty. Did you log in?"
+
+                save_account_files "$new_name"
+                [[ -n "$old_name" ]] && [[ "$old_name" != "$new_name" ]] && set_inactive "$old_name"
+                commit_entry "$new_name" "$hkey" "true"
+                set_active "$new_name"
+                success "Registered new session as '$new_name'."
+                exit
+                ;;
+            x|X|n|N)
+                info "Aborted. Attempting to restore account: $old_name"
+                kill_heroic
+                if [[ -n "$old_name" ]]; then
+                    cmd_load "$old_name"
+                    die "Aborted. Restored ${old_name}"
+                else
+                    die "No previous account to load. Cleared Heroic state."
+                fi
+                ;;
+            *)
+                warn "Unrecognised input. Please enter Y [done] or X [abort]: "
+                ;;
+        esac
+    done
+}
+
+cmd_save() {
+    [[ "$#" -le 1 ]] || die "Usage: ${PROG_NAME} save [name]"
+    init_deps
+    guard_accounts_file
+    local name="${1:-}" hkey active_name uuid active
+
+    [[ -n "$name" ]] && { validate_account_name "$name" || die "invalid account name: $name" ; }
+    hkey=$(get_hkey_id) || die "user.json not found. If this is a fresh install, please log in first."
+    [[ -n "$hkey" ]] || die "No Epic account logged into Heroic."
+    active_name=$(account_by_id "$hkey")
+
+    if [[ -z "$name" ]]; then
+        info "Name not set. Resolving..."
+        if [ -n "$active_name" ]; then
+            info "Found existing $active_name"
+            name="$active_name"
+        else
+            info "Unknown account found. Starting wizard..."
+            cmd_new
+            return
+        fi
+    fi
+
+    if account_exists "$name"; then
+        info "Found account. Resolving..."
+        uuid=$(account_by_name "$name")
+        [[ "$uuid" = "$hkey" ]] || die "Account $name exists with different ID"
+    else
+        info "Account $name not found."
+        [[ -z "$active_name" ]] || die "Account already saved under name '$active_name'"
+        info "Unknown account found. Starting wizard..."
+        cmd_new "$name"
+        return
+    fi
+
+    active=$(active_account)
+    save_account_files "$name"
+    [[ -n "$active" ]] && [[ "$active" != "$name" ]] && set_inactive "$active"
+    commit_entry "$name" "$hkey" "true"
+    success "Saved account: '$name'."
+}
+
+cmd_load() {
+    [[ "$#" -eq 1 ]] || die "Usage: ${PROG_NAME} load <name>"
+    init_deps
+    guard_accounts_file
+    local name="$1" uuid hkey active_name ans
+
+    validate_account_name "$name" || die "invalid account name: $name"
+    account_exists "$name" || die "Account not found"
+    uuid=$(account_by_name "$name")
+    hkey=$(get_hkey_id) || true
+    kill_heroic
+
+    if [[ -n "$hkey" ]]; then
+        active_name=$(account_by_id "$hkey")
+        if account_exists "${active_name:-}"; then
+            save_account_files "$active_name"
+        else
+            while true; do
+                read -rp "Unrecognised session detected. Save before proceeding? [y/N] " ans
+                case "$ans" in
+                    y|Y)
+                        info "Starting wizard..."
+                        handle_unknown_session "$hkey" || die "Aborted. Unable to claim account."
+                        break
+                        ;;
+                    x|X|n|N)
+                        warn "Abandoned existing account"
+                        break
+                        ;;
+                    *)
+                        warn "Unrecognised input: $ans. Please enter Y or N: "
+                        ;;
+                esac
+            done
+        fi
+    fi
+
+    set_hkey_id "$uuid"
+    load_account_files "$name"
+    set_active "$name"
+    success "Loaded account: '$name'. You can now launch Heroic."
+}
+
+cmd_unload() {
+    init_deps
+    guard_accounts_file
+    local name hkey existing ans
+
+    name=$(active_account)
+    hkey=$(get_hkey_id) || die "Heroic config not found. Nothing to do"
+    [[ -n "$hkey" ]] || die "No Epic account logged in. Nothing to do"
+    kill_heroic
+
+    existing=$(account_by_id "$hkey")
+    if [[ -n "$existing" ]]; then
+        save_account_files "$existing"
+    else
+        while true; do
+            read -rp "Unrecognised session detected. Save before proceeding? [y/N] " ans
+            case "$ans" in
+                y|Y)
+                    info "Starting wizard..."
+                    handle_unknown_session "$hkey" || die "Aborted. Unable to claim account."
+                    break
+                    ;;
+                x|X|n|N)
+                    warn "Abandoned existing account"
+                    break
+                    ;;
+                *)
+                    warn "Unrecognised input. Please enter Y or N: "
+                    ;;
+            esac
+        done
+    fi
+
+    [[ -n "$name" ]] && { rm -f "${HEROIC_CONFIG_FILE}" && set_inactive "$name" || die "Could not unset account" ; }
+    success "Heroic state cleared. No active account"
+}
+
+cmd_delete() {
+    [[ "$#" -eq 1 ]] || die "Usage: ${PROG_NAME} delete <name>"
+    guard_accounts_file
+    local name="$1"
+
+    validate_account_name "$name" || die "invalid account name: $name"
+    account_exists "$name" || die "Account not found"
+
+    delete_entry "$name"
+    rm -rf -- "${PROG_XDG_DIR:?}/${name}"
+    success "Deleted account: $name"
+}
+
+cmd_rename() {
+    [[ "$#" -eq 2 ]] || die "Usage: ${PROG_NAME} rename <old_name> <new_name>"
+    guard_accounts_file
+    local old_name="$1" new_name="$2"
+
+    validate_account_name "$new_name" || die "invalid account name: $new_name"
+    validate_account_name "$old_name" || die "invalid account name: $old_name"
+    account_exists "$old_name" || die "Source name $old_name not found"
+    ! account_exists "$new_name" || die "Target name $new_name already exists"
+
+    mv -- "${PROG_XDG_DIR}/${old_name}" "${PROG_XDG_DIR}/${new_name}"
+    sed -i "s/^\\([*-]\\) $old_name /\\1 $new_name /" "$ACCOUNTS_FILE"
+    success "Renamed $old_name to $new_name"
+}
+
+cmd_list() {
+    guard_accounts_file
+
+    printf "%-8s %-20s %s\n" STATUS NAME ID
+    printf "%-8s %-20s %s\n" ------ ---- --
+    while read -r mark name id; do
+        status=$([ "$mark" = "*" ] && echo ACTIVE || echo "")
+        printf "%-8s %-20s %s\n" "$status" "$name" "${id: 0:4}...${id: -4:4}"
+    done <"$ACCOUNTS_FILE"
+}
+
+cmd_config() {
+    [[ $# -le 2 ]] || die "Usage: ${PROG_NAME} config [<key> <value>]. e.g. config debug 1"
+    guard_config_file
+    local key_suffix="${1:-}" value="${2:-}" key_exists=0 key_name
+
+    if [[ $# -lt 1 ]]; then
+        info 'Config file (key: value): ' && sed -r 's/^(EGS_)?([^=]+)=/\L\2\E: /' "$CONFIG_FILE"
+        return
+    fi
+
+    declare -u "key_name=EGS_${key_suffix}"
+
+    for source_key in "${CONFIG_VARS[@]}"; do
+        [[ "$source_key" == "$key_name" ]] && key_exists=1 && break
+    done
+
+    [[ "$key_exists" -eq 1 ]] || die "Invalid key: '$key_suffix'. Valid options: ${CONFIG_VARS[*]}"
+
+    if [[ -z "$value" ]]; then
+        debug "No value given for key: ${key_name}"
+        while true; do
+            read -re -p "Enter the new ${key_suffix} value: " value
+            if [[ -z "$value" ]]; then
+                warn "Value cannot be empty. Please try again:"
+                continue
+            fi
+            break
+        done
+    fi
+
+    printf -v "$key_name" '%s' "$value"
+    save_config_files "$key_name" "$value"
+
+    success "Successfully updated $key_suffix."
+}
+
+cmd_help() {
+        cat <<EOF
+
+Commands:
+  new <name>            Create a new account with name <name>
+                        Example: $PROG_NAME new MyAccount
+
+  save [name]           Save the current account. Optionally specify <name>
+                        If specified <name> does not exist, a new account will be created
+                        Examples:
+                          $PROG_NAME save                 # Save current account using existing active name
+                          $PROG_NAME save ExistingAccount # Same as: $PROG_NAME save
+                          $PROG_NAME save NewAccount      # Save new account with name NewAccount
+
+  load <name>           Load an existing account by name
+                        Example: $PROG_NAME load MyAccount
+
+  unload                Clear the launcher of any logged in user
+                        Example: $PROG_NAME unload
+
+  delete <name>         Delete an existing account
+                        Example: $PROG_NAME delete MyAccount
+
+  rename <old> <new>    Rename an account from <old> to <new>
+                        Example: $PROG_NAME rename OldName NewName
+
+  config                Show all config options
+                        Example: $PROG_NAME config
+
+  config <key> [value]  Change a config <key> to [value]. Will prompt for [value] if not specified.
+                        Examples:
+                          $PROG_NAME config debug 1
+
+  list                  List all saved accounts and the currently active one
+                        Example: $PROG_NAME list
+
+EOF
+}
+
+cmd_desc(){
+    cat <<EOF
+
+EGSwitcher
+A tool for swapping Epic Games accounts exclusively for Heroic Games Launcher without having to manually logout and login each time.
+Copyright (C) 2025 doccy-doc. License: GPL-3.0-only
+
+EOF
+}
+
+# =========================
+# MAIN
+# =========================
+CMD="${1:-}"
+shift || : # Discard the command name
+
+case "$CMD" in
+    new)    cmd_new "$@" ;;
+    save)   cmd_save "$@" ;;
+    load)   cmd_load "$@" ;;
+    unload) cmd_unload "$@" ;;
+    delete) cmd_delete "$@" ;;
+    rename) cmd_rename "$@" ;;
+    config) cmd_config "$@" ;;
+    list)   cmd_list ;;
+    -v|--version)
+        echo "$VERSION"
+        exit 0
+    ;;
+    -h|--help)
+        cmd_desc
+        cmd_help
+        exit 0
+        ;;
+    *)
+        if [ -n "${CMD}" ] ; then
+            warn "Syntax error: command '$CMD' not recognised"
+        else
+            cmd_desc
+        fi
+        cmd_help
+        exit 1
+        ;;
+esac

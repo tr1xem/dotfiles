@@ -15,16 +15,16 @@ output_path = "~/.config/ghostty/themes/matugen"
 [templates.gradience]
 input_path = "~/.config/matugen/templates/gradience.json"
 output_path = "~/.config/presets/user/gradience.json"
-post_hook = "gradience-cli apply --gtk both -n Matu-Adw"
+post_hook = "gradience-cli apply --gtk both -n Matu-Adw &"
 
 [templates.discord]
 input_path = "~/.config/matugen/templates/discord-material-you.theme.css"
 output_path = "~/.config/equibop/themes/material-you.theme.css"
 
-[templates.pywaljson]
-input_path = "~/.config/matugen/templates/pywal-colors.json"
-output_path = "~/.cache/wal/colors.json"
-post_hook = "pywalfox update &"
+# [templates.pywaljson]
+# input_path = "~/.config/matugen/templates/pywal-colors.json"
+# output_path = "~/.cache/wal/colors.json"
+# post_hook = "pywalfox update &"
 
 [templates.zathura]
 input_path = "~/.config/matugen/templates/colors-zathura"
@@ -54,7 +54,7 @@ output_path = '~/.config/btop/themes/matugen.theme'
 [templates.vicinae]
 input_path = '~/.config/matugen/templates/vicinae-matugen.toml'
 output_path = '~/.local/share/vicinae/themes/matugen.toml'
-post_hook = 'vicinae theme set matugen'
+post_hook = 'vicinae theme set matugen &'
 
 [templates.xmobar]
 input_path = '~/.config/matugen/templates/Colors.hs'
@@ -65,17 +65,18 @@ index = 0
 index = 1
 input_path = '~/.config/matugen/templates/Colors.hs'
 output_path = '~/.config/xmonad/lib/Colors.hs'
-post_hook = 'xmonad --recompile && xmonad --restart'
+# post_hook = '(xmonad --recompile && xmonad --restart) &'
+post_hook = "begin; xmonad --recompile; and xmonad --restart; end &"
 
 [templates.spotify]
 input_path = '~/.config/matugen/templates/spotify.ini'
 output_path = '~/.config/spicetify/Themes/Sleek/color.ini'
-post_hook = 'spicetify apply'
+post_hook = 'spicetify apply &'
 
 [templates.dunst]
 input_path = '~/.config/matugen/templates/dunstrc'
 output_path = '~/.config/dunst/dunstrc'
-post_hook = 'dunstctl reload'
+post_hook = 'dunstctl reload &'
 
 [templates.rofi]
 input_path = '~/.config/matugen/templates/colors.rasi'
@@ -137,6 +138,8 @@ post_hook = 'killall stalonetray; nohup stalonetray >/dev/null 2>&1 &'
 [templates.iconicul]
 input_path = '~/.config/matugen/templates/iconicul.json'
 output_path = '~/.cache/iconicul.json'
+post_hook="iconicul generate -b Tela-circle-dark  -n Tela-matugen -s ~/.cache/iconicul.json --apply &"
+
 # [templates.rewaita]
 # input_path = '~/.config/matugen/templates/matugen 😎.css'
 # output_path = '~/.local/share/dark/Matugen 😎.css'

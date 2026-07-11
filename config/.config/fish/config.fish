@@ -2,13 +2,7 @@ if status is-interactive
     if test (tty) != "/dev/tty1" # Replace tty1 with the TTY you want to exclude
         pokemon-colorscripts-go --no-title
     end
-
-    # Commands to run in interactive sessions can go here
 end
-
-# ~/.config/fish/config.fish
-
-
 set -U fish_greeting
 set -U fifc_fd_opts --hidden
 set -U fifc_bat_opts --style=numbers
@@ -37,14 +31,6 @@ if test -f ~/.config/fish/keys.fish
     source ~/.config/fish/keys.fish
 end
 
-# Start X automatically on tty1
-if status is-login
-    if test (tty) = "/dev/tty1"
-        if not set -q DISPLAY
-            exec startx 2>&1 > ~/.xlogfile
-        end
-    end
+if test -d $HOME/perl5
+    eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
 end
-# if test $HOME/perl5
-#     eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
-# end

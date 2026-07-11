@@ -20,14 +20,17 @@
    "theme": {
       "dark": {
          "name": "matugen",
-         "icon_theme": "Tela circle dark"
+         "icon_theme": "Tela-matugen"
       }
    },
    "telemetry": {
       "system_info": false
    },
    "launcher_window": {
-      "opacity": 0.5
+      "opacity": 0.5,
+      "compact_mode": {
+         "enabled": false
+      }
    },
    "favorites": [],
    "providers": {
@@ -42,6 +45,16 @@
             "monitoring": true,
             "eraseOnStartup": false,
             "ignorePasswords": true
+         }
+      },
+      "files": {
+         "enabled": false,
+         "preferences": {
+            "autoIndexing": false,
+            "excludedIndexingPaths": [],
+            "indexingPaths": [
+               "/home/saumya"
+            ]
          }
       },
       "power": {

@@ -1,24 +1,24 @@
-palette = 0=#ffb688
-palette = 1=#e5bfa9
-palette = 2=#ffb688
-palette = 3=#ffb688
-palette = 4=#ffb688
-palette = 5=#f0dfd7
-palette = 6=#6e390f
-palette = 7=#5b4130
-palette = 8=#e5bfa9
-palette = 9=#e5bfa9
-palette = 10=#19120d
-palette = 11=#e5bfa9
-palette = 12=#f0dfd7
-palette = 13=#e5bfa9
-palette = 14=#6e390f
-palette = 15=#ffb688
+palette = 0=#e5b6f2
+palette = 1=#d5c0d7
+palette = 2=#e5b6f2
+palette = 3=#e5b6f2
+palette = 4=#e5b6f2
+palette = 5=#e9e0e7
+palette = 6=#5d386b
+palette = 7=#514254
+palette = 8=#d5c0d7
+palette = 9=#d5c0d7
+palette = 10=#161217
+palette = 11=#d5c0d7
+palette = 12=#e9e0e7
+palette = 13=#d5c0d7
+palette = 14=#5d386b
+palette = 15=#e5b6f2
 
 background = #000000
-foreground = #f0dfd7
-cursor-color = #ffb688
-# cursor-text-color = #512400
-selection-background = #ffb688
-selection-foreground = #19120d
+foreground = #e9e0e7
+cursor-color = #e5b6f2
+# cursor-text-color = #452153
+selection-background = #e5b6f2
+selection-foreground = #161217
 

@@ -20,7 +20,6 @@ depends=(
     gradience
     adwaita-qt5
     adwaita-qt6
-    tela-circle-icon-theme-all
     # nwg-look
     pwvucontrol
     viewnior
