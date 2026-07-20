@@ -4,4 +4,5 @@ xhost +local:
 pactl load-module module-native-protocol-tcp port=4656 listen=0.0.0.0 auth-anonymous=true 2>&1 >/dev/null &
 # bluetooth
 rfkill unblock bluetooth
-vicinae vicinae://launch/@Gelei/store.vicinae.bluetooth/bluetooth-on
+#turn numlockon
+/usr/bin/numlockx on

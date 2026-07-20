@@ -64,6 +64,12 @@
                   "confirm": false,
                   "customProgram": "betterlockscreen -l"
                }
+            },
+            "sleep": {
+               "preferences": {
+                  "confirm": true,
+                  "customProgram": "loginctl suspend"
+               }
             }
          }
       }

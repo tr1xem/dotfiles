@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <file.pdf>"
+    exit 1
+fi
+
+input="$1"
+
+if [[ ! -f "$input" ]]; then
+    echo "Error: '$input' does not exist."
+    exit 1
+fi
+
+if [[ "${input##*.}" != "pdf" && "${input##*.}" != "PDF" ]]; then
+    echo "Error: Input must be a PDF."
+    exit 1
+fi
+
+base="${input%.*}"
+output="${base}_compress.pdf"
+
+gs \
+    -sDEVICE=pdfwrite \
+    -dCompatibilityLevel=1.4 \
+    -dPDFSETTINGS=/ebook \
+    -dNOPAUSE \
+    -dQUIET \
+    -dBATCH \
+    -sOutputFile="$output" \
+    "$input"
+
+echo "Compressed PDF saved as: $output"

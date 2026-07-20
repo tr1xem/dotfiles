@@ -1,12 +1,15 @@
 Checks: >
     bugprone-*,
+    concurrency-*,
     clang-analyzer-*,
-    performance-*,
-    portability-*,
+    performance-*, portability-*,
     readability-*,
     modernize-*,
     misc-*,
     hicpp-*,
+    cert-*,
+    boost-*,
+    llvm-*,
     cppcoreguidelines-*,
     -cppcoreguidelines-avoid-magic-numbers,
     -cppcoreguidelines-owning-memory,
@@ -21,7 +24,9 @@ Checks: >
     -readability-function-size,
     -readability-isolate-declaration,
     -readability-implicit-bool-conversion,
-
+    -cert-err58-cpp
+#
+# Checks: "*"
 WarningsAsErrors: "bugprone-*,clang-analyzer-*"
 
 FormatStyle: file

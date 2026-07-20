@@ -1,0 +1,204 @@
+/*
+* Matugen Theme Integration
+*/
+
+body.matugen {
+  /* Matugen Colors */
+  --accent: {{colors.tertiary.default.hex}};
+  --accent-overlay: {{colors.inverse_primary.default.hex}};
+
+  --primary: {{colors.primary.default.hex}};
+  --primary-hover: {{colors.primary_container.default.hex}};
+  --navbar-accent: var(--primary);
+
+  --background: {{colors.background.default.hex}};
+  --body-background: {{colors.surface.default.hex}};
+  --navbar-background: {{colors.surface_container.default.hex}};
+
+  --background-darker: var(--background);
+  --current-background: var(--body-background);
+  --navbar-active-background: {{colors.surface_container_high.default.hex}};
+
+  --gradient-body-background: linear-gradient(
+    90deg,
+    var(--background-darker) -32px,
+    var(--body-background) 64px,
+    var(--body-background) 100%
+  );
+
+  --input-background: var(--navbar-background);
+  --modal-background: var(--body-background);
+  --modal-border: var(--body-background);
+
+  --success: {{colors.tertiary.default.hex}};
+  --success-hover: {{colors.tertiary_container.default.hex}};
+  --danger: {{colors.error.default.hex}};
+  --danger-hover: {{colors.error_container.default.hex}};
+
+  --text-default: {{colors.on_surface.default.hex}};
+  --text-title: {{colors.on_surface.default.hex}};
+  --text-secondary: {{colors.on_surface_variant.default.hex}};
+  --text-tertiary: {{colors.on_tertiary.default.hex}};
+  --text-hover: {{colors.primary.default.hex}};
+
+  --action-icon: {{colors.on_surface.default.hex}};
+  --action-icon-hover: {{colors.primary.default.hex}};
+  --action-icon-active: {{colors.primary_container.default.hex}};
+  --icons-background: {{colors.surface_variant.default.hex}};
+  --icon-disabled: {{colors.on_surface_variant.default.hex}};
+
+  --anticheat-denied: var(--danger);
+  --anticheat-broken: var(--accent);
+  --anticheat-running: var(--primary);
+  --anticheat-supported: var(--success);
+  --anticheat-planned: {{colors.secondary.default.hex}};
+
+  --neutral-06: {{colors.on_surface_variant.default.hex}};
+  --gamecard-title-color: {{colors.surface_container.default.hex}}cc;
+  --secondary-button: var(--accent);
+  --tertiary-button: var(--primary);
+
+  /* * Structural Variables (Adapted for Matugen)
+  */
+  --button-background: var(--navbar-background);
+  --button-text: var(--text-default);
+
+  --box-shadow-color: var(--background-darker);
+  --secondary-box-shadow-color: var(--background);
+  --tertiary-box-shadow-color: var(--icons-background);
+
+  --box-shadow: 0 0 0 1px var(--box-shadow-color);
+  --secondary-box-shadow: var(--box-shadow-color);
+
+  --border-radius: var(--space-xs);
+  --divider: var(--secondary-box-shadow-color);
+}
+
+/*
+* Component Styling
+*/
+
+body.matugen .Field>input,
+body.matugen select,
+body.matugen .gameCard,
+body.matugen .gameCard>span,
+body.matugen .SearchBar,
+body.matugen .progressHeader,
+body.matugen .dmItemList {
+  box-shadow: var(--box-shadow) !important;
+}
+
+body.matugen .store-icon {
+  background: none;
+}
+
+body.matugen .Sidebar {
+  box-shadow: 1px 0 0 0 var(--box-shadow-color);
+}
+
+body.matugen .divider {
+  height: 1px;
+  margin: var(--space-3xs) 0 !important;
+  background: var(--divider);
+}
+
+body.matugen .dmItemList {
+  border: none;
+}
+
+body.matugen .downloadManagerListItem {
+  border-top: none !important;
+  box-shadow: 0 -1px 0 0 var(--tertiary-box-shadow-color);
+  margin: 0;
+  padding: var(--space-md) var(--space-sm-fixed);
+}
+
+body.matugen .numberOfgames {
+  background: none;
+}
+
+body.matugen .SearchBar,
+body.matugen .gameCard,
+body.matugen .Field>input,
+body.matugen select,
+body.matugen .progressHeader,
+body.matugen .dmItemList,
+body.matugen .svg-button {
+  border-radius: var(--border-radius);
+}
+
+body.matugen .toggle,
+body.matugen .gameConfigContainer .titleWrapper .settings-icon {
+  color: var(--button-text) !important;
+  background: var(--button-background) !important;
+}
+
+
+/*
+* Library Filters
+*/
+
+body.matugen .Header__filters {
+  height: 100%;
+  min-height: 35px;
+}
+
+body.matugen .platformFilters {
+  margin: 0;
+}
+
+body.matugen .storeFilter {
+  margin: auto 24px;
+}
+
+body.matugen *:has(>.FormControl) {
+  height: 100%;
+}
+
+body.matugen .FormControl {
+  height: 100%;
+  background: var(--button-background);
+  color: var(--button-text);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+}
+
+body.matugen .FormControl .FormControl__button:first-child {
+  border-radius: var(--border-radius) 0 0 var(--border-radius) !important;
+}
+
+body.matugen .FormControl .FormControl__button:last-child {
+  border-radius: 0 var(--border-radius) var(--border-radius) 0 !important;
+}
+
+body.matugen .FormControl__button:hover,
+body.matugen .FormControl__button.active  {
+  background: var(--icons-background) !important;
+}
+
+body.matugen .ActionIcons .FormControl__button>svg {
+  margin: auto;
+}
+
+
+/*
+* Buttons & Hover States
+*/
+
+body.matugen *:not(.submenu)>.button,
+body.matugen .sideloadGameButton,
+body.matugen .titleWrapper .svg-button,
+body.matugen .game-actions {
+  background: var(--button-background);
+  color: var(--button-text);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+}
+
+body.matugen *:not(.submenu).button:hover,
+body.matugen .sideloadGameButton:hover,
+body.matugen .titleWrapper .svg-button:hover,
+body.matugen .titleWrapper .settings-icon:hover {
+  background: var(--icons-background) !important;
+  color: var(--button-text);
+}

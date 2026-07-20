@@ -102,5 +102,12 @@ alias rm='rm -i'
 alias orgmode='nvim -c "cd ~/personal/orgfiles"  -c "Oil"'
 alias yay='paru'
 alias flutter='fvm flutter'
+function git
+    if test (count $argv) -gt 0; and test "$argv[1]" = "commit"
+        command git commit -s $argv[2..-1]
+    else
+        command git $argv
+    end
+end
 
 

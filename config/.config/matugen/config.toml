@@ -71,7 +71,7 @@ post_hook = "begin; xmonad --recompile; and xmonad --restart; end &"
 [templates.spotify]
 input_path = '~/.config/matugen/templates/spotify.ini'
 output_path = '~/.config/spicetify/Themes/Sleek/color.ini'
-post_hook = 'spicetify apply &'
+post_hook = 'spicetify apply -n &'
 
 [templates.dunst]
 input_path = '~/.config/matugen/templates/dunstrc'
@@ -140,6 +140,9 @@ input_path = '~/.config/matugen/templates/iconicul.json'
 output_path = '~/.cache/iconicul.json'
 post_hook="iconicul generate -b Tela-circle-dark  -n Tela-matugen -s ~/.cache/iconicul.json --apply &"
 
+[templates.heroic]
+input_path = '~/.config/matugen/templates/heroic.css'
+output_path = '~/.config/heroic/themes/heroic.css'
 # [templates.rewaita]
 # input_path = '~/.config/matugen/templates/matugen 😎.css'
 # output_path = '~/.local/share/dark/Matugen 😎.css'
