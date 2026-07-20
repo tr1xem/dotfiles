@@ -65,7 +65,6 @@ see the =lxc/etc/= folder of my repo
 *** Mounting volumes
 In unprivilaged containers you have to use =idmap=
 Example ~lxc.mount.entry = /home/host/StudioProjects/ home/container/projects none bind,create=dir,idmap=container 0 0~
-
 This way it would mount correct permissions to even unprivileged conatiners
 *** The greatest script that ever lived
 Check out my =lxc-machine= script from the folder =config/.local/bin/= It does and contains pretty much every thing you ever need while using my workflow
