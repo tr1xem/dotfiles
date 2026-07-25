@@ -5,7 +5,7 @@ import std.process;
 import std.json;
 import std.getopt;
 import std.datetime;
-import core.thread;
+import core.thread.osthread;
 
 bool DEBUG = false;
 enum string APP_IMAGE = "~/.local/share/icons/ntfy.png";
@@ -24,7 +24,7 @@ void sendNotification(string topic, string message) {
         writef("Received Message: %s from %s\n", message, topic);
     // Show a notification with an app's icon and name:
     // notify-send "Test" [-i|--icon] google-chrome [-a|--app-name] "Google Chrome"
-    auto rCMD = format("notify-send -a ntfy.sh -i %s %s %s", APP_IMAGE, topic, message);
+    auto rCMD = format("notify-send -a ntfy.sh -i %s '%s' '%s'", APP_IMAGE, topic, message);
     auto cmd = executeShell(rCMD);
     if (cmd.status != 0) {
         writef("Failed to spawn notify-send  with error: %s", cmd.output);
