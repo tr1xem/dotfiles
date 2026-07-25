@@ -10,24 +10,19 @@ set -xg XDG_DOCUMENTS_DIR (xdg-user-dir DOCUMENTS)
 set -xg XDG_MUSIC_DIR (xdg-user-dir MUSIC)
 set -xg XDG_PICTURES_DIR (xdg-user-dir PICTURES)
 set -xg XDG_VIDEOS_DIR (xdg-user-dir VIDEOS)
-set -xg QT_QPA_PLATFORMTHEME qt6ct
-set -xg LD_LIBRARY_PATH  /usr/local/lib
-# set -xg CXX clang++
 set -Ux OLLAMA_MODELS /run/media/saumya/Nexus/ollama/
-# set -xg CMAKE_GENERATOR Ninja
+# set -gx CCACHE_CPP2 yes
 set -xg CFLAGS "-fdiagnostics-color=always -std=c23"
-set -xg CXXFLAGS "-fdiagnostics-color=always -std=c++23"
-set -gx EDITOR "nvim"  # Replace "nano" with your desired editor (e.g., vim, nvim, etc.)
-set -gx VISUAL "$EDITOR"
-set -gx CXX clang++
-set -gx CHROME_EXECUTABLE /usr/bin/thorium-browser
+set -xg CXXFLAGS "-fdiagnostics-color=always -std=c++26"
 set -gx CC clang
-set -gx CCACHE_CPP2 yes
-set -gx CMAKE_C_COMPILER_LAUNCHER ccache
-set -gx CMAKE_CXX_COMPILER_LAUNCHER ccache
+set -gx CXX clang++
 set -gx TERM xterm-256color
 set -gx DBUS_SESSION_BUS_ADDRESS "unix:path=/run/user/1000/bus"
+set -gx EDITOR "nvim"
+set -gx CHROME_EXECUTABLE /usr/bin/thorium-browser
+set -gx VISUAL "$EDITOR"
 
+set -xg QT_QPA_PLATFORMTHEME qt6ct
 set -Ux TERM xterm-kitty
 set -g fish_term24bit 1
 set -Ux LANG en_IN.UTF-8

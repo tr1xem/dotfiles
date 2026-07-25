@@ -7,7 +7,7 @@ options=('!debug')
 groups=('trix')
 provides=('trix-xmonad-desktop')
 depends=(
-    xmobar
+    # xmobar
     snixembed  # for xmobar tray
     dunst
     feh

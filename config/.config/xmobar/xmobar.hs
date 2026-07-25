@@ -11,7 +11,7 @@ config station =
         , bgColor = surfaceDim colors
         , fgColor = onPrimaryContainer colors
         , position = TopSize C 100 26
-        ,  alpha = 255
+        , alpha = 255
         , border = BottomB
         , borderColor = inversePrimary colors
         , borderWidth = 1
@@ -161,7 +161,7 @@ config station =
                     , "-c"
                     , colorRed colors
                     ]
-            , Run $ Com "record.sh" ["status", colorRed colors] "screencast" 10
+            , Run $ Com "record" ["-s", "-c", colorRed colors] "screencast" 10
             , Run $
                 Com
                     "/bin/bash"

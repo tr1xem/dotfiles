@@ -12,20 +12,17 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
-import XMonad.Layout.BinarySpacePartition
+import XMonad.Layout.BinarySpacePartition hiding (Swap)
 import qualified XMonad.Layout.BoringWindows as B
 import XMonad.Layout.DraggingVisualizer
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Renamed
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.Simplest
 import XMonad.Layout.Spacing
-import XMonad.Layout.SubLayouts
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ToggleLayouts
 import XMonad.Layout.WindowArranger
-import XMonad.Layout.WindowNavigation hiding (Swap)
 import XMonad.Layout.WindowSwitcherDecoration
 import XMonad.ManageHook
 import XMonad.StackSet as W
@@ -36,6 +33,14 @@ import XMonad.Util.Loggers
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.SpawnOnce
 import XMonad.Util.WorkspaceCompare (filterOutWs, getSortByIndex)
+
+import XMonad.Layout.Groups.Helpers
+import XMonad.Layout.Simplest
+import XMonad.Layout.SubLayouts
+import XMonad.Layout.WindowNavigation
+import XMonad.Prompt
+import XMonad.Prompt.Man
+import XMonad.Prompt.OrgMode (orgPrompt)
 
 -- Appearance
 myBorderWidth = 2
@@ -74,21 +79,54 @@ myTabTheme =
         , decoHeight = 20
         }
 
+myXPConfig :: XPConfig
+myXPConfig =
+    def
+        { font = "xft:JetBrainsMono Nerd Font Mono Bold:size=9"
+        , bgColor = surfaceDim colors
+        , fgColor = onPrimaryContainer colors
+        , bgHLight = primary colors
+        , fgHLight = surfaceDim colors
+        , borderColor = inversePrimary colors
+        , promptBorderWidth = 1
+        , position = Bottom
+        , alwaysHighlight = True
+        , height = 28
+        , maxComplRows = Just 10
+        , maxComplColumns = Nothing
+        , historySize = 256
+        , defaultText = ""
+        , autoComplete = Just 500000
+        , showCompletionOnTab = False
+        , complCaseSensitivity = CaseInSensitive
+        }
+subTabbedTheme =
+    addTabs shrinkText myTabTheme
+        . subLayout [] Simplest
+
 -- Layouts
+groupLayouts =
+    renamed [Replace "Tall"] tall
+        ||| renamed [Replace "BSP"] emptyBSP
+  where
+    tall = ResizableTall 1 (3 / 100) (11 / 20) []
+
+tabLayouts =
+    renamed [Replace "Tabbed"] (tabbed shrinkText myTabTheme)
+        ||| renamed [Replace "Tall"] tall
+        ||| renamed [Replace "BSP"] emptyBSP
+  where
+    tall = ResizableTall 1 (3 / 100) (11 / 20) []
+
 myLayoutHook =
     avoidStruts $
         smartBorders $
             mySpacing $
                 windowNavigation $
-                    B.boringWindows $
-                        subLayout [] Simplest $
-                            toggleLayouts Full $
-                                renamed [Replace "Tall"] tall
-                                    ||| renamed [Replace "BSP"] emptyBSP
-                                    ||| renamed [Replace "Tabbed"] (tabbed shrinkText myTabTheme)
-                                    ||| renamed [Replace "Full"] Full
-  where
-    tall = ResizableTall 1 (3 / 100) (11 / 20) []
+                    toggleLayouts Full $
+                        subTabbedTheme (B.boringWindows groupLayouts)
+                            ||| tabLayouts
+                            ||| renamed [Replace "Full"] Full
 
 -- Scratchpads
 
@@ -219,10 +257,8 @@ myKeys =
       ("M-q", kill)
     , ("M-j", windows W.focusDown)
     , ("M-k", windows W.focusUp)
-    , ("M-<Tab>", windows W.focusDown)
-    , -- Master area
-      ("M-]", sendMessage Expand)
-    , ("M-[", sendMessage Shrink)
+    , ("M-l", sendMessage Expand)
+    , ("M-h", sendMessage Shrink)
     , ("M-S-j", windows swapDownNoMaster)
     , ("M-S-k", windows swapUpNoMaster)
     , -- Layouts
@@ -253,8 +289,7 @@ myKeys =
     , ("M-v", spawn "vicinae vicinae://launch/clipboard/history")
     , ("M-.", spawn "vicinae vicinae://launch/core/search-emojis")
     , ("M-<Return>", spawn myTerminal)
-    , ("M-l", spawn "betterlockscreen -l")
-    , ("M-h", spawn "")
+    , ("M-<End>", spawn "betterlockscreen -l")
     , -- Utils
       ("<XF86AudioRaiseVolume>", spawn "control.sh vol-up")
     , ("<XF86AudioLowerVolume>", spawn "control.sh vol-down")
@@ -268,7 +303,7 @@ myKeys =
     , ("M-S-<F23>", spawn "boomer")
     , ("<XF86Calculator>", namedScratchpadAction scratchpads "calculator")
     , ("C-<Print>", spawn "maim -s | xclip -selection clipboard -t image/png")
-    , ("M-<Print>", spawn "record.sh toggle")
+    , ("M-<Print>", spawn "record -t")
     , -- Scratchpads
       -- ("M-d", namedScratchpadAction scratchpads "discord")
       ("M-d", namedScratchpadAction scratchpads "equibop")
@@ -276,27 +311,22 @@ myKeys =
     , ("M-s o", namedScratchpadAction scratchpads "orgmode")
     , ("M-s g", namedScratchpadAction scratchpads "floatterm")
     , ("C-S-<Escape>", namedScratchpadAction scratchpads "btop")
-    , ("M-S-.", sendMessage (IncMasterN (-1)))
+    , ("M-S-,", sendMessage (IncMasterN (-1)))
+    , ("M-,", sendMessage (IncMasterN 1))
     , ("M1-t", sendMessage $ JumpToLayout "Tabbed")
     , ("M1-m", sendMessage $ JumpToLayout "Tall")
     , ("M1-s", sendMessage ToggleStruts)
     , ("M1-b", sendMessage $ JumpToLayout "BSP")
-    , ("M-C-l", sendMessage (ExpandTowards R))
-    , ("M-C-h", sendMessage (ExpandTowards L))
-    , ("M-C-k", sendMessage (ExpandTowards U))
-    , ("M-C-j", sendMessage (ExpandTowards D))
-    , ("M-S-C-l", sendMessage Rotate)
-    , -- , ("M-S-C-h", sendMessage $ Rotate L)
-      ("M-C-n", sendMessage Swap)
-    , ("M-C-.", sendMessage FocusParent)
-    , -- , ("M-C-,", sendMessage FocusChild)
-      ("M-C-m", withFocused (sendMessage . MergeAll))
-    , ("M-C-u", withFocused (sendMessage . UnMerge))
-    , ("M-C-/", withFocused (sendMessage . UnMergeAll))
     , ("M-C-h", sendMessage $ pullGroup L)
     , ("M-C-l", sendMessage $ pullGroup R)
-    , ("M-C-k", sendMessage $ pullGroup U)
     , ("M-C-j", sendMessage $ pullGroup D)
+    , ("M-C-k", sendMessage $ pullGroup U)
+    , ("M-C-u", withFocused (sendMessage . UnMerge))
+    , ("M-C-S-u", withFocused (sendMessage . UnMergeAll))
+    , ("M-C-m", withFocused (sendMessage . MergeAll))
+    , ("M-C-o", orgPrompt myXPConfig "TODO" "/home/saumya/personal/orgfiles/todos.org")
+    , ("M-C-s", manPrompt myXPConfig)
+    , ("M-r", sendMessage Rotate)
     ,
         ( "M1-<Return>"
         , do
@@ -333,7 +363,10 @@ myXmobarPP =
             { ppSep = xmobarColor (outline colors) "" " │ "
             , ppTitleSanitize = xmobarStrip
             , ppCurrent = xmobarColor (primary colors) ""
-            , ppHidden = xmobarColor (inversePrimary colors) ""
+            , ppHidden = \ws ->
+                if ws `elem` init (drop 6 myWorkspaces)
+                    then ""
+                    else xmobarColor (inversePrimary colors) "" ws
             , ppHiddenNoWindows = \ws ->
                 if ws `elem` init (drop 6 myWorkspaces)
                     then ""

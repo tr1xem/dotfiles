@@ -7,9 +7,10 @@ options=('!debug')
 groups=('trix')
 provides=('trix-xmonad')
 depends=(
-    xmonad
-    xmonad-contrib
-    xmonad-extras
+# Install using cabal instead
+    # xmonad
+    # xmonad-contrib
+    # xmonad-extras
     # haskell-language-server
     xorg-xset
     xorg-xsetroot

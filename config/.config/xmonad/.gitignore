@@ -1,0 +1,13 @@
+# Stack and Cabal build artifacts
+.stack-work/
+dist-newstyle/
+
+# Compiled XMonad binaries and state
+xmonad-x86_64-linux
+custom-xmobar
+xmonad.errors
+xmonad.state
+
+# GHC object and interface files (if compiled directly)
+*.o
+*.hi

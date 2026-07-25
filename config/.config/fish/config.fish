@@ -34,3 +34,6 @@ end
 if test -d $HOME/perl5
     eval "$(perl -I $HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
 end
+
+
+set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; set -gx PATH $HOME/.cabal/bin $PATH /home/saumya/.ghcup/bin # ghcup-env

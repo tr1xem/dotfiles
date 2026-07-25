@@ -11,3 +11,7 @@ xmobar.o
 # optional: editor junk
 .DS_Store
 .direnv/
+# Stack and Cabal build artifacts
+.stack-work/
+dist-newstyle/
+

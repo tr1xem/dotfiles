@@ -1,8 +1,4 @@
 #!/bin/sh
-
-
-
-
 set -eu
 
 SCRIPTNAME="record.sh"
