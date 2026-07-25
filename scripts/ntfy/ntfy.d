@@ -4,6 +4,8 @@ import std.net.curl;
 import std.process;
 import std.json;
 import std.getopt;
+import std.datetime;
+import core.thread;
 
 bool DEBUG = false;
 enum string APP_IMAGE = "~/.local/share/icons/ntfy.png";
@@ -46,15 +48,31 @@ void subscribe(string client) {
     if (DEBUG)
         writeln("Subscribing to " ~ client);
 
-    auto http = HTTP();
-    http.method = HTTP.Method.get;
-    http.url = client;
-    http.onReceive = (ubyte[] data) {
-        setupClient(cast(JSONValue) parseJSON(cast(string)(data)));
-        return data.length;
-    };
+    while (true) {
+        try {
+            auto http = HTTP();
+            http.method = HTTP.Method.get;
+            http.url = client;
 
-    http.perform();
+            http.onReceive = (ubyte[] data) {
+                setupClient(cast(JSONValue) parseJSON(cast(string)(data)));
+                return data.length;
+            };
+
+            http.perform();
+            break;
+        }
+        catch (CurlException e) {
+            if (DEBUG)
+                writeln("Network error: ", e.msg, ". Retrying in 5 seconds...");
+            Thread.sleep(dur!("seconds")(5));
+        }
+        catch (Exception e) {
+            if (DEBUG)
+                writeln("An error occurred: ", e.msg);
+            break;
+        }
+    }
 }
 
 int main(string[] args) {

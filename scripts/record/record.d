@@ -22,8 +22,8 @@ enum string SAVE_DIR = "~/Videos/Recordings";
 //enum string  MIC_NAME="alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__Mic1__source";
 enum string MIC_NAME = "@DEFAULT_SOURCE@";
 enum string VIDEO_CODEC = "hevc_nvenc";
-enum string VIDEO_PRESET = "p5";
-enum string VIDEO_CQ = "28";
+enum string VIDEO_PRESET = "p6";
+enum string VIDEO_CQ = "20";
 string COLOR = "FF0000";
 
 // NOTE: using strings as cmd already needs them as string so to avoid  a cast
@@ -144,7 +144,8 @@ void startRecording(string fileName = "", string dir = SAVE_DIR) {
         "-pix_fmt", "yuv420p",
         "-tag:v", "hvc1",
         "-c:a", "aac",
-        "-b:a", "128k",
+        "-b:a", "192k",
+        "-af", "aresample=async=1",
         "-movflags", "+faststart",
         outputFile,
     ],

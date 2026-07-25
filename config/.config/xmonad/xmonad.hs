@@ -442,6 +442,7 @@ myConfig =
                 spawnOnce "xss-lock -- betterlockscreen -l"
                 spawnOnce "stalonetray"
                 spawnOnce "snixembed --fork"
+                spawnOnce "ntfy"
             }
             `additionalKeysP` myKeys
 
