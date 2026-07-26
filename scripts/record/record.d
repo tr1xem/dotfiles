@@ -132,7 +132,7 @@ void startRecording(string fileName = "", string dir = SAVE_DIR) {
         "-i", ":0.0+" ~ screenDim.x ~ "," ~ screenDim.y,
         "-f", "pulse", "-i", "@DEFAULT_MONITOR@",
         "-f", "pulse", "-i", MIC_NAME,
-        "-filter_complex", "[1:a][2:a]amix=inputs=2[a]",
+        "-filter_complex", "[1:a][2:a]amix=inputs=2,aresample=async=1[a]",
         "-map", "0:v",
         "-map", "[a]",
         "-c:v", VIDEO_CODEC,
@@ -145,7 +145,6 @@ void startRecording(string fileName = "", string dir = SAVE_DIR) {
         "-tag:v", "hvc1",
         "-c:a", "aac",
         "-b:a", "192k",
-        "-af", "aresample=async=1",
         "-movflags", "+faststart",
         outputFile,
     ],
@@ -290,7 +289,7 @@ void recordingStatus() {
         return;
     }
     if (COLOR[0] != '#')
-        COLOR = "#" ~ COLOR;
+        COLOR = '#' ~ COLOR;
     string elapsedTime = to!string(Clock.currTime.toUnixTime - to!long(pidfile.startTime));
     writefln("<fc=%s><fn=1> </fn>REC %02d:%02d</fc>", COLOR, (to!int(elapsedTime) / 60), (
             to!int(

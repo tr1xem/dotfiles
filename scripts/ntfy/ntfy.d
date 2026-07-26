@@ -5,7 +5,8 @@ import std.process;
 import std.json;
 import std.getopt;
 import std.datetime;
-import core.thread.osthread;
+import core.thread;
+import std.concurrency;
 
 bool DEBUG = false;
 enum string APP_IMAGE = "~/.local/share/icons/ntfy.png";
@@ -14,7 +15,7 @@ enum string APP_IMAGE = "~/.local/share/icons/ntfy.png";
  * Names of Clients to subscribe
  */
 string[] clients = [
-    // "mytopic",
+    "trix",
     "tr1x_em-website-baby"
 ];
 
@@ -45,6 +46,8 @@ void setupClient(JSONValue data) {
 // https://docs.ntfy.sh/subscribe/api/#subscribe-as-json-stream
 void subscribe(string client) {
     client = "https://ntfy.sh/" ~ client ~ "/json";
+
+    writeln("Subscribing to " ~ client);
     if (DEBUG)
         writeln("Subscribing to " ~ client);
 
@@ -87,8 +90,10 @@ int main(string[] args) {
         return 0;
     }
 
+    thread_joinAll();
     foreach (client; clients) {
-        subscribe(client);
+        Tid tid = spawn(&subscribe, client);
     }
+    thread_joinAll();
     return 0;
 }
