@@ -1,0 +1,6 @@
+name "record"
+description "Xrec Screen Recording wrapper for ffmpeg"
+authors "tr1x_em"
+copyright "Copyright © 2026, tr1x_em"
+license "GPL-2.0-or-later"
+dependency "requests" version="~>2.2.1"

@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/record
+record.so
+record.dylib
+record.dll
+librecord.a
+record.a
+record.lib
+record-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

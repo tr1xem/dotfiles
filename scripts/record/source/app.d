@@ -1,5 +1,5 @@
-import std.stdio;
 import std.getopt;
+import std.stdio;
 import std.format;
 import std.process;
 import std.datetime;
@@ -12,6 +12,7 @@ import std.conv;
 import core.thread.osthread;
 import std.json;
 import std.string;
+import requests;
 
 bool DEBUG = false;
 
@@ -60,10 +61,10 @@ ScreenDimensions getScreenDimensions() {
     ScreenDimensions screenDim;
     auto cmd = execute(["slop", "-f", "%x %y %w %h"]);
     if (cmd.status != 0) {
-        if (cmd.output == "Selection was cancelled by keystroke or right-click.") {
+        if (cmd.output.strip() == "Selection was cancelled by keystroke or right-click.") {
             exit(0);
         }
-        writefln("Failed to run slop :%s", cmd.output);
+        writefln("Failed to run slop :%s", cmd.output.strip());
         exit(1);
     }
     formattedRead(cmd.output, "%s %s %s %s", &screenDim.x, &screenDim.y, &screenDim.width, &screenDim
@@ -127,7 +128,7 @@ void startRecording(string fileName = "", string dir = SAVE_DIR) {
     auto p = spawnProcess([
         "ffmpeg",
         "-f", "x11grab",
-        "-framerate", "30",
+        "-framerate", "60",
         "-video_size", screenDim.width ~ "x" ~ screenDim.height,
         "-i", ":0.0+" ~ screenDim.x ~ "," ~ screenDim.y,
         "-f", "pulse", "-i", "@DEFAULT_MONITOR@",
@@ -182,21 +183,28 @@ void startRecording(string fileName = "", string dir = SAVE_DIR) {
 bool uploadRecording(string fileName) {
     string apikey = environment.get("MONARCHKEY");
     string apiURL = "https://api.monarchupload.cc/v3/upload";
+    string cleanPath = fileName.strip();
 
     if (DEBUG)
         writefln("Uploading recording to monarch: %s", strip(fileName));
 
-    auto result = execute([
-        "curl", "-Ss",
-        "-F", "secret=" ~ apikey,
-        "-F", "file=@" ~ strip(fileName),
-        apiURL
-    ]);
-
-    if (result.status != 0) {
-        writefln("Failed to upload recording to monarch with error: %s", result.output);
+    ubyte[] fileBytes;
+    try {
+        fileBytes = cast(ubyte[]) std.file.read(cleanPath);
+    }
+    catch (Exception e) {
+        writefln("Failed to read file from disk: %s", e.msg);
         return false;
     }
+
+    MultipartForm multipart;
+    multipart.add(formData("secret", apikey));
+
+    // Pass the raw byte array and explicit filename parameters
+    multipart.add(formData("file", fileBytes, [
+                "filename": cleanPath.baseName()
+            ]));
+    auto content = postContent(apiURL, multipart);
     /* OUTPUT :
     {
       "data": {
@@ -206,16 +214,17 @@ bool uploadRecording(string fileName) {
       "status": "success"
     }
     */
+
     if (DEBUG)
-        writeln(result.output);
-    JSONValue j = parseJSON(result.output);
+        writefln("Upload Response: %s", cast(string) content);
+    JSONValue j = parseJSON(cast(string) content);
     if (j["status"].str != "success") {
         writeln("Failed to upload recording to monarch");
         return false;
     }
-    // Copy the url to clipboard
     auto p = executeShell(
-        format("echo -n %s | xclip -selection clipboard", j["data"]["url"]));
+        format("echo -n %s | xclip -selection clipboard &>/dev/null &",
+            j["data"]["url"].str.replace("\\/", "/")));
     if (p.status != 0) {
         writefln("Failed to copy url to clipboard with error: %s", p.output);
         return false;
@@ -249,7 +258,7 @@ void stopRecording() {
     std.file.remove(PIDFILE);
 
     // Sleep for 1 sec to allow the recording to stop
-    Thread.sleep(dur!"msecs"(1000));
+    Thread.sleep(dur!"msecs"(2000));
     bool status = uploadRecording(pidfile.fileName);
 
     if (!status) {

@@ -161,7 +161,7 @@ config station =
                     , "-c"
                     , colorRed colors
                     ]
-            , Run $ Com "record" ["-s", "-c", colorRed colors] "screencast" 10
+            , Run $ Com "record" ["-s", "-c", colorRed colors] "screencast" 1
             , Run $
                 Com
                     "/bin/bash"
