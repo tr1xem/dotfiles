@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/ntfy
+ntfy.so
+ntfy.dylib
+ntfy.dll
+libntfy.a
+ntfy.a
+ntfy.lib
+ntfy-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

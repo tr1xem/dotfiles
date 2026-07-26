@@ -1,0 +1,5 @@
+name "ntfy"
+description "Ntfy subscribing client"
+authors "tr1x_em"
+copyright "Copyright © 2026, tr1x_em"
+license "GPL-2.0-or-later"

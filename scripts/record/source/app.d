@@ -16,7 +16,7 @@ import requests;
 
 bool DEBUG = false;
 
-enum string VERSION = "0.1.2";
+enum string VERSION = "0.1.1";
 enum string APP_IMAGE = "~/.local/share/icons/xrec.svg";
 enum string PIDFILE = "/tmp/record.pid";
 enum string SAVE_DIR = "~/Videos/Recordings";
