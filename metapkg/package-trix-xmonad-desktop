@@ -7,30 +7,32 @@ options=('!debug')
 groups=('trix')
 provides=('trix-xmonad-desktop')
 depends=(
-    # xmobar
+    xmobar
     snixembed  # for xmobar tray
+
     dunst
     feh
-    picom-git
-    # trayer
+    picom
     betterlockscreen
     flameshot
+
     vicinae-bin
+
     matugen-bin
     gradience
     adwaita-qt5
     adwaita-qt6
-    # nwg-look
+    qt6ct
+
     pwvucontrol
+
     viewnior
     thunar
-    noto-fonts-emoji
-    alsa-utils
-    cronie
-    cronie-openrc
-    qt6ct
-    # gnome-keyring
+
     lxqt-policykit
+    xdg-user-dirs
+
+    numlockx
 )
 
 # vim:ft=sh

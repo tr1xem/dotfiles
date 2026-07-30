@@ -8,38 +8,43 @@ groups=('trix')
 provides=('trix-xmonad-utils')
 depends=(
     brightnessctl
-    wireplumber
     wireplumber-openrc
-    pipewire
     pipewire-openrc
-    pipewire-pulse
     pipewire-pulse-openrc
+
     xorg-xprop
     xorg-xev
     # xautolock
-    bluez
-    bluez-utils
-    bluez-openrc
-    iwd
-    iwd-openrc
-    pokemon-colorscripts-go
+
+    # Terminal tools
+    fish
     duf
     bat
     eza
-    fish
     fisher
     tealdeer
-    ffmpegthumbnailer
-    ffmpeg-audio-thumbnailer
-    gpu-screen-recorder
-    zoxide
-    xdg-user-dirs
     fzf
+    zoxide
+    pokemon-colorscripts-go
+
     tlp
     # tlp-rdw
     tlp-openrc
+
+    # For mobile mtp
     mtpfs
     gvfs-mtp
+
+    # For screen recording
+    slop
+    ffmpeg
+
+    ffmpegthumbnailer
+    ffmpeg-audio-thumbnailer
+
+    man-pages
+
+    udiskie
 )
 
 # vim:ft=sh

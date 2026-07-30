@@ -7,16 +7,29 @@ options=('!debug')
 groups=('trix')
 provides=('trix-artix')
 depends=(
-    connman
+    # Networking
+    bluez-utils
+    bluez-openrc
+    iwd-openrc
     connman-openrc
+
     fakeroot
-    efibootmgr
-    git
     sudo
+
+    efibootmgr
     sof-firmware
+    intel-ucode
+
+    zfs-utils
+    zfs-dkms
+
+    linux-zen
+    linux-zen-headers
+
+    git
     wget
     unzip
-    zfs-utils
+    cronie-openrc
 )
 
 # vim:ft=sh

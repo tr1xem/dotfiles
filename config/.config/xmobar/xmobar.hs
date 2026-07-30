@@ -62,7 +62,7 @@ config station =
                     [ "-L"
                     , "60"
                     , "-H"
-                    , "85"
+                    , "80"
                     , "-l"
                     , primary colors
                     , "-n"
@@ -92,17 +92,22 @@ config station =
             , Run $
                 Memory
                     [ "-t"
-                    , "<fc=" <> primary colors <> "><fn=1>\xe266\&</fn> <usedratio>%</fc>"
+                    , "<fc=" <> primary colors <> "><fn=1>\xe266\&</fn> <used> GB</fc>"
+                    , "-d"
+                    , "1"
                     , "-L"
-                    , "29"
+                    , "4"
                     , "-H"
-                    , "70"
+                    , "14"
                     , "-l"
                     , primary colors
                     , "-n"
                     , primary colors
                     , "-h"
                     , colorRed colors
+                    , "--"
+                    , "--scale"
+                    , "1024"
                     ]
                     10
             , Run $

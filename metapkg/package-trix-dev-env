@@ -16,6 +16,7 @@ depends=(
     git-lfs
     cppman
     tealdeer
+    lxc
 )
 
 # vim:ft=sh

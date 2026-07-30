@@ -16,7 +16,8 @@ depends=(
 	mesa
 	mesa-utils
 	# nvidia-prime
-	# nvidia-utils
+	nvidia-utils
+	nvidia-utils-openrc
 	nvtop
 	opencl-nvidia
 	vdpauinfo

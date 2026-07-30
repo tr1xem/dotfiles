@@ -7,23 +7,24 @@ options=('!debug')
 groups=('trix')
 provides=('trix-xmonad')
 depends=(
-# Install using cabal instead
-    # xmonad
-    # xmonad-contrib
+    xmonad
+    xmonad-contrib
     # xmonad-extras
     # haskell-language-server
+
     xorg-xset
     xorg-xsetroot
     xorg-setxkbmap
+    xorg-host
     xclip
     xorg-xinit
     xorg-xrandr
-    xlibre-input-libinput
+
     xlibre-xserver
-    xlibre-xserver-common
-    xlibre-xserver-devel
+
     ly-openrc
-    fastfetch
+    zram-openrc
+    zrepl-bin
 )
 
 # vim:ft=sh

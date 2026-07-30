@@ -8,28 +8,33 @@ groups=('trix')
 provides=('trix-cachyos')
 depends=(
     acpi_call-dkms
+
     cachyos-keyring
     cachyos-mirrorlist
     cachyos-rate-mirrors
     cachyos-settings
     cachyos-v3-mirrorlist
     cachyos-v4-mirrorlist
-    linux-cachyos-headers
-    linux-cachyos-lts-headers
-    linux-cachyos
-    linux-cachyos-lts
-    chwd
-    sbctl
-    scx-manager
+
+    # linux-cachyos-headers
+    # linux-cachyos-lts-headers
+    # linux-cachyos
+    # linux-cachyos-lts
+    # chwd
+    # sbctl
+    # scx-manager
+#
     sof-firmware
     intel-ucode
-    paru-bin
+
+    paru
     ufw
     fwupd
-    tlp
-    tlpui
-    tlp-rdw
-man-pages
+
+    #Gaming
+    lib32-vkd3d
+    vkd3d
+    vkd3d-proton-git
 )
 
 # vim:ft=sh

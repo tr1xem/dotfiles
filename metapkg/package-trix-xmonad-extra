@@ -11,15 +11,14 @@ depends=(
     btop
     ghostty
     mpv
-    maim
-    curd
+    curd-bin
     stow
     rclone
     spotify
     qalculate-gtk
-    scx-scheds
-    scx-openrc
-    scx-tools
+    noto-fonts-emoji
+    fastfetch
+    sioyek-git
 )
 
 # vim:ft=sh
