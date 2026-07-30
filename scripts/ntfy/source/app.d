@@ -8,7 +8,7 @@ import std.datetime;
 import core.thread;
 import std.concurrency;
 
-bool DEBUG = false;
+shared bool DEBUG = false;
 enum string APP_IMAGE = "~/.local/share/icons/ntfy.png";
 
 /*
@@ -46,8 +46,6 @@ void setupClient(JSONValue data) {
 // https://docs.ntfy.sh/subscribe/api/#subscribe-as-json-stream
 void subscribe(string client) {
     client = "https://ntfy.sh/" ~ client ~ "/json";
-
-    writeln("Subscribing to " ~ client);
     if (DEBUG)
         writeln("Subscribing to " ~ client);
 
@@ -80,19 +78,21 @@ void subscribe(string client) {
 
 int main(string[] args) {
 
+    bool _debug = false;
     auto help = getopt(
         args,
-        "verbose|v", &DEBUG,
+        "verbose|v", &_debug,
     );
+
+    DEBUG = _debug;
 
     if (help.helpWanted) {
         defaultGetoptPrinter("Usage: app [options] file", help.options);
         return 0;
     }
 
-    thread_joinAll();
     foreach (client; clients) {
-        Tid tid = spawn(&subscribe, client);
+        spawn(&subscribe, client);
     }
     thread_joinAll();
     return 0;
