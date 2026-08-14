@@ -12,7 +12,7 @@ set -xg XDG_PICTURES_DIR (xdg-user-dir PICTURES)
 set -xg XDG_VIDEOS_DIR (xdg-user-dir VIDEOS)
 set -Ux OLLAMA_MODELS /run/media/saumya/Nexus/ollama/
 # set -gx CCACHE_CPP2 yes
-set -xg CFLAGS "-fdiagnostics-color=always -std=c23"
+set -xg CFLAGS "-fdiagnostics-color=always"
 set -xg CXXFLAGS "-fdiagnostics-color=always -std=c++26"
 set -gx CC clang
 set -gx CXX clang++

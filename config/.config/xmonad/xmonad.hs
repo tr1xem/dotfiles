@@ -279,7 +279,7 @@ myKeys =
     , ("M-b", spawn myBrowser)
     , ("M-t", spawn myFileManager)
     , ("M-y", spawn "curd")
-    , ("M-S-t", spawn " maim -s /tmp/screenshot.png && tesseract /tmp/screenshot.png stdout | xclip -selection clipboard")
+    , ("M-S-t", spawn "flameshot gui -r | tesseract stdin stdout | xclip -selection clipboard")
     , ("M-c", spawn "~/.local/bin/lxc-machines menu")
     , ("<Print>", spawn "dbus-launch flameshot gui")
     , ("M-w", spawn "~/.local/bin/wallpaper.sh")
@@ -431,9 +431,9 @@ myConfig =
                     <> Hacks.fixSteamFlicker
                     <> Hacks.windowedFullscreenFixEventHook
             , startupHook = do
-                spawnOnce "~/.fehbg"
                 spawn "xsetroot -cursor_name left_ptr"
                 spawn "vicinae server --replace"
+                spawnOnce "~/.fehbg"
                 spawnOnce "picom"
                 spawnOnce "dunst"
                 spawnOnce "udiskie -s -a"

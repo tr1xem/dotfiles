@@ -2,7 +2,6 @@
 
 # Check if running as root
 if [ "$(id -u)" -ne 0 ]; then
-    echo "This script must be run as root."
     exec sudo "$0" "$@"
     exit 1
 fi
@@ -14,7 +13,7 @@ run_dbus_get() {
     output=$(dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
              org.freedesktop.DBus.Properties.Get string:org.scx.Loader string:"$property" 2>&1)
     if echo "$output" | grep -q "Error"; then
-        echo "[tr1x_em] :Error fetching $property: $output" | tee /dev/kmsg
+        echo "[tr1x_em]: Error fetching $property: $output" | tee /dev/kmsg
         exit 1
     fi
     echo "$output"
@@ -36,48 +35,42 @@ current_scheduler=$(extract_dbus_value "$scheduler_output")
 current_mode=$(extract_dbus_value "$mode_output")
 
 # Log for debugging
-echo "[tr1x_em] :Current scheduler: $current_scheduler, mode: $current_mode" | tee /dev/kmsg
+echo "[tr1x_em]: Current scheduler: $current_scheduler, mode: $current_mode" | tee /dev/kmsg
 
 # Check if scheduler is scx_lavd
 if [ "$current_scheduler" = "scx_lavd" ]; then
     if [ "$current_mode" = "2" ]; then
-        echo "[tr1x_em] :scx already set to powersaving"
+        echo "[tr1x_em]: scx already set to powersaving"
     else
-        echo "[tr1x_em] :Switching scx to powersaving mode" | tee /dev/kmsg
+        echo "[tr1x_em]: Switching scx to powersaving mode" | tee /dev/kmsg
         dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
                   org.scx.Loader.SwitchScheduler string:scx_lavd uint32:2 >/dev/null 2>&1 | tee /dev/kmsg
         if [ ${PIPESTATUS[0]} -ne 0 ]; then
-            echo "[tr1x_em] :Error switching to powersaving mode" | tee /dev/kmsg
+            echo "[tr1x_em]: Error switching to powersaving mode" | tee /dev/kmsg
             exit 1
         fi
     fi
 else
-    echo "[tr1x_em] :Switching to scx_lavd and powersaving mode" | tee /dev/kmsg
+    echo "[tr1x_em]: Switching to scx_lavd and powersaving mode" | tee /dev/kmsg
     dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
               org.scx.Loader.SwitchScheduler string:scx_lavd uint32:2 >/dev/null 2>&1 | tee /dev/kmsg
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
-        echo "[tr1x_em] :Error switching to scx_lavd powersaving mode" | tee /dev/kmsg
+        echo "[tr1x_em]: Error switching to scx_lavd powersaving mode" | tee /dev/kmsg
         exit 1
     fi
 fi
-pl1=45000000
-pl2=45000000
-currentpl=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw)
-if [ "$currentpl" != "$pl1" ]; then
-    echo "Setting PL1 to 45W"
-    echo $pl1 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
-    echo $pl2 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw
-    # sudo auto-cpufreq --force='powersave'
-    echo "[tr1x_em] :powerlimits set for powersaving " | tee /dev/kmsg
+pl0=55000000
+pl1=55000000
+currentpl0=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw)
+currentpl1=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw)
+if [ "$currentpl0" != "$pl0" ] || [ "$pl1" != "$currentpl1" ]; then
+    echo "[tr1x_em]: Setting PL0 to $pl0 and PL1 to $pl1"
+    printf '%s' "$pl1" > /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
+    printf '%s' "$pl1" > /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw
+    echo "[tr1x_em]: powerlimits set for powersaving " | tee /dev/kmsg
 else
-    echo "[tr1x_em] :powerlimits already set for powersaving "
+    echo "[tr1x_em]: powerlimits already set for powersaving "
 fi
-#
-#
-
-
-xset s on
-xset +dpms
 
 
 

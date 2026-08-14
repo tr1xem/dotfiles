@@ -2,7 +2,7 @@
 
 # Check if running as root
 if [ "$(id -u)" -ne 0 ]; then
-    echo "This script must be run as root."
+    # echo "This script must be run as root."
     exec sudo "$0" "$@"
     exit 1
 fi
@@ -14,7 +14,7 @@ run_dbus_get() {
     output=$(dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
              org.freedesktop.DBus.Properties.Get string:org.scx.Loader string:"$property" 2>&1)
     if echo "$output" | grep -q "Error"; then
-        echo "[tr1x_em] :Error fetching $property: $output" | tee /dev/kmsg
+        echo "[tr1x_em]: Error fetching $property: $output" | tee /dev/kmsg
         exit 1
     fi
     # Extract value after 'variant' (e.g., "scx_lavd" or "1")
@@ -26,41 +26,41 @@ current_scheduler=$(run_dbus_get CurrentScheduler)
 current_mode=$(run_dbus_get SchedulerMode)
 
 # Log for debugging
-echo "[tr1x_em] :Current scheduler: $current_scheduler, mode: $current_mode" | tee /dev/kmsg
+echo "[tr1x_em]: Current scheduler: $current_scheduler, mode: $current_mode" | tee /dev/kmsg
 
 # Check scheduler and mode
 if [ "$current_scheduler" = "scx_lavd" ]; then
     if [ "$current_mode" = "1" ]; then
-        echo "[tr1x_em] :scx already set to gaming"
+        echo "[tr1x_em]: scx already set to gaming"
     else
-        echo "[tr1x_em] :Switched scx to gaming mode" | tee /dev/kmsg
+        echo "[tr1x_em]: Switched scx to gaming mode" | tee /dev/kmsg
         if ! dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
                       org.scx.Loader.SwitchScheduler string:scx_lavd uint32:1 >/dev/null 2>&1 | tee /dev/kmsg; then
-            echo "[tr1x_em] :Error switching to gaming mode" | tee /dev/kmsg
+            echo "[tr1x_em]: Error switching to gaming mode" | tee /dev/kmsg
             exit 1
         fi
     fi
 else
-    echo "[tr1x_em] :Switched to scx_lavd and gaming mode" | tee /dev/kmsg
+    echo "[tr1x_em]: Switched to scx_lavd and gaming mode" | tee /dev/kmsg
     if ! dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader \
                   org.scx.Loader.SwitchScheduler string:scx_lavd uint32:1 >/dev/null 2>&1 | tee /dev/kmsg; then
-        echo "[tr1x_em] :Error switching to scx_lavd gaming mode" | tee /dev/kmsg
+        echo "[tr1x_em]: Error switching to scx_lavd gaming mode" | tee /dev/kmsg
         exit 1
     fi
 fi
-pl1=55000000
-pl2=100000000
-currentpl=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw)
-if [ "$currentpl" != "$pl1" ]; then
-    echo "Setting PL1 to 80W"
-    echo $pl1 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
-    echo $pl2 | sudo tee /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw
-    sudo chmod o+r /sys/class/powercap/intel-rapl\:0/energy_uj
-    echo "[tr1x_em] :powerlimits set for gaming " | tee /dev/kmsg
+pl0=80000000
+pl1=100000000
+currentpl0=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw)
+currentpl1=$(cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw)
+if [ "$currentpl" != "$pl0" ] || [ "$pl1" != "$currentpl1" ]; then
+    echo "[tr1x_em]: Setting PL0 to $pl0 and PL1 to $pl1"
+    printf '%s' "$pl0" > /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw
+    printf '%s' "$pl1" > /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_1_power_limit_uw
+    echo "[tr1x_em]: powerlimits set for gaming " | tee /dev/kmsg
 
 else
-    echo "[tr1x_em] :powerlimits already set for gaming "
+    echo "[tr1x_em]: powerlimits already set for gaming "
 fi
 
-xset s off
-xset -dpms
+echo "[tr1x_em]: Fixing cpu wattage permissions"
+sudo chmod o+r /sys/class/powercap/intel-rapl\:0/energy_uj

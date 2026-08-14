@@ -76,10 +76,7 @@ function ilspyx
     set asm $argv[1]
     set base (basename $asm .dll)
 
-    # create output folder if missing
     mkdir -p $base
-
-    # run ilspycmd
     ilspycmd -p -o $base $argv
 end
 
@@ -90,24 +87,10 @@ function pixelmpv
         | jq -r '"#EXTM3U", (.files[]? | select(.mime_type | startswith("video/") or startswith("audio/")) | "#EXTINF:-1," + .name, "https://pixeldrain.net/api/file/" + .id)' \
         | mpv --playlist=-
 end
-
-
-# function nspawn
-#      sudo machinectl start $argv[1] && sleep 2 && sudo machinectl shell saumya@$argv[1]
-#  end
-# function nspawn_stop
-#      sudo machinectl stop $argv[1]
-#  end
 alias rm='rm -i'
 alias orgmode='nvim -c "cd ~/personal/orgfiles"  -c "Oil"'
 alias yay='paru'
 alias flutter='fvm flutter'
-function git
-    if test (count $argv) -gt 0; and test "$argv[1]" = "commit"
-        command git commit -s $argv[2..-1]
-    else
-        command git $argv
-    end
-end
+alias cpu 'watch -n1 '\''grep "cpu MHz" /proc/cpuinfo | awk "{ printf \"CPU %-2d: %4.0f MHz\n\", NR-1, \$4 }"'\'''
 
 
