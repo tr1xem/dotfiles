@@ -11,6 +11,6 @@ OffsetMode=THUNAR_SBR_OFFSET_MODE_RIGHT
 [ThunarSbrReplaceRenamer]
 CaseSensitive=FALSE
 Replacement=
-Pattern=SPOILER_
+Pattern=_compressed
 Regexp=TRUE
 

@@ -1,43 +1,26 @@
 # Cava gradient support for Tmux
 alias cavax 'TERM=st-256color cava'
-alias mirrors="sudo reflector -c ID,SG -l 7 -f 7 -p https --sort rate --save /etc/pacman.d/mirrorlist"
 alias init="sudo mkinitcpio -P linux-lts"
-alias grub-update="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 alias clean="paru -Scc && sudo pacman -Scc"
-alias autoremove="paru -Qdtq | paru -Rs"
-alias update="paru -Syu"
-alias music="foot -e cmus"
-alias youtube="ytfzf -f -t --notify-playing --type=all "
-alias download="ytfzf -d -f"
-alias ytmusic="ytfzf --notify-playing --audio-only "
+alias update="paru"
 alias downloadmp3="yt-dlp --extract-audio --audio-format mp3 --audio-quality 0"
+alias downloadmp4='yt-dlp -f "bestvideo+bestaudio/best" --merge-output-format mp4'
 #other
 alias tree='eza -a --tree --color always --icons --group-directories-first'
 alias treell='eza -a -l -b --tree --color always --icons --group-directories-first'
 alias ls='eza -a --color always --icons --group-directories-first'
 alias ll='eza -a -l -b --color always --icons --group-directories-first'
 alias cat="bat"
-alias mem="echo tami | sudo -S ps_mem"
-alias hdd="echo tami | sudo -S hdsentinel"
-alias recordaudio="wf-recorder --audio=alsa_output.pci-0000_00_1b.0.analog-stereo.monitor --file=wf-recorder-audio.mp4"
-alias recordvideo="wf-recorder --file=wf-recorder-no-audio.mp4"
 # alias vim="nvim"
-# alias btop="btop --utf-force"
 alias clock="tty-clock -s -c -B -t -x -b"
-# alias tmux="tmux -u"
 alias hows-my-gpu='echo "NVIDIA Dedicated Graphics" && lspci -nnk | grep -i "NVIDIA" -A 2 | grep "Kernel driver in use" || echo "No NVIDIA GPU detected"; echo "Intel Corporation Raptor Lake-S UHD Graphics" && lspci -nnk | grep -i "Intel.*Graphics" -A 3 | grep "Kernel driver in use" || echo "No Intel GPU detected"; echo "Enable and disable the dedicated NVIDIA GPU with nvidia-enable and nvidia-disable"'
 alias nvidia-enable='sudo rmmod vfio_pci vfio_pci_core vfio_iommu_type1 && echo "VFIO drivers removed" && sudo modprobe -i nvidia_modeset nvidia_uvm nvidia && echo "NVIDIA drivers added" && echo "COMPLETED!"'
 alias nvidia-disable='sudo rmmod nvidia_modeset nvidia_uvm nvidia && echo "NVIDIA drivers removed" && sudo modprobe -i vfio_pci vfio_pci_core vfio_iommu_type1 && echo "VFIO drivers added" && echo "COMPLETED!"'
-alias scxgame='dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader org.scx.Loader.SwitchScheduler string:scx_lavd uint32:1'
-alias scxpower=' dbus-send --system --print-reply --dest=org.scx.Loader /org/scx/Loader org.scx.Loader.SwitchScheduler string:scx_lavd uint32:2'
 alias pamcan=pacman
 alias ollama="prime-run ollama"
-alias server="ssh -p 22022 root@209.74.86.34"
-alias study="sh /run/media/saumya/Nexus/Games/study.sh"
 alias checknvidia="cat /proc/driver/nvidia/gpus/0000:01:00.0/power"
 alias dectohex="printf '0x%x\n' $1"
 alias hextodec="printf '%d\n' $1"
-alias vencordinstall='sh -c "$(curl -sS https://vencord.dev/install.sh)"'
 alias mike="mpv https://www.youtube.com/playlist?list=PLvv0ScY6vfd8j-tlhYVPYgiIyXduu6m-L"
 alias snapshotclean="sudo zfs list -H -o name -t snapshot | grep '@zrepl_' | xargs -n1 sudo zfs destroy"
 
@@ -92,5 +75,3 @@ alias orgmode='nvim -c "cd ~/personal/orgfiles"  -c "Oil"'
 alias yay='paru'
 alias flutter='fvm flutter'
 alias cpu 'watch -n1 '\''grep "cpu MHz" /proc/cpuinfo | awk "{ printf \"CPU %-2d: %4.0f MHz\n\", NR-1, \$4 }"'\'''
-
-
