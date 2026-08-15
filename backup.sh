@@ -74,7 +74,7 @@ commit_all() {
         # commit if needed
         if ! git diff-index --quiet HEAD --; then
             echo "Committing $name"
-            git commit -m "'"$COMMIT_MSG"'"
+            git commit -sm "'"$COMMIT_MSG"'"
         else
             echo "No commit needed"
         fi
@@ -91,7 +91,7 @@ commit_all() {
     echo "📦 Checking main repo..."
 
     if ! git diff-index --quiet HEAD --; then
-        git commit -m "$COMMIT_MSG"
+        git commit -sm "$COMMIT_MSG"
     else
         echo "Main repo clean"
     fi
