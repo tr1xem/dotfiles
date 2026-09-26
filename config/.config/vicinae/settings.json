@@ -10,9 +10,14 @@
 
 {
    "$schema": "https://vicinae.com/schemas/config.json",
-   "close_on_focus_loss": false,
+   "close_on_focus_loss": true,
    "pop_to_root_on_close": true,
+   "escape_key_behavior": "",
+   "tray": {
+      "enabled": false
+   },
    "font": {
+      "rendering": "qt",
       "normal": {
          "size": 10
       }
@@ -28,6 +33,9 @@
    },
    "launcher_window": {
       "opacity": 0.5,
+      "client_side_decorations": {
+         "enabled": false
+      },
       "compact_mode": {
          "enabled": false
       }
@@ -72,6 +80,9 @@
                }
             }
          }
+      },
+      "shortcuts": {
+         "enabled": true
       }
    }
 }
