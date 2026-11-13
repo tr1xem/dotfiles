@@ -45,7 +45,7 @@ config station =
                    \%battery% <fc="
                 <> secondaryContainer colors
                 <> ">│</fc> \
-                   \%date% <fc="
+                   \%date% %dnd% <fc="
                 <> secondaryContainer colors
                 <> ">│</fc> \
                    \%weather% <fc="
@@ -125,6 +125,14 @@ config station =
                     , colorGreen colors
                     ]
                     "bluetooth"
+                    5
+            , Run $
+                Com
+                    "/bin/bash"
+                    [ "/home/saumya/.config/xmobar/scripts/dnd.sh"
+                    , primary colors
+                    ]
+                    "dnd"
                     5
             , Run $
                 Battery

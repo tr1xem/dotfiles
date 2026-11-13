@@ -10,9 +10,9 @@ transparency = 30
 progress_bar_corner_radius = 3
 icon_corner_radius = 3
 corner_radius = 5
-frame_color = "#ffb3b6"
-highlight = "#ffb3b6"
-separator_color= "#9f8c8c"
+frame_color = "#d2bcfd"
+highlight = "#d2bcfd"
+separator_color= "#948f99"
 offset = (0, 30)
 orgin=top-right
 
@@ -25,18 +25,18 @@ per_monitor_dpi = false
 
 [urgency_low]
 timeout = 3
-background = "#1a1111"
-foreground = "#f0dede"
-highlight = "#723338"
+background = "#151218"
+foreground = "#e7e0e8"
+highlight = "#4f3d74"
 
 [urgency_normal]
 timeout = 6
-background = "#1a1111"
-foreground = "#f0dede"
-highlight = "#723338"
+background = "#151218"
+foreground = "#e7e0e8"
+highlight = "#4f3d74"
 
 [urgency_critical]
 timeout = 0
-background = "#1a1111"
-foreground = "#f0dede"
+background = "#151218"
+foreground = "#e7e0e8"
 highlight = "#ffb4ab"

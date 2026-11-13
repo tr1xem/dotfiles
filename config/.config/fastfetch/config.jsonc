@@ -9,12 +9,12 @@
     "separator": " : "
   },
   "modules": [
-    {
-      "type": "command",
-      "key": "  ",
-      "keyColor": "blue",
-      "text": "text=$(fortune -s); echo $text"
-    },
+    // {
+    //   "type": "command",
+    //   "key": "  ",
+    //   "keyColor": "blue",
+    //   "text": "text=$(fortune -s); echo $text"
+    // },
     {
       "type": "custom",
       "format": "┌────────────────────────────────────────────────────────────┐"

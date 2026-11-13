@@ -4,13 +4,13 @@ LastActiveRenamer=ThunarSbrReplaceRenamer
 
 [ThunarSbrInsertRenamer]
 Offset=0
-Text=.bak
+Text=ryouku_
 Mode=THUNAR_SBR_INSERT_MODE_INSERT
-OffsetMode=THUNAR_SBR_OFFSET_MODE_RIGHT
+OffsetMode=THUNAR_SBR_OFFSET_MODE_LEFT
 
 [ThunarSbrReplaceRenamer]
 CaseSensitive=FALSE
-Replacement=
-Pattern=_compressed
+Replacement=ryoku_
+Pattern=ryouku_
 Regexp=TRUE
 

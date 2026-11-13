@@ -16,15 +16,20 @@ import requests;
 
 bool DEBUG = false;
 
-enum string VERSION = "0.1.1";
+enum string VERSION = "0.1.2";
 enum string APP_IMAGE = "~/.local/share/icons/xrec.svg";
 enum string PIDFILE = "/tmp/record.pid";
 enum string SAVE_DIR = "~/Videos/Recordings";
 //enum string  MIC_NAME="alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__Mic1__source";
 enum string MIC_NAME = "@DEFAULT_SOURCE@";
-enum string VIDEO_CODEC = "hevc_nvenc";
-enum string VIDEO_PRESET = "p6";
-enum string VIDEO_CQ = "20";
+// FOR GPU
+// enum string VIDEO_CODEC = "hevc_nvenc";
+// enum string VIDEO_PRESET = "p6";
+// enum string VIDEO_CQ = "20";
+// FOR CPU
+enum string VIDEO_CODEC = "libx264";
+enum string VIDEO_PRESET = "superfast";
+enum string VIDEO_CRF = "23";
 string COLOR = "FF0000";
 
 // NOTE: using strings as cmd already needs them as string so to avoid  a cast
@@ -139,11 +144,15 @@ void startRecording(string fileName = "", string dir = SAVE_DIR) {
         "-c:v", VIDEO_CODEC,
         "-preset", VIDEO_PRESET,
         "-rc", "vbr",
-        "-cq", VIDEO_CQ,
+        // FOR GPU
+        // "-cq", VIDEO_CQ,
+        // FOR CPU
+        "-crf", VIDEO_CRF,
         "-b:v", "0",
         "-profile:v", "main",
         "-pix_fmt", "yuv420p",
-        "-tag:v", "hvc1",
+        // FOR GPU
+        // "-tag:v", "hvc1",
         "-c:a", "aac",
         "-b:a", "192k",
         "-movflags", "+faststart",

@@ -276,6 +276,7 @@ myKeys =
     , -- Apps
       ("M-S-v", spawn "pwvucontrol")
     , ("M-C-v", spawn "~/.local/bin/change_output.sh")
+    , ("M-<Delete>", spawn "dunstctl set-paused toggle && dunstctl close-all")
     , ("M-b", spawn myBrowser)
     , ("M-t", spawn myFileManager)
     , ("M-y", spawn "curd")
@@ -441,6 +442,7 @@ myConfig =
                 spawnOnce "lxqt-policykit-agent"
                 spawnOnce "xss-lock -- betterlockscreen -l"
                 spawnOnce "stalonetray"
+                spawnOnce "/run/media/saumya/tank/games/awnext.AppImage --hidden"
                 spawnOnce "snixembed --fork"
                 spawnOnce "ntfy"
             }
